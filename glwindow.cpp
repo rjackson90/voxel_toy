@@ -54,9 +54,26 @@ void GLWindow::init()
 }
 
 GLWindow::~GLWindow()
-{
+{    
     glXDestroyWindow(display, glWindow);
     XDestroyWindow(display, window);
     XFreeColormap(display, cmap);
     XCloseDisplay(display);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

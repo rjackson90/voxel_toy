@@ -1,11 +1,16 @@
+#ifndef GL_WINDOW_H
+#define GL_WINDOW_H
+
+#include <iostream>
+#include <list>
+
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
 #include <GL/gl.h>
 #include <GL/glx.h>
 
-#define GLX_CONTEXT_MAJOR_VERSION_ARB	0x2091
-#define GLX_CONTEXT_MINOR_VERSION_ARB	0x2092
+using namespace std;
 
 class GLWindow
 {
@@ -45,7 +50,7 @@ int GLWindow::attribs[] =
     GLX_SAMPLES         , 0,
     None
 };
-
+#endif
 
 
 
