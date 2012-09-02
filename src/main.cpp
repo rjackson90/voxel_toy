@@ -1,4 +1,6 @@
 #include "glwindow.h"
+#include "instrumentation.h"
+
 #include <iostream>
 #include <unistd.h>
 
@@ -9,6 +11,7 @@ using namespace std;
 
 int main()
 {
+    instrumentation_status(true);
     cout << "Started program" << endl;
 
     cout << "Creating new window" << endl;
@@ -16,7 +19,7 @@ int main()
 
     window.makeCurrent();
 
-    int max = 1;
+    int max = 10000;
     float shade = 0.0f;
     for(int i = max; i > 0; i--)
     {
@@ -27,5 +30,6 @@ int main()
     }
     
     cout << "Shutting down" << endl;
+    instrumentation_status(false);
     return 0;
 }
