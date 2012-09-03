@@ -2,8 +2,8 @@ CC:=g++
 CFLAGS:=-Wall -Wextra -Werror -pedantic -std=c++0x -Iinclude
 DEBUG:=-g -O0
 PRODUCTION:=-g -O0
-LIBS:=-lGL -lX11 -lrt
-SOURCES:=src/glwindow.cpp src/main.cpp
+LIBS:=-lGL -lX11 -ltools
+SOURCES:=$(wildcard src/*.cpp)
 OBJECTS:=$(patsubst src/%.cpp, bin/%.o, $(SOURCES))
 EXECUTABLE:=GLDemo
 
@@ -28,12 +28,8 @@ production: clean $(EXECUTABLE)
 valgrind: clean debug
 	valgrind --suppressions=res/custom.supp --leak-check=yes ./$(EXECUTABLE)
 
-$(EXECUTABLE): $(OBJECTS) bin/instrumentation.o
-	$(CC) $(OBJECTS) bin/instrumentation.o $(LIBS) -o $@ 
+$(EXECUTABLE): $(OBJECTS)
+	$(CC) $(OBJECTS) -o $@ $(LIBS)
 
 bin/%.o : src/%.cpp
-	$(CC) -c $(CFLAGS) -finstrument-functions $< -o $@
-
-bin/instrumentation.o : src/instrumentation.cpp
-	$(CC) -c $(CFLAGS) $< -o $@
-	
+	$(CC) -c $(CFLAGS) -finstrument-functions $< $(LIBS) -o $@
