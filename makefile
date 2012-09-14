@@ -2,7 +2,7 @@ CC:=g++
 CFLAGS:=-Wall -Wextra -Werror -pedantic -std=c++0x -Iinclude
 DEBUG:=-g -O0
 PRODUCTION:=-g -O0
-LIBS:=-lGL -lX11 -ltools
+LIBS:=-lGLEW -lGLU -lGL -lX11 -ltools
 SOURCES:=$(wildcard src/*.cpp)
 OBJECTS:=$(patsubst src/%.cpp, bin/%.o, $(SOURCES))
 EXECUTABLE:=GLDemo

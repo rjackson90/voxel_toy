@@ -34,23 +34,52 @@ Vertex::Vertex(const Vector3f &pos = Vector3f(), const Vector3f &rgb = Vector3f(
     : position(pos), normal(norm), color(rgb)
 {}
 
-Mesh::Mesh(Vertex* vertices = nullptr, int vertex_count = 0, short *indices = nullptr,
-           int index_count = 0)
-    : vertices(vertices), vertex_count(vertex_count), indices(indices), index_count(index_count)
-{}
-
-Mesh::~Mesh()
+Mesh::Mesh()
+    : vertex_count(0), index_count(0), buffers({0,0}), vao(0), program(0), 
+      vertex_source(nullptr), fragment_source(nullptr), vertex_shader(0), fragment_shader(0)
 {
-    if(vertices != nullptr)
-        delete[] vertices;
-    if(indices != nullptr)
-        delete[] indices;
+    glGenBuffers(2, &buffers[0]);
+    glGenVertexArrays(1, &vao);
 }
 
-Mesh test_cube()
+void Mesh::loadData(Vertex *verts, int vert_count, short *index_array, int index_count)
+{
+    // Store the number of vertices and the number of indices in the mesh object
+    vertex_count = vert_count;
+    this->index_count = index_count;
+
+    // Bind vertex array, vertex buffer, element buffer
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, buffers[VERTEX_BUFFER_INDEX]);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[ELEMENT_BUFFER_INDEX]);
+
+    // Initialize the buffers by loading in data
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vert_count, (void *) verts, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(short) * index_count, (void *)index_array, 
+                 GL_STATIC_DRAW);
+
+    // Tell OpenGL about the layout of the data in the vertex buffer, map attributes to shader 
+    // indexes
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) 0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) sizeof(Vector3f));
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) (2*sizeof(Vector3f)));
+    
+    // Enable vertex attributes
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+
+    // unbind the buffers
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    
+}
+
+void test_cube(Mesh &mesh)
 {
     // Cubes have 8 vertices
-    Vertex *verts = new Vertex[8];
+    Vertex verts[8];
 
     verts[0].position = Vector3f(-1.0f,  1.0f,  1.0f);
     verts[1].position = Vector3f( 1.0f,  1.0f,  1.0f);
@@ -75,19 +104,34 @@ Mesh test_cube()
         verts[i].normal = verts[i].position.normalized();
     }
 
-    short *indices = new short[10];
+    int index_length = 6*2*3;
+    short indices[] = 
+    {
+        0, 3, 1,
+        1, 3, 2,
+        4, 1, 0,
+        1, 4, 5,
+        7, 5, 4,
+        5, 6, 7,
+        3, 0, 4,
+        4, 7, 3,
+        3, 7, 6,
+        6, 2, 3,
+        5, 1, 2,
+        2, 6, 5
+    };
 
-    return Mesh(verts, 8, indices, 10);
+    mesh.loadData(&verts[0], 8, &indices[0], index_length);
 }
 
-Mesh test_latlong_sphere()
+void test_latlong_sphere(Mesh &mesh)
 {
     const int lat_div = 36;
     const int long_div = 76;
 
-    int vert_count = lat_div * long_div;
+    const int vert_count = lat_div * long_div;
 
-    Vertex *verts = new Vertex[vert_count];
+    Vertex verts[vert_count];
 
     for(int i =0; i < vert_count; i++)
     {
@@ -104,7 +148,7 @@ Mesh test_latlong_sphere()
     }
 
     // This is just a placeholder, clearly incorrect
-    short *indices = new short[10];
+    short indices[10];
 
-    return Mesh(verts, vert_count, indices, 10);
+    mesh.loadData(&verts[0], vert_count, &indices[0], 10);
 }

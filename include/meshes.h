@@ -2,11 +2,15 @@
 #define MESHES_H
 
 #include <math.h>
+#include <algorithm>
+#include <GL/glew.h>
 
 #define RADIANS(x) ((x) * (PI) / 180.0f)
 #define DEGREES(x) ((x) * 180.0f / (PI))
 
 const float PI = 4.0f * atan(1);
+const int VERTEX_BUFFER_INDEX = 0;
+const int ELEMENT_BUFFER_INDEX = 1;
 
 class Vector3f
 {
@@ -32,25 +36,29 @@ class Mesh
 {
     public:
 
-    Mesh(Vertex*, int, short*, int);
-    ~Mesh();
+    Mesh();
+    void loadData(Vertex*, int, short*, int);
+    void draw();
 
     private:
 
-    Vertex  *vertices;
     int     vertex_count;
-    short   *indices;
     int     index_count;
+    GLuint buffers[2];
+    GLuint vao;
+    GLuint program;
+    GLchar *vertex_source, *fragment_source;
+    GLuint vertex_shader, fragment_shader;
 };
 
-Mesh test_cube();
+void test_cube(Mesh &);
 
-Mesh test_latlong_sphere();
+void test_latlong_sphere(Mesh &);
 
-Mesh test_ico_sphere();
+void test_ico_sphere(Mesh &);
 
-Mesh test_tetrahedron();
+void test_tetrahedron(Mesh &);
 
-Mesh test_cone();
+void test_cone(Mesh &);
 
 #endif
