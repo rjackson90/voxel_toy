@@ -45,6 +45,8 @@ class Mesh
     GLuint  buffers[2];
     GLuint  vao;
     GLuint  program;
+
+    GLuint locMVP;
 };
 
 void test_cube(Mesh &);

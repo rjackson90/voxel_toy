@@ -49,12 +49,15 @@ int main()
                                         100.0f);                                     // z-max
     viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f,0.0f, -5.0f));
     modelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
-    mvp = projectionMatrix * viewMatrix * modelMatrix;
+    // mvp = projectionMatrix * viewMatrix * modelMatrix;
     cout << "Created mvp matrix" << endl;
+
+    // Enable OpenGL functionality
+    glEnable(GL_DEPTH_TEST);
 
 
     // Draw the scene
-    int max = 10000;
+    int max = 5000;
     float shade = 0.0f;
     float rot = 1.0f / (float) max;
     Mesh cube;
@@ -64,9 +67,10 @@ int main()
     {
         shade = (float)i/max;
         glClearColor(shade, shade, shade, 1);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        mvp = glm::rotate(mvp, rot, glm::vec3(0.0f, 1.0f, 0.0f));
+        modelMatrix = glm::rotate(modelMatrix, rot * i, glm::vec3(0.0f, 1.0f, 0.0f));
+        mvp = projectionMatrix * viewMatrix * modelMatrix;
 
         cube.draw(mvp);
         window.swap();

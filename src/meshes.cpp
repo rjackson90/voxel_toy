@@ -7,7 +7,7 @@ Vertex::Vertex(const glm::vec3 &pos = glm::vec3(), const glm::vec3 &rgb = glm::v
 {}
 
 Mesh::Mesh()
-    : vertex_count(0), index_count(0), buffers({0,0}), vao(0)
+    : vertex_count(0), index_count(0), buffers{0,0}, vao(0), locMVP(0)
 {
     // OpenGL objects need to be allocated on the GPU
     glGenBuffers(2, &buffers[0]);
@@ -152,12 +152,12 @@ void Mesh::draw(glm::mat4 mvp)
 {
     // Select shader, load uniform data
     glUseProgram(program);
-    GLuint locMVP = glGetUniformLocation(program, "mvp");
+    locMVP = glGetUniformLocation(program, "mvp");
     glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
 
     // Bind this mesh's VAO and issue draw command
     glBindVertexArray(vao);
-    glDrawElements(GL_TRIANGLES, index_count / 3, GL_UNSIGNED_SHORT, (GLvoid*) 0);
+    glDrawElements(GL_TRIANGLES, index_count , GL_UNSIGNED_SHORT, (GLvoid*) 0);
 
     // Unbind VAO and program
     glBindVertexArray(0);
@@ -209,6 +209,14 @@ void test_cube(Mesh &mesh)
         5, 1, 2,
         2, 6, 5
     };
+
+    /*
+    for(int i = 0; i < index_length; i++)
+    {
+        indices[i] = indices[i] * 3;
+    }
+    */
+    
 
     mesh.loadData(&verts[0], 8, &indices[0], index_length);
 }

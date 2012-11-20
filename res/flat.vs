@@ -12,5 +12,5 @@ out vec4 vVaryingColor;
 void main(void)
 {
     vVaryingColor = vec4(vColor, 1.0f);
-    gl_Position = vec4(vVertex, 1.0f);
+    gl_Position = mvp * vec4(vVertex, 1.0f);
 }
