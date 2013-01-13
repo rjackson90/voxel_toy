@@ -1,13 +1,11 @@
 #include <GL/glew.h>
 #include "glwindow.h"
-#include "instrumentation.h"
 #include "meshes.h"
 
 #include <iostream>
 #include <unistd.h>
 
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 using namespace std;
@@ -17,8 +15,6 @@ static const int WINDOW_HEIGHT = 768;
 
 int main()
 {
-    // Initialize instrumentation framework
-    instrumentation_status(true);
     cout << "Started program" << endl;
 
     // Create a new window, initialize OpenGL extensions
@@ -30,7 +26,6 @@ int main()
     {
         // Something's up, GLEW initialization should never fail
         cout << "GLEW initialization failed: " << glewGetErrorString(err) << endl;
-        instrumentation_status(false);
         return 1;
     }
     cout << "GLEW initialization OK. Version string: " << glGetString(GL_VERSION) << endl;
@@ -76,8 +71,5 @@ int main()
         window.swap();
     }
     
-    // Cleanup instrumentation framework
-    cout << "Shutting down" << endl;
-    instrumentation_status(false);
     return 0;
 }
