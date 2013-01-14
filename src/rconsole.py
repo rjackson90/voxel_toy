@@ -2,11 +2,13 @@ import socket
 import code
 import sys
 import __builtin__
+import argparse
 
 class RemoteShell(code.InteractiveConsole):
-    def __init__(self, io, locals=None):
+    def __init__(self, io):
         self.io = io
-        code.InteractiveConsole.__init__(self, locals=locals, filename='<RemoteShell>')
+        code.InteractiveConsole.__init__(
+            self, locals=dict(globals(), **locals()), filename='<RemoteShell>')
 
     def raw_input(self, prompt='8===>'):
         self.io.write(prompt)
@@ -31,7 +33,7 @@ def run_server(port=1337):
     print "stop the server with CTRL+C"
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    sock.bind(('', 1337))
+    sock.bind(('', port))
 
     print "listening for connections..."
     while True:
@@ -54,15 +56,21 @@ def run_server(port=1337):
         try:
             shell = RemoteShell(io)
             shell.interact()
-        finally:
-            sys.displayhook = oldhook
-            print "I/O restored, closing connection"
             conn.shutdown(socket.SHUT_RDWR)
             conn.close()
+        except socket.error:
+            print "Connection closed by client"
+        finally:
+            sys.displayhook = oldhook
+            print "I/O restored"
 
 
 if __name__ == "__main__":
-    run_server()
+    parser = argparse.ArgumentParser(
+        description="Start an interactive console session accessible via telnet on a chosen port.")
+    parser.add_argument('--port', type=int, help="Port on which to start the server",
+                        default=1337)
+    run_server(parser.parse_args().port)
 
         
         
