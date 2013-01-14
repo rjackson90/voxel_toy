@@ -14,7 +14,6 @@ class GLRenderer
 
     GLRenderer(int, int, const char*);
     GLRenderer();
-    ~GLRenderer();
 
     private:
 
