@@ -1,19 +1,40 @@
 #include <GL/glew.h>
-#include "glwindow.h"
-#include "meshes.h"
-
 #include <iostream>
-#include <unistd.h>
+#include <signal.h>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include "meshes.h"
+#include "dispatch.h"
 
 using namespace std;
 
-static const int WINDOW_WIDTH = 1024;
-static const int WINDOW_HEIGHT = 768;
-
 int main()
+{
+    // Initialize GCD, attach it to the subsystems once constructed
+    Dispatch dispatch = Dispatch();
+    dispatch.render_sys.attachDispatch(&dispatch);
+
+    // Use our own system signal handler
+    cout << "Setting system signal handler." << endl;
+    signal(SIGINT, Dispatch::signal_handler);
+
+    // Add meshes to the render system
+    cout << "Creating meshes" << endl;
+    Mesh cube;
+    test_cube(cube);
+    cube.loadProgram("res/flat.vs", "res/flat.fs");
+    dispatch.render_sys.addNode(1, cube);
+
+    // GO
+    cout << "Starting main loop" << endl;
+    dispatch.run();
+
+    cout << "Stopped." << endl;
+    return 0;
+}
+
+/*
+
+int old_main()
 {
     cout << "Started program" << endl;
 
@@ -73,3 +94,5 @@ int main()
     
     return 0;
 }
+
+*/

@@ -1,11 +1,11 @@
 #ifndef MESHES_H
 #define MESHES_H
 
+#include <GL/glew.h>
 #include <math.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <algorithm>
-#include <GL/glew.h>
 #include <string>
 #include <iostream>
 #include <fstream>

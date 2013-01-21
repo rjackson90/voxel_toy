@@ -29,7 +29,7 @@ GLWindow::GLWindow()
     init();
 }
 
-GLWindow::GLWindow(int width, int height, const char *title)
+GLWindow::GLWindow(int width, int height, string title)
 {
     this->width = width;
     this->height = height;
@@ -95,7 +95,7 @@ void GLWindow::init()
     else
         cout << "WARNING: Failed to create new X11 window" << endl;
     
-    XStoreName(display, window, title);
+    XStoreName(display, window, title.c_str());
     XMapWindow(display, window);
     XFree(visual);
 

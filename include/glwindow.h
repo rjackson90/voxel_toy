@@ -4,11 +4,12 @@
 #include <list>
 #include <iostream>
 #include <pthread.h>
+#include <string>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-#include <GL/gl.h>
+#include <GL/glew.h>
 #include <GL/glx.h>
 
 using namespace std;
@@ -19,7 +20,7 @@ class GLWindow
 {
     public:
         GLWindow();
-        GLWindow(int, int, const char*);
+        GLWindow(int, int, string);
         ~GLWindow();
         
         void makeCurrent(bool=false);
@@ -32,7 +33,7 @@ class GLWindow
         GLXWindow glWindow;
         Colormap cmap;
         int width, height;
-        const char* title;
+        string title;
         static int attribs[];
         GLXContext *contexts;
         

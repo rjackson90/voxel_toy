@@ -74,7 +74,7 @@ bool Mesh::loadShaderFile(std::string path, GLuint shader)
     }
     std::string source((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
     in.close();
-    std::cout << "Got shader source: " << std::endl << source << std::endl << std::endl;
+    std::cout << "Got shader source" << std::endl;
     
     // Move shader source to GPU
     std::cout << "Loading shader source" << std::endl;
