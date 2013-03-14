@@ -2,24 +2,23 @@
 #define PHYSICS_SYSTEM_H
 
 #include <list>
-#include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
 
+#include "math_ext.h"
 #include "system.h"
 
 struct State
 {
     // primary
-    glm::quat orientation;
-    glm::vec3 position;
-    glm::vec3 momentum;
-    glm::vec3 angular_momentum;
+    Quaternion orientation;
+    Vector position;
+    Vector momentum;
+    Vector angular_momentum;
 
     // secondary
-    glm::quat spin;
-    glm::vec3 velocity;
-    glm::vec3 angular_velocity;
-    glm::mat4 world_coords;
+    Quaternion spin;
+    Vector velocity;
+    Vector angular_velocity;
+    // glm::mat4 world_coords; // Need a replacement for GLM::mat4
 
     // constant
     float inertia;
@@ -32,11 +31,17 @@ struct State
 
 struct Derivative
 {
-    glm::vec3 velocity;
-    glm::vec3 force;
-    glm::quat spin;
-    glm::vec3 torque;
+    Vector velocity;
+    Vector force;
+    Quaternion spin;
+    Vector torque;
+
 };
+
+// These functions make up the RK4 integrator
+Derivative evaluate(const State &, float, const Derivative &);
+Derivative evaluate(const State &);
+void integrate(State &, float);
 
 class PhysicsSystem : public System
 {
