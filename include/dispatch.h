@@ -12,7 +12,9 @@
 #include <iostream>
 #include <signal.h>
 
+// Subsystem headers
 #include "rendersystem.h"
+#include "physicssystem.h"
 
 
 static const int WINDOW_WIDTH = 1024;
@@ -28,7 +30,9 @@ class Dispatch
     void run();
     static void signal_handler(int);
 
+    // Subsystems
     RenderSystem render_sys;
+    PhysicsSystem physics_sys;
 
     private:
     static bool isRunning;

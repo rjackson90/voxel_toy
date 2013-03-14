@@ -19,7 +19,8 @@ void Dispatch::signal_handler(int signum)
 
 // The constructor for the Dispatch object performs global initialization and
 // triggers init for subsystems
-Dispatch::Dispatch() : render_sys(RenderSystem(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE))
+Dispatch::Dispatch() : render_sys(RenderSystem(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)),
+                       physics_sys(PhysicsSystem())
 {
     cout << "Starting up..." << endl;
 
@@ -53,14 +54,17 @@ void Dispatch::run()
         while ( accumulator >= dt )
         {
             // physics runs until the simulation is accurate for the present time. 
+            physics_sys.tick( dt );
 
             t += dt;
             accumulator -= dt;
         }
-
-        const double alpha = accumulator / dt;
+        
+        // Interpolation factor, unused at the moment
+        // const double alpha = accumulator / dt;
+        
         // Interpolate between the current and prior physics state, then render the results
-        render_sys.tick( (float) dt * alpha /*args are BULLSHIT*/);
+        render_sys.tick();
     }
 }
 

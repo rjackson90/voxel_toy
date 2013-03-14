@@ -1,5 +1,47 @@
 #include "physicssystem.h"
 
+const Vector UNIT_X = Vector(1.0f, 0.0f, 0.0f);
+const Vector UNIT_Y = Vector(0.0f, 1.0f, 0.0f);
+const Vector UNIT_Z = Vector(0.0f, 0.0f, 1.0f);
+
+PhysicsSystem::PhysicsSystem(int node_count) : nodes(node_count)
+{
+}
+
+void PhysicsSystem::tick(double dt)
+{
+    // Advance the physics simulation by dt
+    for(std::vector<RigidBodyNode>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        it->past = it->present;
+        integrate(it->present, dt);
+    }
+}
+
+void PhysicsSystem::addNode(int key, Quaternion orient, Vector pos, Vector mo, Vector a_mo,
+                            float inert, float inv_inert, float mass, float inv_mass)
+{
+    State initial;
+    initial.orientation = orient;
+    initial.position = pos;
+    initial.momentum = mo;
+    initial.angular_momentum = a_mo;
+    initial.inertia = inert;
+    initial.inverse_inertia = inv_inert;
+    initial.mass = mass;
+    initial.inverse_mass = inv_mass;
+    initial.recalculate();
+
+    State initial_prev = initial;
+
+    RigidBodyNode newNode;
+    newNode.key = key;
+    newNode.past = initial_prev;
+    newNode.present = initial;
+
+    nodes.push_back(newNode);
+}
+
 void State::recalculate()
 {
     // Linear quantities
@@ -25,7 +67,7 @@ Derivative evaluate(const State &state)
     return output;
 }
 
-Derivative evaluate(State &state, float dt, const Derivative &d)
+Derivative evaluate(State &state, double dt, const Derivative &d)
 {
     state.position         = state.position         + d.velocity * dt;
     state.momentum         = state.momentum         + d.force    * dt;
@@ -42,7 +84,7 @@ Derivative evaluate(State &state, float dt, const Derivative &d)
     return output;
 }
 
-void integrate(State &state, float dt)
+void integrate(State &state, double dt)
 {
     Derivative a, b, c, d;
     a = evaluate(state);

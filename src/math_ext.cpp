@@ -1,5 +1,9 @@
 #include "math_ext.h"
 
+const Vector Vector::UNIT_X = Vector(1.0f, 0.0f, 0.0f);
+const Vector Vector::UNIT_Y = Vector(0.0f, 1.0f, 0.0f);
+const Vector Vector::UNIT_Z = Vector(0.0f, 0.0f, 1.0f);
+
 Vector::Vector(float X, float Y, float Z)
 {
     x = X;

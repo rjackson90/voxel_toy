@@ -30,7 +30,7 @@ void RenderSystem::addNode(int key, Mesh data)
     nodes.push_back(newNode);
 }
 
-void RenderSystem::tick(__attribute__((unused)) float dt)
+void RenderSystem::tick(__attribute__((unused)) double dt)
 {
     // Clear the frame buffer, depth buffer, and stencil buffer
     glClearColor(0.0, 0.0, 0.0, 1.0);

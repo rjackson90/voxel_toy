@@ -1,7 +1,7 @@
 #ifndef PHYSICS_SYSTEM_H
 #define PHYSICS_SYSTEM_H
 
-#include <list>
+#include <vector>
 
 #include "math_ext.h"
 #include "system.h"
@@ -39,18 +39,24 @@ struct Derivative
 };
 
 // These functions make up the RK4 integrator
-Derivative evaluate(const State &, float, const Derivative &);
+Derivative evaluate(const State &, double, const Derivative &);
 Derivative evaluate(const State &);
-void integrate(State &, float);
+void integrate(State &, double);
 
+// Physics Subsystem
 class PhysicsSystem : public System
 {
     public:
+        PhysicsSystem(int=10);
+        virtual void tick(double);
+        void addNode(int, Quaternion, Vector, Vector, Vector, float, float, float, float);
     private:
     struct RigidBodyNode : Node
     {
+        State past;
+        State present;
     };
 
-    std::list<RigidBodyNode> nodes;
+    std::vector<RigidBodyNode> nodes;
 };
 #endif /*PHYSICS_SYSTEM_H*/

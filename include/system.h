@@ -8,7 +8,7 @@ class Dispatch;
 class System
 {
     public:
-    virtual void tick(float dt) = 0;
+    virtual void tick(double dt=0.0) = 0;
     void attachDispatch(Dispatch*);
 
     protected:

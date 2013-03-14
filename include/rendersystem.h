@@ -15,7 +15,7 @@ class RenderSystem : public System
 {
     public:
     RenderSystem(int, int, string);
-    virtual void tick(float);
+    virtual void tick(double=0.0);
     void addNode(int, Mesh);
 
     private:

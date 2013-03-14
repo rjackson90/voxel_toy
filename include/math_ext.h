@@ -16,6 +16,11 @@ struct Vector
     float dot(const Vector &) const;
     Vector cross(const Vector &) const;
     float norm() const;
+
+    // Useful constants
+    static const Vector UNIT_X;
+    static const Vector UNIT_Y;
+    static const Vector UNIT_Z;
 };
 
 struct Quaternion
