@@ -12,30 +12,30 @@
 #include <iostream>
 #include <signal.h>
 
-// Subsystem headers
+class RenderSystem;
+
 #include "rendersystem.h"
 #include "physicssystem.h"
-
-
-static const int WINDOW_WIDTH = 1024;
-static const int WINDOW_HEIGHT = 768;
-static const string WINDOW_TITLE = "A Really Fun Game!!!";
 
 double hires_time_seconds();
 
 class Dispatch
 {
     public:
-    Dispatch();
+    Dispatch(Subsystems *);
     void run();
     static void signal_handler(int);
 
-    // Subsystems
-    RenderSystem render_sys;
-    PhysicsSystem physics_sys;
-
     private:
     static bool isRunning;
+    Subsystems *systems;
+};
+
+struct Subsystems
+{
+    RenderSystem* render = nullptr;
+    PhysicsSystem* physics = nullptr;
+    Dispatch* dispatch = nullptr;
 };
 
 #endif

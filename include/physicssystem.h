@@ -1,7 +1,9 @@
 #ifndef PHYSICS_SYSTEM_H
 #define PHYSICS_SYSTEM_H
 
-#include <vector>
+#include <unordered_map>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "math_ext.h"
 #include "system.h"
@@ -18,11 +20,11 @@ struct State
     Quaternion spin;
     Vector velocity;
     Vector angular_velocity;
-    // glm::mat4 world_coords; // Need a replacement for GLM::mat4
+    glm::mat4 world_coords;
 
     // constant
-    float inertia;
-    float inverse_inertia;
+    glm::mat3 inertia;
+    glm::mat3 inverse_inertia;
     float mass;
     float inverse_mass;
 
@@ -44,12 +46,16 @@ Derivative evaluate(const State &);
 void integrate(State &, double);
 
 // Physics Subsystem
+
+struct Subsystems;
+
 class PhysicsSystem : public System
 {
     public:
-        PhysicsSystem(int=10);
-        virtual void tick(double);
-        void addNode(int, Quaternion, Vector, Vector, Vector, float, float, float, float);
+        PhysicsSystem(Subsystems *);
+        virtual void tick(const double) override;
+        void addNode(int, State);
+        glm::mat4 getWorldCoords(int);
     private:
     struct RigidBodyNode : Node
     {
@@ -57,6 +63,7 @@ class PhysicsSystem : public System
         State present;
     };
 
-    std::vector<RigidBodyNode> nodes;
+    std::unordered_map<int, RigidBodyNode> nodes;
+    Subsystems *systems;
 };
 #endif /*PHYSICS_SYSTEM_H*/

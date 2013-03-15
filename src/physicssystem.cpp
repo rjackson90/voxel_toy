@@ -1,45 +1,33 @@
 #include "physicssystem.h"
 
-const Vector UNIT_X = Vector(1.0f, 0.0f, 0.0f);
-const Vector UNIT_Y = Vector(0.0f, 1.0f, 0.0f);
-const Vector UNIT_Z = Vector(0.0f, 0.0f, 1.0f);
+PhysicsSystem::PhysicsSystem(Subsystems *sys) : systems(sys)
+{}
 
-PhysicsSystem::PhysicsSystem(int node_count) : nodes(node_count)
-{
-}
-
-void PhysicsSystem::tick(double dt)
+void PhysicsSystem::tick(const double dt)
 {
     // Advance the physics simulation by dt
-    for(std::vector<RigidBodyNode>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    for(auto it = nodes.begin(); it != nodes.end(); ++it)
     {
-        it->past = it->present;
-        integrate(it->present, dt);
+        it->second.past = it->second.present;
+        integrate(it->second.present, dt);
     }
 }
 
-void PhysicsSystem::addNode(int key, Quaternion orient, Vector pos, Vector mo, Vector a_mo,
-                            float inert, float inv_inert, float mass, float inv_mass)
+void PhysicsSystem::addNode(int key, State initial)
 {
-    State initial;
-    initial.orientation = orient;
-    initial.position = pos;
-    initial.momentum = mo;
-    initial.angular_momentum = a_mo;
-    initial.inertia = inert;
-    initial.inverse_inertia = inv_inert;
-    initial.mass = mass;
-    initial.inverse_mass = inv_mass;
     initial.recalculate();
-
-    State initial_prev = initial;
 
     RigidBodyNode newNode;
     newNode.key = key;
-    newNode.past = initial_prev;
+    newNode.past = initial;
     newNode.present = initial;
 
-    nodes.push_back(newNode);
+    nodes.insert({{key, newNode}});
+}
+
+glm::mat4 PhysicsSystem::getWorldCoords(int key)
+{
+    return nodes[key].present.world_coords;
 }
 
 void State::recalculate()
@@ -48,12 +36,13 @@ void State::recalculate()
     velocity = momentum * inverse_mass;
 
     // Rotational quantities
-    angular_velocity = angular_momentum * inverse_inertia;
+    angular_velocity = Vector(inverse_inertia * angular_momentum.toGLMVec());
     orientation.normalize();
     spin = (Quaternion(0.0f, angular_velocity) * orientation) * 0.5f;
 
     // Coordinates -- there isn't currently a method to convert a Quaternion to a matrix
-    // world_coords = glm::translate(glm::mat4(1.0), position) * glm::mat4_cast(orientation);
+    world_coords = glm::translate(orientation.toMatrix(), 
+                                  glm::vec3(position.x, position.y, position.z));
 }
 
 Derivative evaluate(const State &state)

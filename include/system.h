@@ -3,20 +3,16 @@
 
 #include <list>
 
-class Dispatch;
-
 class System
 {
     public:
-    virtual void tick(double dt=0.0) = 0;
-    void attachDispatch(Dispatch*);
+    virtual void tick(const double) = 0;
 
     protected:
     struct Node
     {
         int key;
     };
-    Dispatch* dispatch;
 };
 
 #endif /*SYSTEM_H*/

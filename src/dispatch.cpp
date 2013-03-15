@@ -7,27 +7,25 @@ void Dispatch::signal_handler(int signum)
     switch(signum)
     {
         case SIGINT:
-            cout << "Recieved SIGINT: Shutting down." << endl;
+            std::cout << "Recieved SIGINT: Shutting down." << std::endl;
             Dispatch::isRunning = false;
             break;
         default:
-            cout << "Recieved signal for which no action is defined: " << signum << endl;
+            std::cout << "Recieved signal for which no action is defined: " << signum << std::endl;
     }
         
 }
 
-
 // The constructor for the Dispatch object performs global initialization and
 // triggers init for subsystems
-Dispatch::Dispatch() : render_sys(RenderSystem(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)),
-                       physics_sys(PhysicsSystem())
+Dispatch::Dispatch(Subsystems *sys) : systems(sys)
 {
-    cout << "Starting up..." << endl;
+    std::cout << "Starting up..." << std::endl;
 
     timespec ts;
     clock_getres(CLOCK_MONOTONIC_RAW, &ts);
     double time_sec = ts.tv_sec + (ts.tv_nsec * 0.000000001);
-    cout << "Resolution of CLOCK_MONOTONIC_RAW is: " << time_sec << endl;
+    std::cout << "Resolution of CLOCK_MONOTONIC_RAW is: " << time_sec << std::endl;
 }
 
 void Dispatch::run()
@@ -54,7 +52,7 @@ void Dispatch::run()
         while ( accumulator >= dt )
         {
             // physics runs until the simulation is accurate for the present time. 
-            physics_sys.tick( dt );
+            systems->physics->tick(dt);
 
             t += dt;
             accumulator -= dt;
@@ -64,7 +62,7 @@ void Dispatch::run()
         // const double alpha = accumulator / dt;
         
         // Interpolate between the current and prior physics state, then render the results
-        render_sys.tick();
+        systems->render->tick(dt);
     }
 }
 

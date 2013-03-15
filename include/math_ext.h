@@ -2,8 +2,10 @@
 #define MATH_EXT_H
 
 #include <math.h>
+#include <glm/glm.hpp>
 
-const float epsilon = 0.0001f;
+double radians(double);
+double degrees(double);
 
 struct Vector
 {
@@ -11,11 +13,13 @@ struct Vector
     
     Vector();
     Vector(float, float, float);
+    Vector(const glm::vec3 &);
     Vector operator+(const Vector &) const;
     Vector operator*(float) const;
     float dot(const Vector &) const;
     Vector cross(const Vector &) const;
     float norm() const;
+    glm::vec3 toGLMVec() const;
 
     // Useful constants
     static const Vector UNIT_X;
@@ -40,6 +44,19 @@ struct Quaternion
     Quaternion slerp(const Quaternion &, float) const;
     void normalize();
     Vector rotate(const Vector &) const;
+    glm::mat4 toMatrix() const;
+};
+
+struct Constants
+{
+    static const float EPSILON;
+
+    static const Vector ORIGIN;
+    static const Vector UNIT_X;
+    static const Vector UNIT_Y;
+    static const Vector UNIT_Z;
+
+    static const double PI;
 };
 
 #endif /*MATH_EXT_H*/

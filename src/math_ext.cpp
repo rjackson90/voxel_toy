@@ -1,8 +1,16 @@
 #include "math_ext.h"
 
-const Vector Vector::UNIT_X = Vector(1.0f, 0.0f, 0.0f);
-const Vector Vector::UNIT_Y = Vector(0.0f, 1.0f, 0.0f);
-const Vector Vector::UNIT_Z = Vector(0.0f, 0.0f, 1.0f);
+const double Constants::PI = std::atan(1.0) * 4.0;
+
+const Vector Constants::ORIGIN = Vector(0.0f, 0.0f, 0.0f);
+const Vector Constants::UNIT_X = Vector(1.0f, 0.0f, 0.0f);
+const Vector Constants::UNIT_Y = Vector(0.0f, 1.0f, 0.0f);
+const Vector Constants::UNIT_Z = Vector(0.0f, 0.0f, 1.0f);
+
+const float Constants::EPSILON = 0.0001f;
+
+double radians(double deg){ return deg * (Constants::PI/180.0); }
+double degrees(double rad){ return rad * (180.0/Constants::PI); }
 
 Vector::Vector(float X, float Y, float Z)
 {
@@ -14,6 +22,13 @@ Vector::Vector(float X, float Y, float Z)
 Vector::Vector()
 {
     x = y = z = 0.0;
+}
+
+Vector::Vector(const glm::vec3 &vec)
+{
+    x = vec.x;
+    y = vec.y;
+    z = vec.z;
 }
 
 Vector Vector::operator+(const Vector &v) const
@@ -51,6 +66,11 @@ Vector Vector::cross(const Vector &v) const
 float Vector::norm() const
 {
     return sqrt(x*x + y*y + z*z);
+}
+
+glm::vec3 Vector::toGLMVec() const
+{
+    return glm::vec3(x, y, z);
 }
 
 Quaternion::Quaternion(float W, const Vector &v)
@@ -142,7 +162,7 @@ Quaternion Quaternion::slerp(const Quaternion &q, float t) const
         flip = -flip;
     }
 
-    if ((1.0f - cosine) < epsilon)
+    if ((1.0f - cosine) < Constants::EPSILON)
     {
         // If the quaternions are too close together, do an approximation
         return (*this) * (1.0f - t) + q * (t*flip);
@@ -166,4 +186,11 @@ void Quaternion::normalize()
     this->z /= mag;
 }
 
-
+glm::mat4 Quaternion::toMatrix() const
+{
+    return glm::mat4(
+        1.0f - 2.0f*(y*y) - 2.0f*(z*z), 2.0f*x*y + 2.0f*w*z, 2.0f*z*x - 2.0f*w*y, 0.0f,
+        2.0f*x*y - 2.0f*w*z, 1.0f - 2.0f*(x*x) - 2.0f*(z*z), 2.0f*y*z + 2.0f*w*x, 0.0f,
+        2.0f*z*x + 2.0f*w*y, 2.0f*y*z - 2.0f*w*x, 1.0f - 2.0f*(x*x) - 2.0f*(y*y), 0.0f,
+        0.0f, 0.0f, 0.0f, 0.0f);
+}
