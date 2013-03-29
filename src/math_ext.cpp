@@ -186,11 +186,14 @@ void Quaternion::normalize()
     this->z /= mag;
 }
 
-glm::mat4 Quaternion::toMatrix() const
+glm::mat4 Quaternion::toMatrix(const Vector &pos) const
 {
-    return glm::mat4(
-        1.0f - 2.0f*(y*y) - 2.0f*(z*z), 2.0f*x*y + 2.0f*w*z, 2.0f*z*x - 2.0f*w*y, 0.0f,
-        2.0f*x*y - 2.0f*w*z, 1.0f - 2.0f*(x*x) - 2.0f*(z*z), 2.0f*y*z + 2.0f*w*x, 0.0f,
-        2.0f*z*x + 2.0f*w*y, 2.0f*y*z - 2.0f*w*x, 1.0f - 2.0f*(x*x) - 2.0f*(y*y), 0.0f,
-        0.0f, 0.0f, 0.0f, 0.0f);
+    glm::mat4 result;
+    
+    result[0] = glm::vec4(1.0f - 2.0f*(y*y) - 2.0f*(z*z), 2.0f*x*y+2.0f*w*z, 2.0f*z*x-2.0f*w*y, 0.0f);
+    result[1] = glm::vec4(2.0f*x*y-2.0f*w*z, 1.0f - 2.0f*(x*x) - 2.0f*(z*z), 2.0f*y*z+2.0f*w*x, 0.0f);
+    result[2] = glm::vec4(2.0f*z*x+2.0f*w*y, 2.0f*y*z-2.0f*w*x, 1.0f - 2.0f*(x*x) - 2.0f*(y*y), 0.0f);
+    result[3] = glm::vec4(pos.x, pos.y, pos.z, 1.0f);
+
+    return result;
 }

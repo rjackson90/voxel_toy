@@ -41,8 +41,7 @@ void State::recalculate()
     spin = (Quaternion(0.0f, angular_velocity) * orientation) * 0.5f;
 
     // Coordinates -- there isn't currently a method to convert a Quaternion to a matrix
-    world_coords = glm::translate(orientation.toMatrix(), 
-                                  glm::vec3(position.x, position.y, position.z));
+    world_coords = orientation.toMatrix(position);
 }
 
 Derivative evaluate(const State &state)

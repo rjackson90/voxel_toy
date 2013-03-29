@@ -43,8 +43,8 @@ int main()
     float sixth = 1.0f/6.0f;
 
     State start;
-    start.orientation = Quaternion( 0.0, Constants::UNIT_X );
-    start.position = Constants::ORIGIN;
+    start.orientation = Quaternion( 1.0, Constants::ORIGIN );
+    start.position = Vector(0.0f, 0.0f, -10.0f);
     start.momentum = Constants::ORIGIN;
     start.angular_momentum = Constants::ORIGIN;
     start.mass = 1.0f;

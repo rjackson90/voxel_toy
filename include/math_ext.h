@@ -44,7 +44,7 @@ struct Quaternion
     Quaternion slerp(const Quaternion &, float) const;
     void normalize();
     Vector rotate(const Vector &) const;
-    glm::mat4 toMatrix() const;
+    glm::mat4 toMatrix(const Vector&) const;
 };
 
 struct Constants

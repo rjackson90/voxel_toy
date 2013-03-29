@@ -14,10 +14,10 @@ RenderSystem::RenderSystem(Subsystems *sys, int width, int height, string title)
         cout << " FAIL: " << glewGetErrorString(err) << endl;
     }
 
-    perspective = glm::perspective(90.0,                            // FOV
+    perspective = glm::perspective(40.0,                            // FOV
                                    (double)width / (double)height,  // Viewport
-                                   0.1,                             // z-min
-                                   100.0);                          // z-max
+                                   1.0,                             // z-min
+                                   1000.0);                         // z-max
     glEnable(GL_DEPTH_TEST);
 }
 
@@ -42,7 +42,7 @@ void RenderSystem::tick(__attribute__((unused)) const double dt)
          * and the camera matrix would be pulled from somewhere else... input system?
          */
         glm::mat4 coords = systems->physics->getWorldCoords(i->second.key);
-        glm::mat4 camera = glm::translate( glm::mat4(1.0), glm::vec3(0.0, 0.0, -5.0));
+        glm::mat4 camera = glm::translate( glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0));
         i->second.mesh->draw(perspective * camera * coords);
     }
 
