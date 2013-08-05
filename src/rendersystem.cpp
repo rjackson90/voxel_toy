@@ -1,7 +1,10 @@
 #include "rendersystem.h"
 
-RenderSystem::RenderSystem(Subsystems *sys, int width, int height, string title) 
-    : window(GLWindow(width, height, title)), systems(sys)
+/* The constuctor initializes GLEW, a critical library which makes loading
+ * function pointers for OpenGL functionality REALLY EASY
+ */
+RenderSystem::RenderSystem(int width, int height, string title) 
+    : window(GLWindow(width, height, title))
 {
     // Run GLEW init here, after context creation and before just about anything else
     cout << "Getting OpenGL bindings...";
@@ -21,6 +24,8 @@ RenderSystem::RenderSystem(Subsystems *sys, int width, int height, string title)
     glEnable(GL_DEPTH_TEST);
 }
 
+/* This function adds another node to the "Scene Graph" /s
+ */
 void RenderSystem::addNode(int key, Mesh* data)
 {
     RenderNode newNode;
@@ -30,7 +35,10 @@ void RenderSystem::addNode(int key, Mesh* data)
     nodes.insert({{key, newNode}});
 }
 
-void RenderSystem::tick(__attribute__((unused)) const double dt)
+/* RenderSystem's tick simply draws the whole scene, calling upon the PhysicsSystem 
+ * to provide correct world coordinates.
+ */
+void RenderSystem::tick(const Subsystems &systems, __attribute__((unused)) const double dt)
 {
     // Clear the frame buffer, depth buffer, and stencil buffer
     glClearColor(0.0, 0.0, 0.0, 1.0);
@@ -41,7 +49,7 @@ void RenderSystem::tick(__attribute__((unused)) const double dt)
         /* In reality the coordinate matrix would be pulled from the physics simulation
          * and the camera matrix would be pulled from somewhere else... input system?
          */
-        glm::mat4 coords = systems->physics->getWorldCoords(i->second.key);
+        glm::mat4 coords = systems.physics->getWorldCoords(i->second.key);
         glm::mat4 camera = glm::translate( glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0));
         i->second.mesh->draw(perspective * camera * coords);
     }

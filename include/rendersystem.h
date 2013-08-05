@@ -13,11 +13,18 @@
 
 struct Subsystems;
 
+/* The render system is rather simple.
+ * Most of the heavy lifting is done in the Mesh class. 
+ * This subsystem pretty much just has to keep track of all the RenderNodes,
+ * and render them at the appropriate time.
+ * If this engine had a "scene graph", it would be a datastructure used to hold
+ * renderNodes.
+ */
 class RenderSystem : public System
 {
     public:
-    RenderSystem(Subsystems *, int, int, string);
-    virtual void tick(const double)override;
+    RenderSystem( int, int, string);
+    virtual void tick(const Subsystems &, const double)override;
     void addNode(int, Mesh*);
 
     private:
@@ -29,7 +36,6 @@ class RenderSystem : public System
     glm::mat4 perspective;
     GLWindow window;
     unordered_map<int, RenderNode> nodes;
-    Subsystems *systems;
 };
 
 #endif /* RENDER_SYSTEM_H */

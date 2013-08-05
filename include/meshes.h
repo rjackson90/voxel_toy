@@ -2,7 +2,6 @@
 #define MESHES_H
 
 #include <GL/glew.h>
-#include <math.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <algorithm>
@@ -10,24 +9,28 @@
 #include <iostream>
 #include <fstream>
 
-const float PI = 4.0f * atan(1);
-inline float RADIANS(float x){return (x * PI)/180.0f;}
-inline float DEGREES(float x){return (x * 180.0f)/PI;}
+#include "math_ext.h"
 
 const int VERTEX_BUFFER_INDEX = 0;
 const int ELEMENT_BUFFER_INDEX = 1;
 
+/* Each of the Vectors in a Vertex is a per-vertex attribute, and will be 
+ * passed to the vertex shader during rendering.
+ */
 class Vertex
 {
     public:
 
-    Vertex(const glm::vec3&, const glm::vec3&, const glm::vec3&);
+    Vertex(const Vector&, const Vector&, const Vector&);
 
-    glm::vec3 position; 
-    glm::vec3 normal;
-    glm::vec3 color;
+    Vector position; 
+    Vector normal;
+    Vector color;
 };
 
+/* A Mesh object tracks all of the OpenGL state information associated with an on-screen object.
+ * NOT IMPLEMENTED: Materials.
+ */
 class Mesh
 {
     public:
@@ -49,6 +52,10 @@ class Mesh
     GLuint locMVP;
 };
 
+/* The following functions generate test shapes and store them in a Mesh.
+ * Not all of them have implementations. In fact, as of writing, only test_cube
+ * has a correct and valid implementation
+ */
 void test_cube(Mesh &);
 
 void test_latlong_sphere(Mesh &);

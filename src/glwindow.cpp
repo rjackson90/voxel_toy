@@ -1,5 +1,9 @@
 #include "glwindow.h"
 
+/* These attributes determine what kind of window we request from the system on startup.
+ * A future improvement is to expose this array to the user through an appropriate GUI, allowing
+ * us to request a new rendering context on demand.
+ */
 int GLWindow::attribs[] = 
 {
     GLX_X_RENDERABLE    , True,
@@ -19,6 +23,7 @@ int GLWindow::attribs[] =
     None
 };
 
+/* This default constructor provides reasonable settings */
 GLWindow::GLWindow()
 {
     width = 1024;
@@ -29,6 +34,7 @@ GLWindow::GLWindow()
     init();
 }
 
+/* Full constructor demands window dimmensions and title */
 GLWindow::GLWindow(int width, int height, string title)
 {
     this->width = width;
@@ -40,6 +46,7 @@ GLWindow::GLWindow(int width, int height, string title)
     init();
 }
 
+/* This is where the real setup work happens */
 void GLWindow::init()
 {
     //Initialize context table
@@ -57,6 +64,7 @@ void GLWindow::init()
 
     // Get a list of available GLXFBConfigs matching the filter parameters
     // Take the first one, because all members of the list meet requirements
+    // NOT IMPLEMENTED: Take the *best* one, might be able to get better AA or colors
     int count = 0;
     GLXFBConfig *configs = glXChooseFBConfig(display, screen, attribs, &count);
     config = configs[0];
@@ -108,6 +116,7 @@ void GLWindow::init()
         cout << "WARNING: Failed to create a GLX window" << endl;
 }
 
+/* The destructor is responsible for cleaning up *every* OpenGL context, as well as the window */
 GLWindow::~GLWindow()
 {
     cout << "Destroying GLWindow..." << endl;
@@ -131,6 +140,10 @@ GLWindow::~GLWindow()
     cout << "Done" << endl;
 }
 
+/* This class supports the existence of multiple threads, each having its own OpenGL context.
+ * Such things can be useful when it comes to tasks like texture loading.
+ * The class destructor must then clean up all of these contexts
+ */
 void GLWindow::makeCurrent(bool disconnect)
 {
     if(disconnect)
@@ -158,6 +171,7 @@ void GLWindow::makeCurrent(bool disconnect)
     glXMakeContextCurrent(display, glWindow, glWindow, contexts[id]);
 }
 
+/* wrapper around the platform-specific buffer swap function */
 void GLWindow::swap()
 {
     glXSwapBuffers(display, glWindow);

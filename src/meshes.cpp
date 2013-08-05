@@ -1,11 +1,13 @@
 
 #include "meshes.h"
 
-Vertex::Vertex(const glm::vec3 &pos = glm::vec3(), const glm::vec3 &rgb = glm::vec3(), 
-               const glm::vec3 &norm = glm::vec3())
+/* Vertex constructor. NB: Vertices are NOT Vectors, however, Vertices CONTAIN Vectors */
+Vertex::Vertex(const Vector &pos = Vector(), const Vector &rgb = Vector(), 
+               const Vector &norm = Vector())
     : position(pos), normal(norm), color(rgb)
 {}
 
+/* Mesh constructor. Every parameter is required */
 Mesh::Mesh()
     : vertex_count(0), index_count(0), buffers{0,0}, vao(0), locMVP(0)
 {
@@ -15,6 +17,12 @@ Mesh::Mesh()
     program = glCreateProgram();
 }
 
+/* This function makes creating a shader program easier than pouring water out of a boot.
+ * Even if there were directions on the heel.
+ *
+ * The two parameters are the filesystem path to the vertex shader and fragment shader, respectively,
+ * which compose the program to be created
+ */
 void Mesh::loadProgram(std::string vs_path, std::string fs_path)
 {
     // Create shader objects
@@ -62,6 +70,9 @@ void Mesh::loadProgram(std::string vs_path, std::string fs_path)
     glDeleteShader(fs);
 }
 
+/* One of the components of the cheater-mode program creation function, this function
+ * loads a shader from disk and compiles it on the GPU
+ */
 bool Mesh::loadShaderFile(std::string path, GLuint shader)
 {
     // Load shader source from text file
@@ -114,6 +125,8 @@ bool Mesh::loadShaderFile(std::string path, GLuint shader)
     return true;
 }
 
+/* This function takes a bunch of raw data in memory, and organizes it into a Mesh object.
+ */
 void Mesh::loadData(Vertex *verts, int vert_count, short *index_array, int index_count)
 {
     // Store the number of vertices and the number of indices in the mesh object
@@ -133,8 +146,8 @@ void Mesh::loadData(Vertex *verts, int vert_count, short *index_array, int index
     // Tell OpenGL about the layout of the data in the vertex buffer, map attributes to shader 
     // indexes
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) 0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) sizeof(glm::vec3));
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2*sizeof(glm::vec3)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) sizeof(Vector));
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2*sizeof(Vector)));
     
     // Enable vertex attributes
     glEnableVertexAttribArray(0);
@@ -148,6 +161,11 @@ void Mesh::loadData(Vertex *verts, int vert_count, short *index_array, int index
     
 }
 
+/* Thanks to the magic of programmable shader hardware, every mesh can be drawn just about the same
+ * way. At least for simple meshes. 
+ * NOT IMPLEMENTED: instanced rendering
+ * NOT IMPLEMENTED: WON'T DO: deferred rendering
+ */
 void Mesh::draw(glm::mat4 mvp)
 {
     // Select shader, load uniform data
@@ -165,32 +183,33 @@ void Mesh::draw(glm::mat4 mvp)
 
 }
 
+/* This function creates a cube mesh, perfect for testing */
 void test_cube(Mesh &mesh)
 {
     // Cubes have 8 vertices
     Vertex verts[8];
 
-    verts[0].position = glm::vec3(-1.0f,  1.0f,  1.0f);
-    verts[1].position = glm::vec3( 1.0f,  1.0f,  1.0f);
-    verts[2].position = glm::vec3( 1.0f, -1.0f,  1.0f);
-    verts[3].position = glm::vec3(-1.0f, -1.0f,  1.0f);
-    verts[4].position = glm::vec3(-1.0f,  1.0f, -1.0f);
-    verts[5].position = glm::vec3( 1.0f,  1.0f, -1.0f);
-    verts[6].position = glm::vec3( 1.0f, -1.0f, -1.0f);
-    verts[7].position = glm::vec3(-1.0f, -1.0f, -1.0f);
+    verts[0].position = Vector(-1.0f,  1.0f,  1.0f);
+    verts[1].position = Vector( 1.0f,  1.0f,  1.0f);
+    verts[2].position = Vector( 1.0f, -1.0f,  1.0f);
+    verts[3].position = Vector(-1.0f, -1.0f,  1.0f);
+    verts[4].position = Vector(-1.0f,  1.0f, -1.0f);
+    verts[5].position = Vector( 1.0f,  1.0f, -1.0f);
+    verts[6].position = Vector( 1.0f, -1.0f, -1.0f);
+    verts[7].position = Vector(-1.0f, -1.0f, -1.0f);
 
-    verts[0].color = glm::vec3(0.0f, 1.0f, 0.0f);
-    verts[1].color = glm::vec3(1.0f, 1.0f, 0.0f);
-    verts[2].color = glm::vec3(0.0f, 1.0f, 0.0f);
-    verts[3].color = glm::vec3(0.0f, 0.0f, 0.0f);
-    verts[4].color = glm::vec3(0.0f, 1.0f, 1.0f);
-    verts[5].color = glm::vec3(1.0f, 1.0f, 1.0f);
-    verts[6].color = glm::vec3(0.0f, 1.0f, 1.0f);
-    verts[7].color = glm::vec3(0.0f, 0.0f, 1.0f);
+    verts[0].color = Vector(0.0f, 1.0f, 0.0f);
+    verts[1].color = Vector(1.0f, 1.0f, 0.0f);
+    verts[2].color = Vector(0.0f, 1.0f, 0.0f);
+    verts[3].color = Vector(0.0f, 0.0f, 0.0f);
+    verts[4].color = Vector(0.0f, 1.0f, 1.0f);
+    verts[5].color = Vector(1.0f, 1.0f, 1.0f);
+    verts[6].color = Vector(0.0f, 1.0f, 1.0f);
+    verts[7].color = Vector(0.0f, 0.0f, 1.0f);
 
     for(int i = 0; i < 8; i++)
     {
-        verts[i].normal = glm::normalize(verts[i].position);
+        verts[i].normal = verts[i].position.normalize();
     }
 
     int index_length = 6*2*3;
@@ -209,18 +228,13 @@ void test_cube(Mesh &mesh)
         5, 1, 2,
         2, 6, 5
     };
-
-    /*
-    for(int i = 0; i < index_length; i++)
-    {
-        indices[i] = indices[i] * 3;
-    }
-    */
     
-
     mesh.loadData(&verts[0], 8, &indices[0], index_length);
 }
 
+/* This function creates a sphere using the Latitude/Longitude method. Shitty model, but it's really
+ * easy to figure out appropriate texture coordinates.
+ */
 void test_latlong_sphere(Mesh &mesh)
 {
     const int lat_div = 36;
@@ -232,16 +246,16 @@ void test_latlong_sphere(Mesh &mesh)
 
     for(int i =0; i < vert_count; i++)
     {
-        float phi = RADIANS(360.0f / long_div * (i % long_div));
-        float theta = RADIANS(180.0f / lat_div * (i / long_div));
+        float phi = radians(360.0f / long_div * (i % long_div));
+        float theta = radians(180.0f / lat_div * (i / long_div));
         
-        verts[i].position = glm::vec3(cos(theta) * cos(phi), cos(theta) * sin(phi), sin(theta));
+        verts[i].position = Vector(cos(theta) * cos(phi), cos(theta) * sin(phi), sin(theta));
         verts[i].position.x = verts[i].position.x * 2.0f - 1.0f;
         verts[i].position.y = verts[i].position.y * 2.0f - 1.0f;
         verts[i].position.z = verts[i].position.z * 2.0f - 1.0f;
 
-        verts[i].color = glm::vec3(cos(theta) * cos(phi), cos(theta) * sin(phi), sin(theta));
-        verts[i].normal = glm::normalize(verts[i].position);
+        verts[i].color = Vector(cos(theta) * cos(phi), cos(theta) * sin(phi), sin(theta));
+        verts[i].normal = verts[i].position.normalize();
     }
 
     // This is just a placeholder, clearly incorrect

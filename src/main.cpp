@@ -15,29 +15,24 @@ class PhysicsSystem;
 
 int main()
 {
-    // Create container struct and initialize subsystems
+    /* Create container struct and initialize subsystems */
     Subsystems systems;
-    RenderSystem render = RenderSystem(&systems, 1024, 768, "Really Fun Game!");
-    PhysicsSystem physics = PhysicsSystem(&systems);
-    Dispatch dispatch = Dispatch(&systems);
+    systems.render = std::unique_ptr<RenderSystem>(new RenderSystem(1024, 768, "Really Fun Game!"));
+    systems.physics = std::unique_ptr<PhysicsSystem>(new PhysicsSystem());
+    systems.dispatch = std::unique_ptr<Dispatch>(new Dispatch());
 
-    // Update references to point to newly created objects
-    systems.render = &render;
-    systems.physics = &physics;
-    systems.dispatch = &dispatch;
-
-    // Use our own system signal handler
+    /* Register signal handler with the system */
     cout << "Setting system signal handler." << endl;
     signal(SIGINT, Dispatch::signal_handler);
 
-    // Add meshes to the render system
+    /* Add meshes to the render system */
     cout << "Creating meshes" << endl;
     Mesh cube;
     test_cube(cube);
     cube.loadProgram("res/flat.vs", "res/flat.fs");
     systems.render->addNode(1, &cube);
 
-    // Add rigid bodies to the physics system
+    /* Add rigid bodies to the physics system */
     cout << "Creating rigid bodies" << endl;
 
     float sixth = 1.0f/6.0f;
@@ -54,9 +49,9 @@ int main()
 
     systems.physics->addNode(1, start);
 
-    // GO
+    /* GO */
     cout << "Starting main loop" << endl;
-    dispatch.run();
+    systems.dispatch->run(systems);
 
     cout << "Stopped." << endl;
     return 0;

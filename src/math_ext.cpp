@@ -1,5 +1,6 @@
 #include "math_ext.h"
 
+/* Set all constants right off the bat */
 const double Constants::PI = std::atan(1.0) * 4.0;
 
 const Vector Constants::ORIGIN = Vector(0.0f, 0.0f, 0.0f);
@@ -9,9 +10,16 @@ const Vector Constants::UNIT_Z = Vector(0.0f, 0.0f, 1.0f);
 
 const float Constants::EPSILON = 0.0001f;
 
+/*
+ * Handy rad-to-deg and deg-to-rad conversions.
+ * Functions GOOD Macros BAD
+ */
 double radians(double deg){ return deg * (Constants::PI/180.0); }
 double degrees(double rad){ return rad * (180.0/Constants::PI); }
 
+/*
+ * Vector methods
+ */
 Vector::Vector(float X, float Y, float Z)
 {
     x = X;
@@ -68,11 +76,26 @@ float Vector::norm() const
     return sqrt(x*x + y*y + z*z);
 }
 
+Vector Vector::normalize() const
+{
+    Vector result(*this);
+    float norm = this->norm();
+
+    result.x = result.x / norm;
+    result.y = result.y / norm;
+    result.z = result.z / norm;
+
+    return result;
+}
+
 glm::vec3 Vector::toGLMVec() const
 {
     return glm::vec3(x, y, z);
 }
 
+/*
+ * Quaternion methods
+ */
 Quaternion::Quaternion(float W, const Vector &v)
 {
     w = W;

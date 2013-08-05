@@ -16,6 +16,10 @@ using namespace std;
 
 #define MAX_THREADS 10
 
+/* This class is a platform-independent wrapper around an OpenGL rendering context, as well as
+ * the platform's conception of a window and any other ancillary data that needs to be hidden 
+ * from the rest of the engine.
+ */
 class GLWindow
 {
     public:

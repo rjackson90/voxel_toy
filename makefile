@@ -1,5 +1,5 @@
 CC:=g++
-CFLAGS:=-Wall -Wextra -Werror -pedantic -std=c++0x -Iinclude
+CFLAGS:=-Wall -Wextra -Werror -pedantic -std=c++11 -Iinclude
 DEBUG:=-ggdb -O0
 PRODUCTION:=-g -O0
 LIBS:=-lGLEW -lGLU -lGL -lX11

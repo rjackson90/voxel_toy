@@ -7,6 +7,7 @@
 double radians(double);
 double degrees(double);
 
+/* Custom Vector object, because sometimes GLM sucks */
 struct Vector
 {
     float x, y, z;
@@ -19,6 +20,7 @@ struct Vector
     float dot(const Vector &) const;
     Vector cross(const Vector &) const;
     float norm() const;
+    Vector normalize() const;
     glm::vec3 toGLMVec() const;
 
     // Useful constants
@@ -27,6 +29,7 @@ struct Vector
     static const Vector UNIT_Z;
 };
 
+/* Representation of Quaternions, because GLM didn't meet requirements */
 struct Quaternion
 {
     float w, x, y, z;
@@ -47,6 +50,7 @@ struct Quaternion
     glm::mat4 toMatrix(const Vector&) const;
 };
 
+/* Useful math constants */
 struct Constants
 {
     static const float EPSILON;

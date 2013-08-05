@@ -1,9 +1,9 @@
 #include "physicssystem.h"
 
-PhysicsSystem::PhysicsSystem(Subsystems *sys) : systems(sys)
-{}
-
-void PhysicsSystem::tick(const double dt)
+/* This is where the magic happens. During each subsystem tick the physics
+ * simulation is advanced by dt
+ */
+void PhysicsSystem::tick(__attribute__((unused)) const Subsystems &systems, const double dt)
 {
     // Advance the physics simulation by dt
     for(auto it = nodes.begin(); it != nodes.end(); ++it)
@@ -13,6 +13,10 @@ void PhysicsSystem::tick(const double dt)
     }
 }
 
+/* This method adds a new node to the physics system. Because it
+ * has no past as far as the simulation is concerned, the initial state
+ * occupies both state buffers in the RigidBodyNode
+ */
 void PhysicsSystem::addNode(int key, State initial)
 {
     initial.recalculate();
@@ -25,11 +29,16 @@ void PhysicsSystem::addNode(int key, State initial)
     nodes.insert({{key, newNode}});
 }
 
+/* This method is critical for interop between subsystems. 
+ * The render system calls this method to obtain the position and 
+ * orientation of objects in world-space.
+ */
 glm::mat4 PhysicsSystem::getWorldCoords(int key)
 {
     return nodes[key].present.world_coords;
 }
 
+/* Certain fields of State objects have to be updated from time to time */
 void State::recalculate()
 {
     // Linear quantities
@@ -40,21 +49,27 @@ void State::recalculate()
     orientation.normalize();
     spin = (Quaternion(0.0f, angular_velocity) * orientation) * 0.5f;
 
-    // Coordinates -- there isn't currently a method to convert a Quaternion to a matrix
+    // Coordinates
     world_coords = orientation.toMatrix(position);
 }
 
+/* Similar to the State struct, derivatives need to be evaluated from time to time */
 Derivative evaluate(const State &state)
 {
     Derivative output;
     output.velocity = state.velocity;
     output.spin = state.spin;
 
-    // Apply forces here
+    /* NOT IMPLEMENTED: Application of forces from other objects
+     * that code would go here.
+     */
     
     return output;
 }
 
+/* This method is part of the guts of the RK4 integrator.
+ * It allows the evaluation of derivatives using prior results
+ */
 Derivative evaluate(State &state, double dt, const Derivative &d)
 {
     state.position         = state.position         + d.velocity * dt;
@@ -72,6 +87,8 @@ Derivative evaluate(State &state, double dt, const Derivative &d)
     return output;
 }
 
+/* Entry point for RK4 integrator. 
+ */
 void integrate(State &state, double dt)
 {
     Derivative a, b, c, d;
