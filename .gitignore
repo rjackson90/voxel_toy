@@ -3,3 +3,4 @@
 *.dat
 GLDemo
 UnitTests
+build/

@@ -1,1 +1,9 @@
-libglew-dev libglm-dev
+REQUIRED LIBRARIES
+------------------
+    - GLEW (GL Extension Wrangler) - Automatically gets references to function pointers for available
+      OpenGL Extensions. Ubuntu package libglew-dev
+    - GLM - Provides C++ math constructs which match those available in GLSL. 
+      Ubuntu package libglm-dev
+    - UnitTest++ - A unit testing framework for C++ designed with game development in mind. Project is
+      hosted on SourceForge. Download and build from source, copy libUnitTest++.a to /usr/lib, and the
+      headers (with platform extensions) to /usr/include.

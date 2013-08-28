@@ -1,15 +1,18 @@
 CC:=g++
 CFLAGS:=-Wall -Wextra -Werror -pedantic -std=c++11 
+
 INCLUDE:=-Iinclude
-TEST_INCLUDE:=-Ilib/UnitTest++
+LIBS:=-lGLEW -lGLU -lGL -lX11 -lUnitTest++
+
 DEBUG:=-ggdb -O0
 PRODUCTION:=-g -O0
-LIBS:=-lGLEW -lGLU -lGL -lX11
-TEST_LIBS:=-Llib/UnitTest++ -lUnitTest++
+
 TESTS:=$(wildcard tests/*.cpp)
-TEST_OBJ:=$(patsubst tests/%.cpp, bin/tests/%.o, $(TESTS))
-SOURCES:=$(wildcard src/*.cpp)
-OBJECTS:=$(patsubst src/%.cpp, bin/%.o, $(SOURCES))
+TEST_OBJ:=$(patsubst tests/%.cpp, bin/%_test.o, $(TESTS))
+
+SOURCES:=$(wildcard src/classes/*.cpp)
+OBJECTS:=$(patsubst src/classes/%.cpp, bin/%.o, $(SOURCES))
+
 EXECUTABLE:=GLDemo
 TEST_EXEC:=UnitTests
 
@@ -18,9 +21,6 @@ TEST_EXEC:=UnitTests
 .PHONY: tests
 .PHONY: clean
 .PHONY: valgrind
-.PHONY: all
-
-all: $(EXECUTABLE)
 
 clean:
 	rm -rf bin/*.o
@@ -28,10 +28,9 @@ clean:
 	rm -f $(EXECUTABLE)
 	rm -f $(TEST_EXEC)
 
-debug: CFLAGS += $(DEBUG) $(INCLUDE)
+debug: CFLAGS += $(DEBUG)
 debug: $(EXECUTABLE) tests
 
-tests: CFLAGS += $(DEBUG) $(TEST_INCLUDE)
 tests: $(TEST_EXEC)
 
 production: CFLAGS += $(PRODUCTION) $(INCLUDE)
@@ -43,12 +42,12 @@ valgrind: debug
 $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(OBJECTS) -o $@ $(LIBS)
 
-bin/%.o : src/%.cpp
-	$(CC) -c $(CFLAGS) $< $(LIBS) -o $@
+%.o : %.cpp
+	$(CC) -c $(CFLAGS) $< -o $@
 
-$(TEST_EXEC): $(TEST_OBJ)
-	$(CC) $(TEST_OBJ) -o $@ $(TEST_LIBS)
+$(TEST_EXEC): $(TEST_OBJ) $(OBJECTS)
+	$(CC) $(TEST_OBJ) $(OBJECTS) -o $@ $(LIBS) $(TEST_LIBS)
 	./$(TEST_EXEC)
 
-bin/tests/%.o : tests/%.cpp
-	$(CC) -c $(CFLAGS) $< -o $@
+#bin/tests/%.o : tests/%.cpp
+#	$(CC) -c $(CFLAGS) $< -o $@
