@@ -22,11 +22,6 @@ struct Vector
     float norm() const;
     Vector normalize() const;
     glm::vec3 toGLMVec() const;
-
-    // Useful constants
-    static const Vector UNIT_X;
-    static const Vector UNIT_Y;
-    static const Vector UNIT_Z;
 };
 
 /* Representation of Quaternions, because GLM didn't meet requirements */

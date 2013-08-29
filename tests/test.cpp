@@ -1,14 +1,4 @@
-#include "UnitTest++.h"
-
-TEST(EpicFailure)
-{
-    CHECK(false);
-}
-
-TEST(EpicWin)
-{
-    CHECK(true);
-}
+#include <UnitTest++/UnitTest++.h>
 
 int main()
 {

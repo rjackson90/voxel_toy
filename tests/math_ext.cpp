@@ -1,4 +1,4 @@
-#include "UnitTest++.h"
+#include <UnitTest++/UnitTest++.h>
 
 #include "math_ext.h"
 
@@ -8,7 +8,7 @@ SUITE(MathExtensions)
 {
     TEST(VectorAddition)
     {
-        Vector result = Vector::UNIT_X + Vector::UNIT_Y;
+        Vector result = Constants::UNIT_X + Constants::UNIT_Y;
         
         CHECK_CLOSE(result.x, 1.0f, tolerance);
         CHECK_CLOSE(result.y, 1.0f, tolerance);
