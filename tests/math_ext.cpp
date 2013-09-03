@@ -19,8 +19,15 @@ SUITE(MathExtensions)
     {
         Vector result = Constants::UNIT_X * 5.0f;
 
-        CHECK_CLOSE(result.x, 50.0f, tolerance);
+        CHECK_CLOSE(result.x, 5.0f, tolerance);
         CHECK_CLOSE(result.y, 0.0f, tolerance);
         CHECK_CLOSE(result.z, 0.0f, tolerance);
+    }
+    TEST(DotProduct)
+    {
+	Vector a = Constants::UNIT_X; 
+	Vector b = Vector(-1.0f,0.0f,0.0f);
+	float dot = a.dot(b);
+	CHECK_CLOSE(dot, -1.0f, tolerance);
     }
 }
