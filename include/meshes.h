@@ -28,6 +28,29 @@ class Vertex
     Vector color;
 };
 
+struct TGAHeader
+{
+    struct ColorMapSpec
+    {
+        unsigned short f_index;
+        unsigned short m_len;
+        char e_size;
+    };
+    struct ImageSpec
+    {
+        unsigned short x_origin;
+        unsigned short y_origin;
+        unsigned short width;
+        unsigned short height;
+        char depth;
+        char descriptor;
+    };
+    char id_len;
+    char color_map_type;
+    char image_type;
+    ColorMapSpec cmspec;
+    ImageSpec ispec;
+};
 /* A Mesh object tracks all of the OpenGL state information associated with an on-screen object.
  * NOT IMPLEMENTED: Materials.
  */
@@ -38,7 +61,8 @@ class Mesh
     Mesh();
     void loadData(Vertex*, int, short*, int);
     void loadProgram(std::string, std::string);    
-    static bool loadShaderFile(std::string, GLuint);
+    bool loadShaderFile(std::string, GLuint);
+    bool loadTextureFile(std::string);
     void draw(glm::mat4);
 
     private:

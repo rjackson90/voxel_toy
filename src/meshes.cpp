@@ -83,7 +83,7 @@ bool Mesh::loadShaderFile(std::string path, GLuint shader)
         std::cout << "Failed to open file " << path << std::endl;
         return false;
     }
-    std::string source((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+    std::string source(std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>());
     in.close();
     std::cout << "Got shader source" << std::endl;
     
@@ -122,6 +122,24 @@ bool Mesh::loadShaderFile(std::string path, GLuint shader)
     }
 
     std::cout << "Shader compilation succeeded" << std::endl;
+    return true;
+}
+bool Mesh::loadTextureFile(std::string path)
+{
+    TGAHeader header;
+    std::cout << "Opening texture file (" << path << ")" <<std::endl;
+    std::ifstream in(path);
+    if(!in.good())
+    {
+        std::cout << "Failed to open file";
+        return false;
+    }
+    in >> header;
+    in.close();
+    std::cout << "Texture complilation succeded" << std::endl;
+    std::cout << "ID length:" << static_cast<int>(header.id_len) << std::endl;
+    std::cout << "Color Map type:" << static_cast<int>(header.color_map_type) << std::endl;
+    std::cout << "Image type:" << static_cast<int>(header.image_type) << std::endl; 
     return true;
 }
 
