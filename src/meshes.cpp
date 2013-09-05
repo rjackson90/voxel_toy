@@ -1,4 +1,3 @@
-
 #include "meshes.h"
 
 /* Vertex constructor. NB: Vertices are NOT Vectors, however, Vertices CONTAIN Vectors */
@@ -15,6 +14,7 @@ Mesh::Mesh()
     glGenBuffers(2, &buffers[0]);
     glGenVertexArrays(1, &vao);
     program = glCreateProgram();
+    glGenTextures(1, &color_tex);
 }
 
 /* This function makes creating a shader program easier than pouring water out of a boot.
@@ -83,7 +83,7 @@ bool Mesh::loadShaderFile(std::string path, GLuint shader)
         std::cout << "Failed to open file " << path << std::endl;
         return false;
     }
-    std::string source(std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>());
+    std::string source((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
     in.close();
     std::cout << "Got shader source" << std::endl;
     
@@ -124,22 +124,117 @@ bool Mesh::loadShaderFile(std::string path, GLuint shader)
     std::cout << "Shader compilation succeeded" << std::endl;
     return true;
 }
+
+/* This function reads TGA images from disk and stores the contents in a texture object on the GPU
+ */
 bool Mesh::loadTextureFile(std::string path)
 {
+    using std::cout;
+    using std::endl;
+
+    // Open file
     TGAHeader header;
-    std::cout << "Opening texture file (" << path << ")" <<std::endl;
-    std::ifstream in(path);
+    cout << "Opening texture file (" << path << ")" << endl;
+    std::ifstream in(path, std::ifstream::binary | std::ifstream::in);
     if(!in.good())
     {
-        std::cout << "Failed to open file";
+        cout << "Failed to open file";
         return false;
     }
-    in >> header;
+
+    // Read header information from file
+    char *buffer = new char[sizeof(short)];
+
+    in.read(buffer, sizeof(char));
+    header.id_len = *buffer;
+
+    in.read(buffer, sizeof(char));
+    header.color_map_type = *buffer;
+
+    in.read(buffer, sizeof(char));
+    header.image_type = *buffer;
+
+    in.read(buffer, sizeof(short));
+    header.f_index = *((short*)buffer);
+
+    in.read(buffer, sizeof(short));
+    header.m_len = *((short*)buffer);
+
+    in.read(buffer, sizeof(char));
+    header.e_size = *buffer;
+
+    in.read(buffer, sizeof(short));
+    header.x_origin = *((short*)buffer);
+
+    in.read(buffer, sizeof(short));
+    header.y_origin = *((short*)buffer);
+
+    in.read(buffer, sizeof(short));
+    header.width = *((short*)buffer);
+
+    in.read(buffer, sizeof(short));
+    header.height = *((short*)buffer);
+
+    in.read(buffer, sizeof(char));
+    header.depth = *buffer;
+
+    in.read(buffer, sizeof(char));
+    header.descriptor = *buffer;
+
+    delete[] buffer;
+
+    
+    /* Check this image to ensure compliance with established technical requirements:
+     *  - Square image with side length equal to a power of two.
+     *  - No color map, image should be uncompressed true color
+     */
+    if(header.id_len > 0)
+    {
+        char *id = new char[header.id_len];
+        in.read(id, header.id_len);
+        cout << "Image ID: " << id << endl;
+        delete[] id;
+    }
+    if(header.color_map_type != 0)
+    {
+        std::cout << "Failed to load image: colormap type (" 
+                  << static_cast<int>(header.color_map_type) << ") is unsupported." << std::endl;
+        return false;
+    }
+    if(header.image_type != 2)
+    {
+        std::cout << "Failed to load image: image type (" 
+                  << static_cast<int>(header.image_type) << ") is not an uncompressed truecolor "
+                  << "image and is therefore not supported." << std::endl;
+        return false;
+    }
+
+    // Print out the image properties
+    std::cout << "Image properties: " << std::endl;
+    std::cout << "origin: (" << header.x_origin  << ", " << header.y_origin << ") "
+              << "dimensions: (" << header.width << ", " << header.height << ") "
+              << static_cast<int>(header.depth)  << " bits per pixel, "
+              << (header.descriptor & 56) << " bits alpha."
+              << std::endl << std::endl;
+
+    // Allocate a buffer to hold the raw image data, read it from the file then close the file
+    int size = header.width * header.height * sizeof(int);
+    char *data = new char[size];
+    in.read(data, size);
     in.close();
-    std::cout << "Texture complilation succeded" << std::endl;
-    std::cout << "ID length:" << static_cast<int>(header.id_len) << std::endl;
-    std::cout << "Color Map type:" << static_cast<int>(header.color_map_type) << std::endl;
-    std::cout << "Image type:" << static_cast<int>(header.image_type) << std::endl; 
+
+    // Push image data to the GPU, release heap allocated buffer
+    glBindTexture(GL_TEXTURE_2D, color_tex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, header.width, header.height, 0, 
+            GL_RGBA, GL_UNSIGNED_BYTE, data);
+    delete[] data;
+
+    // Apply bilinear filtering
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    // Finished
+    glBindTexture(GL_TEXTURE_2D, 0);
     return true;
 }
 
@@ -166,11 +261,13 @@ void Mesh::loadData(Vertex *verts, int vert_count, short *index_array, int index
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) 0);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) sizeof(Vector));
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2*sizeof(Vector)));
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(3*sizeof(Vector)));
     
     // Enable vertex attributes
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
+    glEnableVertexAttribArray(3);
 
     // unbind the buffers
     glBindVertexArray(0);
@@ -189,7 +286,14 @@ void Mesh::draw(glm::mat4 mvp)
     // Select shader, load uniform data
     glUseProgram(program);
     locMVP = glGetUniformLocation(program, "mvp");
+    locTex = glGetUniformLocation(program, "texSampler");
+
     glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
+    glUniform1i(locTex, 0);
+
+    // Bind textures
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, color_tex);
 
     // Bind this mesh's VAO and issue draw command
     glBindVertexArray(vao);
@@ -224,6 +328,15 @@ void test_cube(Mesh &mesh)
     verts[5].color = Vector(1.0f, 1.0f, 1.0f);
     verts[6].color = Vector(0.0f, 1.0f, 1.0f);
     verts[7].color = Vector(0.0f, 0.0f, 1.0f);
+
+    verts[0].uv = Vector(1.0f, 1.0f, 0.0f);
+    verts[1].uv = Vector(0.0f, 1.0f, 0.0f);
+    verts[2].uv = Vector(0.0f, 0.0f, 0.0f);
+    verts[3].uv = Vector(1.0f, 0.0f, 0.0f);
+    verts[4].uv = Vector(0.0f, 1.0f, 0.0f);
+    verts[5].uv = Vector(1.0f, 1.0f, 0.0f);
+    verts[6].uv = Vector(1.0f, 0.0f, 0.0f);
+    verts[7].uv = Vector(0.0f, 0.0f, 0.0f);
 
     for(int i = 0; i < 8; i++)
     {

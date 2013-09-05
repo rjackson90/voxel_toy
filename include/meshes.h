@@ -26,31 +26,32 @@ class Vertex
     Vector position; 
     Vector normal;
     Vector color;
+    Vector uv;
 };
 
+/* This struct describes the header of Truevision TGA format image files. It also declares
+ * overloads of operator>> which make reading TGA files from disk really easy
+ */
 struct TGAHeader
 {
-    struct ColorMapSpec
-    {
-        unsigned short f_index;
-        unsigned short m_len;
-        char e_size;
-    };
-    struct ImageSpec
-    {
-        unsigned short x_origin;
-        unsigned short y_origin;
-        unsigned short width;
-        unsigned short height;
-        char depth;
-        char descriptor;
-    };
-    char id_len;
-    char color_map_type;
-    char image_type;
-    ColorMapSpec cmspec;
-    ImageSpec ispec;
+    char id_len = -1;
+    char color_map_type = -1;
+    char image_type = -1;
+
+    // Colormap spec
+    short f_index = -1;
+    short m_len = -1;
+    char e_size = -1;
+
+    // Image spec
+    short x_origin = -1;
+    short y_origin = -1;
+    short width = -1;
+    short height = -1;
+    char depth = -1;
+    char descriptor = -1;
 };
+
 /* A Mesh object tracks all of the OpenGL state information associated with an on-screen object.
  * NOT IMPLEMENTED: Materials.
  */
@@ -61,7 +62,7 @@ class Mesh
     Mesh();
     void loadData(Vertex*, int, short*, int);
     void loadProgram(std::string, std::string);    
-    bool loadShaderFile(std::string, GLuint);
+    static bool loadShaderFile(std::string, GLuint);
     bool loadTextureFile(std::string);
     void draw(glm::mat4);
 
@@ -72,8 +73,10 @@ class Mesh
     GLuint  buffers[2];
     GLuint  vao;
     GLuint  program;
+    GLuint  color_tex;
 
     GLuint locMVP;
+    GLuint locTex;
 };
 
 /* The following functions generate test shapes and store them in a Mesh.

@@ -29,7 +29,8 @@ int main()
     cout << "Creating meshes" << endl;
     Mesh cube;
     test_cube(cube);
-    cube.loadProgram("res/flat.vs", "res/flat.fs");
+    cube.loadProgram("res/texture.vs", "res/texture.fs");
+    cube.loadTextureFile("res/stonebrick.tga");
     systems.render->addNode(1, &cube);
 
     /* Add rigid bodies to the physics system */
