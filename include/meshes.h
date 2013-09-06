@@ -68,7 +68,7 @@ class Mesh
     static bool loadShaderFile(std::string, GLuint);
     void loadTextures(std::string, std::string);
     bool loadTextureFile(std::string, GLuint);
-    void draw(glm::mat4);
+    void draw(glm::mat4, glm::mat4, glm::mat4);
 
     private:
 
@@ -78,10 +78,6 @@ class Mesh
     GLuint  vao;
     GLuint  program;
     GLuint  textures[2];
-
-    GLuint locMVP;
-    GLuint locTexColor;
-    GLuint locTexNormal;
 };
 
 /* The following functions generate test shapes and store them in a Mesh.

@@ -8,8 +8,7 @@ Vertex::Vertex(const Vector &pos = Vector(), const Vector &rgb = Vector(),
 
 /* Mesh constructor. Every parameter is required */
 Mesh::Mesh()
-    : vertex_count(0), index_count(0), buffers{0,0}, vao(0), locMVP(0), locTexColor(0), 
-      locTexNormal(0)
+    : vertex_count(0), index_count(0), buffers{0,0}, vao(0)
 {
     // OpenGL objects need to be allocated on the GPU
     glGenBuffers(2, &buffers[0]);
@@ -291,16 +290,31 @@ void Mesh::loadData(Vertex *verts, int vert_count, short *index_array, int index
  * NOT IMPLEMENTED: instanced rendering
  * NOT IMPLEMENTED: WON'T DO: deferred rendering
  */
-void Mesh::draw(glm::mat4 mvp)
+void Mesh::draw(glm::mat4 p, glm::mat4 v, glm::mat4 m)
 {
-    // Select shader, load uniform data
+    // Select shader, locate uniforms
     glUseProgram(program);
-    locMVP = glGetUniformLocation(program, "mvp");
-    locTexColor = glGetUniformLocation(program, "texColor");
-    locTexNormal = glGetUniformLocation(program, "texNormal");
+    GLuint locMVP = glGetUniformLocation(program, "mvp");
+    GLuint locMV = glGetUniformLocation(program, "mv");
+    GLuint locLightPos = glGetUniformLocation(program, "lightPosition");
 
-    glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
+    GLuint locTexColor = glGetUniformLocation(program, "texColor");
+    GLuint locTexNormal = glGetUniformLocation(program, "texNormal");
+    GLuint locNormalMat = glGetUniformLocation(program, "normalMatrix");
+    GLuint locAmbientColor = glGetUniformLocation(program, "ambientColor");
+
+    // Calculate uniform data
+    glm::mat3 normalMat = glm::mat3(glm::transpose(glm::inverse(p*v*m)));
+
+    // Push uniform variables to the GPU
+    glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(p*v*m));
+    glUniformMatrix4fv(locMV, 1, GL_FALSE, glm::value_ptr(v*m));
+    glUniform3f(locLightPos, 0.0f, 0.0f, -1.5f);
+
     glUniform1i(locTexColor, 0);
+    glUniform1i(locTexNormal, 1);
+    glUniformMatrix3fv(locNormalMat, 1, GL_FALSE, glm::value_ptr(normalMat));
+    glUniform4f(locAmbientColor, 0.0f, 0.02f, 0.04f, 0.01f);
 
     // Bind textures
     glActiveTexture(GL_TEXTURE0);

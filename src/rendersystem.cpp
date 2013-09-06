@@ -27,12 +27,12 @@ RenderSystem::RenderSystem(int width, int height, string title)
 
     // Orthographic projection
     float aspect = (float) width / (float) height;
-    perspective = glm::ortho(-4.0f, 4.0f, -4.0f / aspect, 4.0f / aspect, -100.0f, 100.0f);
+    perspective = glm::ortho(-2.5f, 2.5f, -2.5f / aspect, 2.5f / aspect, -100.0f, 100.0f);
     
     glEnable(GL_DEPTH_TEST);
 }
 
-/* This function adds another node to the "Scene Graph" /s
+/* This function adds another node to the "Scene Graph"
  */
 void RenderSystem::addNode(int key, Mesh* data)
 {
@@ -59,7 +59,7 @@ void RenderSystem::tick(const Subsystems &systems, __attribute__((unused)) const
          */
         glm::mat4 coords = systems.physics->getWorldCoords(i->second.key);
         glm::mat4 camera = glm::translate( glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0));
-        i->second.mesh->draw(perspective * camera * coords);
+        i->second.mesh->draw(perspective, camera, coords);
     }
 
     // Swap front and rear buffers. In other words, display the just-rendered scene
