@@ -14,6 +14,9 @@
 const int VERTEX_BUFFER_INDEX = 0;
 const int ELEMENT_BUFFER_INDEX = 1;
 
+const int COLOR_TEXTURE = 0;
+const int NORMAL_TEXTURE = 1;
+
 /* Each of the Vectors in a Vertex is a per-vertex attribute, and will be 
  * passed to the vertex shader during rendering.
  */
@@ -63,7 +66,8 @@ class Mesh
     void loadData(Vertex*, int, short*, int);
     void loadProgram(std::string, std::string);    
     static bool loadShaderFile(std::string, GLuint);
-    bool loadTextureFile(std::string);
+    void loadTextures(std::string, std::string);
+    bool loadTextureFile(std::string, GLuint);
     void draw(glm::mat4);
 
     private:
@@ -73,10 +77,11 @@ class Mesh
     GLuint  buffers[2];
     GLuint  vao;
     GLuint  program;
-    GLuint  color_tex;
+    GLuint  textures[2];
 
     GLuint locMVP;
-    GLuint locTex;
+    GLuint locTexColor;
+    GLuint locTexNormal;
 };
 
 /* The following functions generate test shapes and store them in a Mesh.

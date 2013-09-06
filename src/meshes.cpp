@@ -8,13 +8,14 @@ Vertex::Vertex(const Vector &pos = Vector(), const Vector &rgb = Vector(),
 
 /* Mesh constructor. Every parameter is required */
 Mesh::Mesh()
-    : vertex_count(0), index_count(0), buffers{0,0}, vao(0), locMVP(0)
+    : vertex_count(0), index_count(0), buffers{0,0}, vao(0), locMVP(0), locTexColor(0), 
+      locTexNormal(0)
 {
     // OpenGL objects need to be allocated on the GPU
     glGenBuffers(2, &buffers[0]);
     glGenVertexArrays(1, &vao);
     program = glCreateProgram();
-    glGenTextures(1, &color_tex);
+    glGenTextures(2, &textures[0]);
 }
 
 /* This function makes creating a shader program easier than pouring water out of a boot.
@@ -127,7 +128,7 @@ bool Mesh::loadShaderFile(std::string path, GLuint shader)
 
 /* This function reads TGA images from disk and stores the contents in a texture object on the GPU
  */
-bool Mesh::loadTextureFile(std::string path)
+bool Mesh::loadTextureFile(std::string path, GLuint texture)
 {
     using std::cout;
     using std::endl;
@@ -218,24 +219,33 @@ bool Mesh::loadTextureFile(std::string path)
               << std::endl << std::endl;
 
     // Allocate a buffer to hold the raw image data, read it from the file then close the file
-    int size = header.width * header.height * sizeof(int);
+    int size = header.width * header.height * (header.depth/8);
     char *data = new char[size];
     in.read(data, size);
     in.close();
 
     // Push image data to the GPU, release heap allocated buffer
-    glBindTexture(GL_TEXTURE_2D, color_tex);
+    glBindTexture(GL_TEXTURE_2D, texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, header.width, header.height, 0, 
-            GL_RGBA, GL_UNSIGNED_BYTE, data);
+            GL_BGRA, GL_UNSIGNED_BYTE, data);
     delete[] data;
+
+    // Texture coordinates should repeat, not clamp
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     // Apply bilinear filtering
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-    // Finished
-    glBindTexture(GL_TEXTURE_2D, 0);
     return true;
+}
+
+/* Load a color texture and a normal texture
+ */
+void Mesh::loadTextures(std::string color_path, std::string normal_path)
+{
+    loadTextureFile(color_path, textures[0]);
+    loadTextureFile(normal_path, textures[1]);
 }
 
 /* This function takes a bunch of raw data in memory, and organizes it into a Mesh object.
@@ -286,14 +296,18 @@ void Mesh::draw(glm::mat4 mvp)
     // Select shader, load uniform data
     glUseProgram(program);
     locMVP = glGetUniformLocation(program, "mvp");
-    locTex = glGetUniformLocation(program, "texSampler");
+    locTexColor = glGetUniformLocation(program, "texColor");
+    locTexNormal = glGetUniformLocation(program, "texNormal");
 
     glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
-    glUniform1i(locTex, 0);
+    glUniform1i(locTexColor, 0);
 
     // Bind textures
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, color_tex);
+    glBindTexture(GL_TEXTURE_2D, textures[0]);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, textures[1]);
 
     // Bind this mesh's VAO and issue draw command
     glBindVertexArray(vao);

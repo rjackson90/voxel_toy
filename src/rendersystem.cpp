@@ -16,11 +16,19 @@ RenderSystem::RenderSystem(int width, int height, string title)
     } else {
         cout << " FAIL: " << glewGetErrorString(err) << endl;
     }
-
+    
+    /*
+    // Perspective projection
     perspective = glm::perspective(40.0,                            // FOV
                                    (double)width / (double)height,  // Viewport
                                    1.0,                             // z-min
                                    1000.0);                         // z-max
+    */
+
+    // Orthographic projection
+    float aspect = (float) width / (float) height;
+    perspective = glm::ortho(-4.0f, 4.0f, -4.0f / aspect, 4.0f / aspect, -100.0f, 100.0f);
+    
     glEnable(GL_DEPTH_TEST);
 }
 
