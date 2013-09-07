@@ -1,0 +1,16 @@
+#ifndef DATA_PATHS_H
+#define DATA_PATHS_H
+
+// This header is filled in by CMake with the absolute filesystem path to each module's data
+// directory
+
+namespace Paths
+{
+    const std::string rendering("@rendering_data_path@");
+    const std::string shaders("@rendering_shaders_path@");
+    const std::string physics("@physics_data_path@");
+    const std::string core("@core_data_path@");
+}
+
+
+#endif

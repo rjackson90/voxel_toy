@@ -1,6 +1,6 @@
 *.swp
 *.o
 *.dat
-GLDemo
-UnitTests
+*.tga
 build/
+!build/.gitkeep

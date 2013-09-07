@@ -1,6 +1,9 @@
 # Declare minimum CMake version, project name
 cmake_minimum_required(VERSION 2.8)
-project(GLDemo)
+project(GLDemo CXX)
+
+# List of modules in the project
+set(MODULES core physics rendering)
 
 # Set appropriate flags for g++
 if(CMAKE_COMPILER_IS_GNUCXX)
@@ -14,27 +17,36 @@ else(CMAKE_COMPILER_IS_GNUCXX)
     message("[WARN] Target compiler is NOT a gnu compiler!")
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
-# Built artifacts should all be in build/bin
+# Binary artifacts should all be in build/bin
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${GLDemo_BINARY_DIR}/bin)
 
-# Glob together a list of the common source files between executable and test builds
-file(GLOB SOURCES src/*.cpp)
-list(REMOVE_ITEM SOURCES ${GLDemo_SOURCE_DIR}/src/main.cpp)
-
-# Glob together a list of tests
-file(GLOB TESTS tests/*.cpp)
-
 # Tell CMake where the includes are
-include_directories(${GLDemo_SOURCE_DIR}/include)
+foreach( MODULE ${MODULES})
+    include_directories("${MODULE}/include/")
+endforeach()
 
-# Compile the two sets of source files
-add_library(DCClasses OBJECT ${SOURCES})
-add_executable(DeepCore $<TARGET_OBJECTS:DCClasses> src/main.cpp)
-add_executable(DeepCoreTests $<TARGET_OBJECTS:DCClasses> ${TESTS})
+# Create the special "data-path" header
+foreach( MODULE ${MODULES})
+    set( "${MODULE}_data_path" "${CMAKE_SOURCE_DIR}/${MODULE}/data/" )
+endforeach()
+set( "rendering_shaders_path" "${CMAKE_SOURCE_DIR}/rendering/shaders/" )
+configure_file( exec/include/data_paths.h.in ${CMAKE_BINARY_DIR}/exec/include/data_paths.h )
+include_directories( ${CMAKE_BINARY_DIR}/exec/include/ )
+
+# Compile each module, get the name of each library
+foreach( MODULE ${MODULES})
+    add_subdirectory(${MODULE})
+    set( MODULE_LIBS ${MODULE_LIBS} "$<TARGET_OBJECTS:GLDemo-${MODULE}>" )
+    set( MODULE_TEST_LIBS ${MODULE_TEST_LIBS} "$<TARGET_OBJECTS:GLDemo-${MODULE}-tests>" )
+endforeach()
+
+# Compile the main executable
+add_executable(DeepCore ${MODULE_LIBS} exec/src/main.cpp)
+add_executable(DeepCoreTests ${MODULE_LIBS} ${MODULE_TEST_LIBS} exec/src/tests.cpp)
 
 # Link the source objects to finish building the executables
 set(LIBRARIES GLEW GLU GL X11)
-target_link_libraries(DeepCore ${LIBRARIES})
+target_link_libraries(DeepCore ${LIBRARIES} )
 target_link_libraries(DeepCoreTests ${LIBRARIES} UnitTest++)
 
 # Run the tests after they (successfully) build
