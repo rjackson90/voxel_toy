@@ -14,7 +14,7 @@ Mesh::Mesh()
     glGenBuffers(2, &buffers[0]);
     glGenVertexArrays(1, &vao);
     program = glCreateProgram();
-    glGenTextures(2, &textures[0]);
+    // glGenTextures(2, &textures[0]);
 }
 
 /* This function makes creating a shader program easier than pouring water out of a boot.
@@ -126,7 +126,7 @@ bool Mesh::loadShaderFile(std::string path, GLuint shader)
 }
 
 /* This function reads TGA images from disk and stores the contents in a texture object on the GPU
- */
+
 bool Mesh::loadTextureFile(std::string path, GLuint texture)
 {
     using std::cout;
@@ -184,10 +184,10 @@ bool Mesh::loadTextureFile(std::string path, GLuint texture)
     delete[] buffer;
 
     
-    /* Check this image to ensure compliance with established technical requirements:
-     *  - Square image with side length equal to a power of two.
-     *  - No color map, image should be uncompressed true color
-     */
+    // Check this image to ensure compliance with established technical requirements:
+    //  - Square image with side length equal to a power of two.
+    //  - No color map, image should be uncompressed true color
+    //
     if(header.id_len > 0)
     {
         char *id = new char[header.id_len];
@@ -238,14 +238,16 @@ bool Mesh::loadTextureFile(std::string path, GLuint texture)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     return true;
 }
+*/
 
 /* Load a color texture and a normal texture
- */
+
 void Mesh::loadTextures(std::string color_path, std::string normal_path)
 {
     loadTextureFile(color_path, textures[0]);
     loadTextureFile(normal_path, textures[1]);
 }
+*/
 
 /* This function takes a bunch of raw data in memory, and organizes it into a Mesh object.
  */
@@ -317,11 +319,13 @@ void Mesh::draw(glm::mat4 p, glm::mat4 v, glm::mat4 m)
     glUniform4f(locAmbientColor, 0.0f, 0.02f, 0.04f, 0.01f);
 
     // Bind textures
+    /*
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textures[0]);
 
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, textures[1]);
+    */
 
     // Bind this mesh's VAO and issue draw command
     glBindVertexArray(vao);

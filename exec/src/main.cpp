@@ -37,8 +37,8 @@ int main()
     cube.loadProgram(Paths::shaders + "phong.vs", Paths::shaders + "phong.fs");
     Mesh box1/*, box2, box3, box4*/ = cube;
 
-    box1.loadTextures(Paths::rendering + "stonebrick.tga", 
-                      Paths::rendering + "stonebrickn.tga");
+    //box1.loadTextures(Paths::rendering + "stonebrick.tga", 
+    //                  Paths::rendering + "stonebrickn.tga");
     //box2.loadTextureFile("res/stonebrickn.tga");
 
     systems.render->addNode(1, &box1);    

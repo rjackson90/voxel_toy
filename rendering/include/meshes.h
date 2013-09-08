@@ -34,7 +34,7 @@ class Vertex
 
 /* This struct describes the header of Truevision TGA format image files. It also declares
  * overloads of operator>> which make reading TGA files from disk really easy
- */
+
 struct TGAHeader
 {
     char id_len = -1;
@@ -54,6 +54,7 @@ struct TGAHeader
     char depth = -1;
     char descriptor = -1;
 };
+*/
 
 /* A Mesh object tracks all of the OpenGL state information associated with an on-screen object.
  * NOT IMPLEMENTED: Materials.
@@ -66,8 +67,8 @@ class Mesh
     void loadData(Vertex*, int, short*, int);
     void loadProgram(std::string, std::string);    
     static bool loadShaderFile(std::string, GLuint);
-    void loadTextures(std::string, std::string);
-    bool loadTextureFile(std::string, GLuint);
+    // void loadTextures(std::string, std::string);
+    // bool loadTextureFile(std::string, GLuint);
     void draw(glm::mat4, glm::mat4, glm::mat4);
 
     private:
@@ -77,7 +78,7 @@ class Mesh
     GLuint  buffers[2];
     GLuint  vao;
     GLuint  program;
-    GLuint  textures[2];
+    // GLuint  textures[2];
 };
 
 /* The following functions generate test shapes and store them in a Mesh.
