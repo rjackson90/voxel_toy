@@ -34,7 +34,7 @@ int main()
 
     Mesh cube;
     test_cube(cube);
-    cube.loadProgram(Paths::shaders + "phong.vs", Paths::shaders + "phong.fs");
+    //cube.loadProgram(Paths::shaders + "phong.vs", Paths::shaders + "phong.fs");
     Mesh box1/*, box2, box3, box4*/ = cube;
 
     //box1.loadTextures(Paths::rendering + "stonebrick.tga", 

@@ -1,6 +1,6 @@
 #include "fileops.h"
 
-int fileLength(const std::string &path)
+int getLength(const std::string &path)
 {
     using namespace std;
     ifstream file(path, ifstream::binary | ifstream::ate);
@@ -15,11 +15,11 @@ int fileLength(const std::string &path)
     return length;
 }
 
-bool fileDump(const std::string &path, char *buffer, int buflen)
+bool getBlob(const std::string &path, char *buffer, int buflen)
 {
     using namespace std;
 
-    int file_len = fileLength(path);
+    int file_len = getLength(path);
     if(file_len < 0)return false;
     if(buflen < file_len)
     {
@@ -41,4 +41,20 @@ bool fileDump(const std::string &path, char *buffer, int buflen)
         file.close();
         return false;
     }
+}
+
+std::string getText(const std::string &path)
+{
+    using namespace std;
+
+    ifstream file(path);
+    if(file.good())
+    {
+        // The seemingly-redundant parentheses below are REQUIRED. DO NOT REMOVE
+        string text((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+        return text;
+    }
+
+    cout << "Failed to open file " << path << endl;
+    return string();
 }

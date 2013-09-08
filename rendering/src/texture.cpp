@@ -11,12 +11,12 @@ Texture::Texture(GLenum tg, std::string path) : target(tg)
     glGenTextures(1, &tex_obj);
 
     // If the path is good, load texture file
-    int length = fileLength(path);
+    int length = getLength(path);
     if(length > 0)
     {
         // Allocate a buffer to hold the file contents
         char* buffer = new char[length];
-        fileDump(path, buffer, length);
+        getBlob(path, buffer, length);
 
         // Push file contents to GPU
         loadTGA(buffer);

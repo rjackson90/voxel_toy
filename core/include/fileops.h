@@ -5,8 +5,9 @@
 #include <fstream>
 #include <iostream>
 
-int fileLength(const std::string&);
-bool fileDump(const std::string&, char*, int);
+int getLength(const std::string&);
+bool getBlob(const std::string&, char*, int);
+std::string getText(const std::string&);
 
 template<typename T>
 void blobRead(T &val, char *buffer)

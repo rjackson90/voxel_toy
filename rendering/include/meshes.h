@@ -65,8 +65,8 @@ class Mesh
 
     Mesh();
     void loadData(Vertex*, int, short*, int);
-    void loadProgram(std::string, std::string);    
-    static bool loadShaderFile(std::string, GLuint);
+    //void loadProgram(std::string, std::string);    
+    //static bool loadShaderFile(std::string, GLuint);
     // void loadTextures(std::string, std::string);
     // bool loadTextureFile(std::string, GLuint);
     void draw(glm::mat4, glm::mat4, glm::mat4);
@@ -77,7 +77,7 @@ class Mesh
     int     index_count;
     GLuint  buffers[2];
     GLuint  vao;
-    GLuint  program;
+    // GLuint  program;
     // GLuint  textures[2];
 };
 

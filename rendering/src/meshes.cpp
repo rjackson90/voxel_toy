@@ -13,7 +13,7 @@ Mesh::Mesh()
     // OpenGL objects need to be allocated on the GPU
     glGenBuffers(2, &buffers[0]);
     glGenVertexArrays(1, &vao);
-    program = glCreateProgram();
+    //program = glCreateProgram();
     // glGenTextures(2, &textures[0]);
 }
 
@@ -22,7 +22,7 @@ Mesh::Mesh()
  *
  * The two parameters are the filesystem path to the vertex shader and fragment shader, respectively,
  * which compose the program to be created
- */
+
 void Mesh::loadProgram(std::string vs_path, std::string fs_path)
 {
     // Create shader objects
@@ -69,10 +69,11 @@ void Mesh::loadProgram(std::string vs_path, std::string fs_path)
     glDeleteShader(vs);
     glDeleteShader(fs);
 }
+*/
 
 /* One of the components of the cheater-mode program creation function, this function
  * loads a shader from disk and compiles it on the GPU
- */
+
 bool Mesh::loadShaderFile(std::string path, GLuint shader)
 {
     // Load shader source from text file
@@ -124,6 +125,7 @@ bool Mesh::loadShaderFile(std::string path, GLuint shader)
     std::cout << "Shader compilation succeeded" << std::endl;
     return true;
 }
+*/
 
 /* This function reads TGA images from disk and stores the contents in a texture object on the GPU
 
@@ -295,7 +297,11 @@ void Mesh::loadData(Vertex *verts, int vert_count, short *index_array, int index
 void Mesh::draw(glm::mat4 p, glm::mat4 v, glm::mat4 m)
 {
     // Select shader, locate uniforms
-    glUseProgram(program);
+    //glUseProgram(program);
+    
+    // Dummy program target
+    GLuint program = 0;
+
     GLuint locMVP = glGetUniformLocation(program, "mvp");
     GLuint locMV = glGetUniformLocation(program, "mv");
     GLuint locLightPos = glGetUniformLocation(program, "lightPosition");
