@@ -1,7 +1,9 @@
 #ifndef FILEOPS_H
 #define FILEOPS_H
 
-#include "dispatch.h"
+#include <string>
+#include <fstream>
+#include <iostream>
 
 int fileLength(const std::string&);
 bool fileDump(const std::string&, char*, int);

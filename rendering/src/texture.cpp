@@ -2,11 +2,12 @@
 
 using namespace Rendering;
 
-Texture::Texture(std::string path) : target(GL_TEXTURE_2D)
+Texture::Texture(GLenum tg, std::string path) : target(tg)
 {
     using namespace std;
 
     // Generate texture
+    tex_obj = 0;
     glGenTextures(1, &tex_obj);
 
     // If the path is good, load texture file
@@ -29,9 +30,8 @@ Texture::~Texture()
 }
 
 
-void Texture::bind(GLenum unit)
+void Texture::bind()
 {
-    glActiveTexture(unit);
     glBindTexture(target, tex_obj);
 }
 

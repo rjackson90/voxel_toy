@@ -1,7 +1,10 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
-#include "rendersystem.h"
+#include <GL/glew.h>
+#include <string>
+#include <iostream>
+
 #include "fileops.h"
 
 namespace Rendering
@@ -9,10 +12,10 @@ namespace Rendering
     class Texture
     {
         public:
-        Texture(std::string);
+        Texture(GLenum, std::string);
         ~Texture();
 
-        void bind(GLenum);
+        void bind();
 
         private:
         GLenum target;
