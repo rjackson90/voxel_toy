@@ -1,3 +1,8 @@
+/* NOTICE: This class has been deprecated. All functionality has been moved elsewhere.
+ * This file is being kept temporarily for reference. DO NOT use this header for any purpose
+ * except as a reference.
+ */
+
 #ifndef MESHES_H
 #define MESHES_H
 
@@ -11,15 +16,17 @@
 
 #include "math_ext.h"
 
+/*
 const int VERTEX_BUFFER_INDEX = 0;
 const int ELEMENT_BUFFER_INDEX = 1;
 
 const int COLOR_TEXTURE = 0;
 const int NORMAL_TEXTURE = 1;
+*/
 
 /* Each of the Vectors in a Vertex is a per-vertex attribute, and will be 
  * passed to the vertex shader during rendering.
- */
+
 class Vertex
 {
     public:
@@ -31,6 +38,7 @@ class Vertex
     Vector color;
     Vector uv;
 };
+*/
 
 /* This struct describes the header of Truevision TGA format image files. It also declares
  * overloads of operator>> which make reading TGA files from disk really easy
@@ -58,7 +66,7 @@ struct TGAHeader
 
 /* A Mesh object tracks all of the OpenGL state information associated with an on-screen object.
  * NOT IMPLEMENTED: Materials.
- */
+
 class Mesh
 {
     public:
@@ -80,19 +88,13 @@ class Mesh
     // GLuint  program;
     // GLuint  textures[2];
 };
+*/
 
 /* The following functions generate test shapes and store them in a Mesh.
  * Not all of them have implementations. In fact, as of writing, only test_cube
  * has a correct and valid implementation
- */
+
 void test_cube(Mesh &);
-
-void test_latlong_sphere(Mesh &);
-
-void test_ico_sphere(Mesh &);
-
-void test_tetrahedron(Mesh &);
-
-void test_cone(Mesh &);
+*/
 
 #endif

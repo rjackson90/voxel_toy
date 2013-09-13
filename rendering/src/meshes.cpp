@@ -1,12 +1,14 @@
 #include "meshes.h"
 
 /* Vertex constructor. NB: Vertices are NOT Vectors, however, Vertices CONTAIN Vectors */
-Vertex::Vertex(const Vector &pos = Vector(), const Vector &rgb = Vector(), 
+/*Vertex::Vertex(const Vector &pos = Vector(), const Vector &rgb = Vector(), 
                const Vector &norm = Vector())
     : position(pos), normal(norm), color(rgb)
 {}
+*/
 
 /* Mesh constructor. Every parameter is required */
+/*
 Mesh::Mesh()
     : vertex_count(0), index_count(0), buffers{0,0}, vao(0)
 {
@@ -16,6 +18,7 @@ Mesh::Mesh()
     //program = glCreateProgram();
     // glGenTextures(2, &textures[0]);
 }
+*/
 
 /* This function makes creating a shader program easier than pouring water out of a boot.
  * Even if there were directions on the heel.
@@ -252,7 +255,7 @@ void Mesh::loadTextures(std::string color_path, std::string normal_path)
 */
 
 /* This function takes a bunch of raw data in memory, and organizes it into a Mesh object.
- */
+
 void Mesh::loadData(Vertex *verts, int vert_count, short *index_array, int index_count)
 {
     // Store the number of vertices and the number of indices in the mesh object
@@ -288,6 +291,7 @@ void Mesh::loadData(Vertex *verts, int vert_count, short *index_array, int index
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     
 }
+*/
 
 /* Thanks to the magic of programmable shader hardware, every mesh can be drawn just about the same
  * way. At least for simple meshes. 
@@ -334,16 +338,16 @@ void Mesh::draw(glm::mat4 p, glm::mat4 v, glm::mat4 m)
     */
 
     // Bind this mesh's VAO and issue draw command
-    glBindVertexArray(vao);
-    glDrawElements(GL_TRIANGLES, index_count , GL_UNSIGNED_SHORT, (GLvoid*) 0);
+    //glBindVertexArray(vao);
+    //glDrawElements(GL_TRIANGLES, index_count , GL_UNSIGNED_SHORT, (GLvoid*) 0);
 
     // Unbind VAO and program
-    glBindVertexArray(0);
-    glUseProgram(0);
+    //glBindVertexArray(0);
+    //glUseProgram(0);
 
 }
 
-/* This function creates a cube mesh, perfect for testing */
+/* This function creates a cube mesh, perfect for testing
 void test_cube(Mesh &mesh)
 {
     // Cubes have 8 vertices
@@ -400,35 +404,4 @@ void test_cube(Mesh &mesh)
     
     mesh.loadData(&verts[0], 8, &indices[0], index_length);
 }
-
-/* This function creates a sphere using the Latitude/Longitude method. Shitty model, but it's really
- * easy to figure out appropriate texture coordinates.
- */
-void test_latlong_sphere(Mesh &mesh)
-{
-    const int lat_div = 36;
-    const int long_div = 76;
-
-    const int vert_count = lat_div * long_div;
-
-    Vertex verts[vert_count];
-
-    for(int i =0; i < vert_count; i++)
-    {
-        float phi = radians(360.0f / long_div * (i % long_div));
-        float theta = radians(180.0f / lat_div * (i / long_div));
-        
-        verts[i].position = Vector(cos(theta) * cos(phi), cos(theta) * sin(phi), sin(theta));
-        verts[i].position.x = verts[i].position.x * 2.0f - 1.0f;
-        verts[i].position.y = verts[i].position.y * 2.0f - 1.0f;
-        verts[i].position.z = verts[i].position.z * 2.0f - 1.0f;
-
-        verts[i].color = Vector(cos(theta) * cos(phi), cos(theta) * sin(phi), sin(theta));
-        verts[i].normal = verts[i].position.normalize();
-    }
-
-    // This is just a placeholder, clearly incorrect
-    short indices[10];
-
-    mesh.loadData(&verts[0], vert_count, &indices[0], 10);
-}
+*/
