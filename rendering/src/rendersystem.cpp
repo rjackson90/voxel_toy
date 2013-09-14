@@ -34,11 +34,10 @@ RenderSystem::RenderSystem(int width, int height, string title)
 
 /* This function adds another node to the "Scene Graph"
  */
-void RenderSystem::addNode(int key, Mesh* data)
+void RenderSystem::addNode(int key)
 {
     RenderNode newNode;
     newNode.key = key;
-    newNode.mesh = data;
 
     nodes.insert({{key, newNode}});
 }
@@ -57,9 +56,10 @@ void RenderSystem::tick(const Subsystems &systems, __attribute__((unused)) const
         /* In reality the coordinate matrix would be pulled from the physics simulation
          * and the camera matrix would be pulled from somewhere else... input system?
          */
-        glm::mat4 coords = systems.physics->getWorldCoords(i->second.key);
-        glm::mat4 camera = glm::translate( glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0));
-        i->second.mesh->draw(perspective, camera, coords);
+        __attribute__((unused)) glm::mat4 coords = systems.physics->getWorldCoords(i->second.key);
+        __attribute__((unused)) glm::mat4 camera = glm::translate( glm::mat4(1.0), 
+                glm::vec3(0.0, 0.0, 0.0));
+        // i->second.mesh->draw(perspective, camera, coords);
     }
 
     // Swap front and rear buffers. In other words, display the just-rendered scene

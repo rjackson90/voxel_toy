@@ -2,7 +2,7 @@
 
 using namespace Rendering;
 
-Geometry::Geometry() : draw_mode(GL_POINTS), vertex_count(0), index_count(0), buffers{0,0}, vao(0)
+Geometry::Geometry() : draw_mode(GL_POINTS), index_count(0), buffers{0,0}, vao(0)
 {
     glGenBuffers(2, &buffers[0]);
     glGenVertexArrays(1, &vao);
@@ -63,41 +63,29 @@ void Geometry::loadData(Vertex *vert_buf, int vbuf_size, short* elem_buf, int eb
  */
 void Geometry::genTestCube()
 {
+    using glm::vec3;
+    using glm::vec2;
     // Cubes have 8 vertices
     Vertex verts[8];
     
-    verts[0].position = Vector(-1.0f,  1.0f,  1.0f);
-    verts[1].position = Vector( 1.0f,  1.0f,  1.0f);
-    verts[2].position = Vector( 1.0f, -1.0f,  1.0f);
-    verts[3].position = Vector(-1.0f, -1.0f,  1.0f);
-    verts[4].position = Vector(-1.0f,  1.0f, -1.0f);
-    verts[5].position = Vector( 1.0f,  1.0f, -1.0f);
-    verts[6].position = Vector( 1.0f, -1.0f, -1.0f);
-    verts[7].position = Vector(-1.0f, -1.0f, -1.0f);
+    verts[0].position = vec3(-1.0f,  1.0f,  1.0f);
+    verts[1].position = vec3( 1.0f,  1.0f,  1.0f);
+    verts[2].position = vec3( 1.0f, -1.0f,  1.0f);
+    verts[3].position = vec3(-1.0f, -1.0f,  1.0f);
+    verts[4].position = vec3(-1.0f,  1.0f, -1.0f);
+    verts[5].position = vec3( 1.0f,  1.0f, -1.0f);
+    verts[6].position = vec3( 1.0f, -1.0f, -1.0f);
+    verts[7].position = vec3(-1.0f, -1.0f, -1.0f);
      
-    verts[0].color = Vector(0.0f, 1.0f, 0.0f);
-    verts[1].color = Vector(1.0f, 1.0f, 0.0f);
-    verts[2].color = Vector(0.0f, 1.0f, 0.0f);
-    verts[3].color = Vector(0.0f, 0.0f, 0.0f);
-    verts[4].color = Vector(0.0f, 1.0f, 1.0f);
-    verts[5].color = Vector(1.0f, 1.0f, 1.0f);
-    verts[6].color = Vector(0.0f, 1.0f, 1.0f);
-    verts[7].color = Vector(0.0f, 0.0f, 1.0f);
+    verts[0].texture = vec2(1.0f, 1.0f);
+    verts[1].texture = vec2(0.0f, 1.0f);
+    verts[2].texture = vec2(0.0f, 0.0f);
+    verts[3].texture = vec2(1.0f, 0.0f);
+    verts[4].texture = vec2(0.0f, 1.0f);
+    verts[5].texture = vec2(1.0f, 1.0f);
+    verts[6].texture = vec2(1.0f, 0.0f);
+    verts[7].texture = vec2(0.0f, 0.0f);
      
-    verts[0].uv = Vector(1.0f, 1.0f, 0.0f);
-    verts[1].uv = Vector(0.0f, 1.0f, 0.0f);
-    verts[2].uv = Vector(0.0f, 0.0f, 0.0f);
-    verts[3].uv = Vector(1.0f, 0.0f, 0.0f);
-    verts[4].uv = Vector(0.0f, 1.0f, 0.0f);
-    verts[5].uv = Vector(1.0f, 1.0f, 0.0f);
-    verts[6].uv = Vector(1.0f, 0.0f, 0.0f);
-    verts[7].uv = Vector(0.0f, 0.0f, 0.0f);
-     
-    for(int i = 0; i < 8; i++)
-    {
-        verts[i].normal = verts[i].position.normalize();
-    }
-    
     int index_length = 6*2*3;
     short indices[] = 
     {

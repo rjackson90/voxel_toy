@@ -297,7 +297,7 @@ void Mesh::loadData(Vertex *verts, int vert_count, short *index_array, int index
  * way. At least for simple meshes. 
  * NOT IMPLEMENTED: instanced rendering
  * NOT IMPLEMENTED: WON'T DO: deferred rendering
- */
+
 void Mesh::draw(glm::mat4 p, glm::mat4 v, glm::mat4 m)
 {
     // Select shader, locate uniforms
@@ -329,13 +329,11 @@ void Mesh::draw(glm::mat4 p, glm::mat4 v, glm::mat4 m)
     glUniform4f(locAmbientColor, 0.0f, 0.02f, 0.04f, 0.01f);
 
     // Bind textures
-    /*
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textures[0]);
 
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, textures[1]);
-    */
 
     // Bind this mesh's VAO and issue draw command
     //glBindVertexArray(vao);
@@ -346,6 +344,7 @@ void Mesh::draw(glm::mat4 p, glm::mat4 v, glm::mat4 m)
     //glUseProgram(0);
 
 }
+*/
 
 /* This function creates a cube mesh, perfect for testing
 void test_cube(Mesh &mesh)
