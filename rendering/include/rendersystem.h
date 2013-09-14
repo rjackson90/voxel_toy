@@ -9,7 +9,6 @@
 #include "dispatch.h"
 #include "system.h"
 #include "glwindow.h"
-#include "meshes.h"
 
 struct Subsystems;
 
@@ -25,12 +24,11 @@ class RenderSystem : public System
     public:
     RenderSystem( int, int, string);
     virtual void tick(const Subsystems &, const double)override;
-    void addNode(int, Mesh*);
+    void addNode(int);
 
     private:
     struct RenderNode : Node
     {
-        Mesh* mesh = nullptr;
     };
 
     glm::mat4 perspective;
