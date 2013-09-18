@@ -10,12 +10,12 @@ Sampler::Sampler(const SamplerParams &p)
     setParams(p);
 }
 
-void Sampler::bind(GLuint unit)
+void Sampler::bind(GLuint unit) const
 {
     glBindSampler(unit, sampler_obj);
 }
 
-const SamplerParams& Sampler::getParams()
+const SamplerParams& Sampler::getParams() const
 {
     return params;
 }

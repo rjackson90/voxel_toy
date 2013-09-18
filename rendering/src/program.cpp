@@ -32,19 +32,14 @@ Program::Program(const std::string &vertex_path, const std::string &fragment_pat
     }
 }
 
-bool Program::isValid()
+bool Program::isValid() const
 {
     return valid;
 }
 
-void Program::bind()
+void Program::bind() const
 {
     glUseProgram(program_obj);
-}
-
-void Program::unbind()
-{
-    glUseProgram(0);
 }
 
 bool Program::compileShader(const std::string &path, GLuint shader_obj)

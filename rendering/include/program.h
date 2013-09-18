@@ -13,9 +13,9 @@ namespace Rendering
     {
     public:
         Program(const std::string&, const std::string&);
-        bool isValid();
-        void bind();
-        void unbind();
+        bool isValid() const;
+        void bind() const;
+        GLuint getProgramObj() const { return program_obj; }
 
     private:
         bool valid;

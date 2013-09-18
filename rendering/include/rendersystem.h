@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "dispatch.h"
 #include "system.h"
@@ -25,6 +26,9 @@ class RenderSystem : public System
     RenderSystem( int, int, string);
     virtual void tick(const Subsystems &, const double)override;
     void addNode(int);
+
+    glm::mat4 getCameraMatrix() { return glm::mat4(1.0f); }
+    glm::mat4 getPerspectiveMatrix() { return perspective; }
 
     private:
     struct RenderNode : Node

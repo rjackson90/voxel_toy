@@ -15,7 +15,7 @@ namespace Rendering
         Texture(GLenum, std::string);
         ~Texture();
 
-        void bind();
+        void bind() const;
 
         private:
         GLenum target;

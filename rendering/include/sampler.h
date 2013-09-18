@@ -29,8 +29,8 @@ namespace Rendering
     {
         public:
         Sampler(const SamplerParams&);
-        void bind(GLuint);
-        const SamplerParams& getParams();
+        void bind(GLuint) const;
+        const SamplerParams& getParams() const;
         void setParams(const SamplerParams&);
 
         private:

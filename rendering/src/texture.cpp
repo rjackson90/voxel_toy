@@ -30,7 +30,7 @@ Texture::~Texture()
 }
 
 
-void Texture::bind()
+void Texture::bind() const
 {
     glBindTexture(target, tex_obj);
 }
