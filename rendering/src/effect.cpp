@@ -39,12 +39,11 @@ PhongShading::PhongShading(GLuint& tex_unit_begin, GLuint& uniform_binding_begin
     material.bind(material_idx);
 }
 
-Effect::Effect(GLuint &tex_idx, GLuint tex_size, GLuint &uniform_idx, GLuint uniform_size) :
-    tex_unit_size(tex_size), uniform_binding_size(uniform_size)
+Effect::Effect(GLuint &tex_idx, GLuint tex_size, GLuint &uniform_idx, GLuint uniform_size)
 {
     tex_unit_start = tex_idx;
-    tex_idx += tex_unit_size;
+    tex_idx += tex_size;
 
     uniform_binding_start = uniform_idx;
-    uniform_idx += uniform_binding_size;
+    uniform_idx += uniform_size;
 }

@@ -3,18 +3,15 @@
 
 #include <GL/glew.h>
 
-namespace Rendering
-{
-    class Program;
-    class Texture;
-    class Sampler;
-    class UniformBuffer;
-}
-
 #include "texture.h"
 #include "sampler.h"
 #include "program.h"
-#include "uniform_buffer.h"
+#include "uniform.h"
+
+namespace Rendering
+{
+    class UniformBuffer;
+}
 
 namespace Rendering
 {
@@ -30,10 +27,7 @@ namespace Rendering
 
     protected:
         GLuint tex_unit_start;
-        const GLuint tex_unit_size;
-
         GLuint uniform_binding_start;
-        const GLuint uniform_binding_size;
     };
     
     /* This class is an implementation of an Effect. It implements simple Phong shading, with

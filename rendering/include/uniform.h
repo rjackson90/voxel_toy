@@ -1,25 +1,44 @@
-#ifndef UNIFORM_BLOCK_H
-#define UNIFORM_BLOCK_H
+#ifndef UNIFORM_H
+#define UNIFORM_H
 
+// System headers
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
 #include <GL/glew.h>
 #include <algorithm>
 
+struct Subsystems;
+
+// Core headers
 #include "dispatch.h"
 
 namespace Rendering
 {
+    // Forward declaration
+    struct BlockDefinition;
+
+    /* This class describes a uniform buffer. It holds a reference to a BlockDefinition 
+     * (or more likely, a struct that inherits from BlockDefinition) which represents the uniform
+     * block inside a shader program. This class manages the buffer backing the uniform block
+     */
+    class UniformBuffer
+    {
+    public:
+        UniformBuffer();
+        ~UniformBuffer();
+        void bind(GLuint) const;
+        void setBlock(const BlockDefinition&);
+    
+    private:
+        GLuint buffer;
+    };
+
     /* This struct describes the minimum requirements of a uniform block definition,
      * namely that all such definitions have names and optionally a callback function to update
      * the data in the struct
      */
     struct BlockDefinition
     {
-        const GLchar* name;
-
-        BlockDefinition(const GLchar* block_name) : name(block_name){}
         virtual void getData(const Subsystems&, __attribute__((unused))int key) {return;}
         virtual void updateBuffer() const = 0;
     };
@@ -29,7 +48,6 @@ namespace Rendering
      */
     struct TransformBlock : BlockDefinition
     {
-        TransformBlock() : BlockDefinition("TransformBlock"){}
         virtual void getData(const Subsystems&, int key);
         virtual void updateBuffer() const;
 
@@ -43,7 +61,6 @@ namespace Rendering
      */
     struct PointLight : BlockDefinition
     {
-        PointLight() : BlockDefinition("PointLight"){}
         virtual void updateBuffer() const;
 
         glm::vec3 position;
@@ -55,7 +72,6 @@ namespace Rendering
      */
     struct Material : BlockDefinition
     {
-        Material() : BlockDefinition("Material"){}
         virtual void updateBuffer() const;
 
         glm::vec4 ambient;
@@ -65,4 +81,4 @@ namespace Rendering
     };
 }
 
-#endif // UNIFORM_BLOCK_H
+#endif // UNIFORM_H

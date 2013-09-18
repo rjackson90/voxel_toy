@@ -76,15 +76,18 @@ void Geometry::genTestCube()
     verts[5].position = vec3( 1.0f,  1.0f, -1.0f);
     verts[6].position = vec3( 1.0f, -1.0f, -1.0f);
     verts[7].position = vec3(-1.0f, -1.0f, -1.0f);
-     
-    verts[0].texture = vec2(1.0f, 1.0f);
-    verts[1].texture = vec2(0.0f, 1.0f);
-    verts[2].texture = vec2(0.0f, 0.0f);
-    verts[3].texture = vec2(1.0f, 0.0f);
-    verts[4].texture = vec2(0.0f, 1.0f);
-    verts[5].texture = vec2(1.0f, 1.0f);
-    verts[6].texture = vec2(1.0f, 0.0f);
-    verts[7].texture = vec2(0.0f, 0.0f);
+ 
+    const float third = 1.0f / 3.0f;
+    const float two_thirds = 2.0f * third;
+
+    verts[0].texture = vec2(third, 0.0f);
+    verts[1].texture = vec2(two_thirds, 0.0f);
+    verts[2].texture = vec2(two_thirds, third);
+    verts[3].texture = vec2(third, third);
+    verts[4].texture = vec2(0.0f, two_thirds);
+    verts[5].texture = vec2(0.0f, 1.0f);
+    verts[6].texture = vec2(two_thirds, two_thirds);
+    verts[7].texture = vec2(third, two_thirds);
      
     int index_length = 6*2*3;
     short indices[] = 

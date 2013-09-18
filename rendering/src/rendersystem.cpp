@@ -17,14 +17,6 @@ RenderSystem::RenderSystem(int width, int height, string title)
         cout << " FAIL: " << glewGetErrorString(err) << endl;
     }
     
-    /*
-    // Perspective projection
-    perspective = glm::perspective(40.0,                            // FOV
-                                   (double)width / (double)height,  // Viewport
-                                   1.0,                             // z-min
-                                   1000.0);                         // z-max
-    */
-
     // Orthographic projection
     float aspect = (float) width / (float) height;
     perspective = glm::ortho(-2.5f, 2.5f, -2.5f / aspect, 2.5f / aspect, -100.0f, 100.0f);
@@ -32,12 +24,17 @@ RenderSystem::RenderSystem(int width, int height, string title)
     glEnable(GL_DEPTH_TEST);
 }
 
-/* This function adds another node to the "Scene Graph"
+/* This function adds another node to the batch
  */
-void RenderSystem::addNode(int key)
+void RenderSystem::addNode(int key, 
+        const Rendering::Geometry& geo, 
+        std::vector<std::shared_ptr<Rendering::Effect>> effect_list,
+        std::vector<std::shared_ptr<Rendering::BlockDefinition>> block_list)
 {
     RenderNode newNode;
-    newNode.key = key;
+    newNode.mesh = geo;
+    newNode.effects = effect_list;
+    newNode.uniform_blocks = block_list;
 
     nodes.insert({{key, newNode}});
 }
@@ -45,7 +42,8 @@ void RenderSystem::addNode(int key)
 /* RenderSystem's tick simply draws the whole scene, calling upon the PhysicsSystem 
  * to provide correct world coordinates.
  */
-void RenderSystem::tick(const Subsystems &systems, __attribute__((unused)) const double dt)
+void RenderSystem::tick(__attribute__((unused)) const Subsystems &systems, 
+        __attribute__((unused)) const double dt)
 {
     // Clear the frame buffer, depth buffer, and stencil buffer
     glClearColor(0.0, 0.0, 0.0, 1.0);
@@ -53,13 +51,7 @@ void RenderSystem::tick(const Subsystems &systems, __attribute__((unused)) const
 
     for(auto i = nodes.begin(); i != nodes.end(); ++i)
     {
-        /* In reality the coordinate matrix would be pulled from the physics simulation
-         * and the camera matrix would be pulled from somewhere else... input system?
-         */
-        __attribute__((unused)) glm::mat4 coords = systems.physics->getWorldCoords(i->second.key);
-        __attribute__((unused)) glm::mat4 camera = glm::translate( glm::mat4(1.0), 
-                glm::vec3(0.0, 0.0, 0.0));
-        // i->second.mesh->draw(perspective, camera, coords);
+
     }
 
     // Swap front and rear buffers. In other words, display the just-rendered scene

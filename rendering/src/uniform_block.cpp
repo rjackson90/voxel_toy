@@ -1,4 +1,4 @@
-#include "uniform_block.h"
+#include "uniform.h"
 
 using namespace Rendering;
 

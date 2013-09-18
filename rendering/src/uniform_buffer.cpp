@@ -1,4 +1,4 @@
-#include "uniform_buffer.h"
+#include "uniform.h"
 
 using namespace Rendering;
 
