@@ -19,10 +19,10 @@ void UniformBuffer::bind(GLuint bind_point) const
     glBindBufferBase(GL_UNIFORM_BUFFER, bind_point, buffer);
 }
 
-void UniformBuffer::setBlock(const BlockDefinition &block)
+void UniformBuffer::setBlock(std::shared_ptr<BlockDefinition> block)
 {
     glBindBuffer(GL_UNIFORM_BUFFER, buffer);
-    block.updateBuffer();
+    block->updateBuffer();
 }
 
 

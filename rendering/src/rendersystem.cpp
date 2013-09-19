@@ -4,7 +4,7 @@
  * function pointers for OpenGL functionality REALLY EASY
  */
 RenderSystem::RenderSystem(int width, int height, string title) 
-    : window(GLWindow(width, height, title))
+    : frame_uniforms(), window(GLWindow(width, height, title))
 {
     // Run GLEW init here, after context creation and before just about anything else
     cout << "Getting OpenGL bindings...";
@@ -34,7 +34,7 @@ void RenderSystem::addNode(int key,
     RenderNode newNode;
     newNode.mesh = geo;
     newNode.effects = effect_list;
-    newNode.uniform_blocks = block_list;
+    newNode.object_uniforms = block_list;
 
     nodes.insert({{key, newNode}});
 }
@@ -49,9 +49,30 @@ void RenderSystem::tick(__attribute__((unused)) const Subsystems &systems,
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+    // Update uniforms which are at frame scope
+    for(const auto &uniform : frame_uniforms)
+    {
+        // Pass invalid key to cause errors for buffers which aren't actually frame-scope
+        uniform->getData(systems, -1);
+        uniform->updateBuffer();
+    }
+
+    // Iterate over the RenderNodes
     for(auto i = nodes.begin(); i != nodes.end(); ++i)
     {
+        // Update node-scope uniforms
+        for(const auto &uniform : i->second.object_uniforms)
+        {
+            uniform->getData(systems, i->first);
+            uniform->updateBuffer();
+        }
 
+        // For every effect in the list: bind it then draw the geometry
+        for(const auto &effect : i->second.effects)
+        {
+            effect->bind();
+            i->second.mesh.draw();
+        }
     }
 
     // Swap front and rear buffers. In other words, display the just-rendered scene

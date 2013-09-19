@@ -84,7 +84,7 @@ void Texture::loadTGA(char *buffer)
         return;
     }
     cout << "Image Properties: Origin (" << header.x_origin << " ," << header.y_origin << "), "
-         << header.width << "x" << header.height << " " << header.depth << " bits per pixel, " 
+         << header.width << "x" << header.height << " " << (int)header.depth << " bits per pixel, " 
          << (header.descriptor & 56) << " bits alpha." << endl;
 
     // Skip over the image ID if present, then push data to GPU

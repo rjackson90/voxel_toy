@@ -41,16 +41,16 @@ class RenderSystem : public System
     void addNode(int, const Rendering::Geometry&, 
             std::vector<std::shared_ptr<Rendering::Effect>>,
             std::vector<std::shared_ptr<Rendering::BlockDefinition>>);
-
     glm::mat4 getCameraMatrix() { return glm::mat4(1.0f); }
     glm::mat4 getPerspectiveMatrix() { return perspective; }
 
+    std::vector<std::shared_ptr<Rendering::BlockDefinition>> frame_uniforms;
     private:
     struct RenderNode : Node
     {
         Rendering::Geometry mesh;
         std::vector<std::shared_ptr<Rendering::Effect>> effects;
-        std::vector<std::shared_ptr<Rendering::BlockDefinition>> uniform_blocks;
+        std::vector<std::shared_ptr<Rendering::BlockDefinition>> object_uniforms;
     };
 
     glm::mat4 perspective;

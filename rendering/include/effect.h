@@ -24,6 +24,7 @@ namespace Rendering
     {
     public:
         Effect(GLuint&, GLuint, GLuint&, GLuint);
+        virtual void bind() = 0;
 
     protected:
         GLuint tex_unit_start;
@@ -41,6 +42,7 @@ namespace Rendering
                 const Texture&, const Texture&, 
                 const Sampler&, const Sampler&,
                 const UniformBuffer&, const UniformBuffer&, const UniformBuffer&);
+        virtual void bind();
 
     private:
         const Program &program;
@@ -48,12 +50,15 @@ namespace Rendering
         const Texture &color;
         const Texture &normal;
 
-        const Sampler &linear_blend;
-        const Sampler &nearest;
+        const Sampler &color_sampler;
+        const Sampler &normal_sampler;
 
         const UniformBuffer &transform;
         const UniformBuffer &point_light;
         const UniformBuffer &material;
+
+        GLuint p;
+        GLuint transform_idx, light_idx, material_idx;
     };
 }
 #endif // EFFECT_H

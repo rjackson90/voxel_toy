@@ -1,6 +1,6 @@
 #version 330
 
-in vec2 uv;
+in vec2 UV;
 in vec3 direction;
 
 out vec4 vFragColor;
@@ -32,14 +32,14 @@ layout (std140) uniform TransformBlock
 void main()
 {
     // Transform the normal vector for this fragment
-    vec3 vNormal = normalize(transform.normal * texture(texNormal, uv).rgb);
+    vec3 vNormal = normalize(transform.normal * texture(texNormal, UV).rgb);
 
     // Dot product give diffuse intensity
     float diffuse_intensity = max(0.0, dot(vNormal, direction));
     
     // Multiply intensity by diffuse color from texture
-    vFragColor = diffuse_intensity * texture(texColor, uv);
+    vFragColor = diffuse_intensity * texture(texColor, UV);
 
     // Add in ambient light (maybe don't do this?????)
-    vFragColor += ambientColor;
+    vFragColor += material.ambient;
 }

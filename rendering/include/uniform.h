@@ -27,7 +27,7 @@ namespace Rendering
         UniformBuffer();
         ~UniformBuffer();
         void bind(GLuint) const;
-        void setBlock(const BlockDefinition&);
+        void setBlock(std::shared_ptr<BlockDefinition>);
     
     private:
         GLuint buffer;
