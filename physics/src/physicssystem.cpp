@@ -17,10 +17,10 @@ void PhysicsSystem::tick(__attribute__((unused)) const Subsystems &systems, cons
  * has no past as far as the simulation is concerned, the initial state
  * occupies both state buffers in the RigidBodyNode
  */
-void PhysicsSystem::addNode(int key, State initial)
+void PhysicsSystem::addNode(int key, State &initial)
 {
     initial.recalculate();
-
+    
     RigidBodyNode newNode;
     newNode.key = key;
     newNode.past = initial;

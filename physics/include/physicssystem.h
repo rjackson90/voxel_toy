@@ -65,7 +65,7 @@ class PhysicsSystem : public System
 {
     public:
         virtual void tick(const Subsystems&, const double) override;
-        void addNode(int, State);
+        void addNode(int, State&);
         glm::mat4 getWorldCoords(int);
     private:
     struct RigidBodyNode : Node

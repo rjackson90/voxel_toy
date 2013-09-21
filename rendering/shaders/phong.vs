@@ -1,27 +1,34 @@
 #version 330
 
-in vec3 vVertex;
-in vec3 vNormal;
-in vec3 vColor;
-in vec2 vUV;
+in vec3 position;
+in vec2 uv;
 
 out vec2 UV;
-smooth out vec3 vSmoothLightDir;
+out vec3 direction;
 
-uniform mat4 mvp;
-uniform mat4 mv;
-uniform vec3 lightPosition;
+layout (std140) uniform TransformBlock
+{
+    mat4 mvp;
+    mat4 mv;
+    mat3 normal;
+}transform;
+
+layout (std140) uniform PointLight
+{
+    vec3 position;
+    vec4 intensity;
+}light;
 
 void main()
 {
     // Get vertex position in eye coordinates
-    vec4 vPos4 = mv * vec4(vVertex, 1.0);
+    vec4 vPos4 = transform.mv * vec4(position, 1.0);
     vec3 vPos3 = vPos4.xyz / vPos4.w;
 
     // Get vector to light source
-    vSmoothLightDir = normalize(lightPosition - vPos3);
+    direction = normalize(light.position - vPos3);
 
     // Transform the geometry
-    gl_Position = mvp * vec4(vVertex, 1.0f);
-    UV = vUV;
+    gl_Position = transform.mvp * vec4(position, 1.0f);
+    UV = uv;
 }

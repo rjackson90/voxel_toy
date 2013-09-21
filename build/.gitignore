@@ -1,0 +1,6 @@
+# Ignore module directories
+bin
+core
+exec
+physics
+rendering

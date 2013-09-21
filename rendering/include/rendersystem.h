@@ -1,16 +1,30 @@
 #ifndef RENDER_SYSTEM_H
 #define RENDER_SYSTEM_H
 
+// System headers
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
+// Core headers
 #include "dispatch.h"
 #include "system.h"
-#include "glwindow.h"
-#include "meshes.h"
 
+// Rendering headers
+#include "glwindow.h"
+#include "effect.h"
+#include "geometry.h"
+#include "error.h"
+
+// Forward declarations
+namespace Rendering
+{
+    class Geometry;
+    class Effect;
+    struct BlockDefinition;
+}
 struct Subsystems;
 
 /* The render system is rather simple.
@@ -25,12 +39,22 @@ class RenderSystem : public System
     public:
     RenderSystem( int, int, string);
     virtual void tick(const Subsystems &, const double)override;
-    void addNode(int, Mesh*);
+    void addNode(int, const Rendering::Geometry&, 
+            std::vector<std::shared_ptr<Rendering::Effect>>,
+            std::vector<std::shared_ptr<Rendering::BlockDefinition>>);
+    glm::mat4 getCameraMatrix() { return glm::mat4(1.0f); }
+    glm::mat4 getPerspectiveMatrix() { return perspective; }
 
+    std::vector<std::shared_ptr<Rendering::BlockDefinition>> frame_uniforms;
     private:
     struct RenderNode : Node
     {
-        Mesh* mesh = nullptr;
+        RenderNode(const Rendering::Geometry&, 
+                std::vector<std::shared_ptr<Rendering::Effect>> &,
+                std::vector<std::shared_ptr<Rendering::BlockDefinition>>&);
+        const Rendering::Geometry& mesh;
+        std::vector<std::shared_ptr<Rendering::Effect>> effects;
+        std::vector<std::shared_ptr<Rendering::BlockDefinition>> object_uniforms;
     };
 
     glm::mat4 perspective;
