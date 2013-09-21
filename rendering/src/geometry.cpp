@@ -18,7 +18,7 @@ Geometry::~Geometry()
     glDeleteBuffers(2, &buffers[0]);
 }
 
-void Geometry::draw()
+void Geometry::draw() const
 {
     glBindVertexArray(vao);
     glDrawElements(draw_mode, index_count, GL_UNSIGNED_SHORT, (GLvoid*) 0);

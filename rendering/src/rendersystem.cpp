@@ -1,5 +1,7 @@
 #include "rendersystem.h"
 
+using namespace Rendering;
+
 /* The constuctor initializes GLEW, a critical library which makes loading
  * function pointers for OpenGL functionality REALLY EASY
  */
@@ -24,18 +26,15 @@ RenderSystem::RenderSystem(int width, int height, string title)
     glEnable(GL_DEPTH_TEST);
 }
 
+
 /* This function adds another node to the batch
  */
 void RenderSystem::addNode(int key, 
-        const Rendering::Geometry& geo, 
-        std::vector<std::shared_ptr<Rendering::Effect>> effect_list,
-        std::vector<std::shared_ptr<Rendering::BlockDefinition>> block_list)
+        const Geometry& geo, 
+        vector<shared_ptr<Effect>> effect_list, 
+        vector<shared_ptr<BlockDefinition>> block_list)
 {
-    RenderNode newNode;
-    newNode.mesh = geo;
-    newNode.effects = effect_list;
-    newNode.object_uniforms = block_list;
-
+    RenderNode newNode(geo, effect_list, block_list);
     nodes.insert({{key, newNode}});
 }
 
@@ -71,10 +70,21 @@ void RenderSystem::tick(__attribute__((unused)) const Subsystems &systems,
         for(const auto &effect : i->second.effects)
         {
             effect->bind();
+            glQuitOnError();
             i->second.mesh.draw();
+            glQuitOnError();
         }
     }
 
     // Swap front and rear buffers. In other words, display the just-rendered scene
     window.swap();
+    
+    // Check for and report any errors that occured in the frame just completed
+    glQuitOnError();
+}
+
+RenderSystem::RenderNode::RenderNode(const Geometry& geo, 
+        vector<shared_ptr<Effect>>& effect_stack, vector<shared_ptr<BlockDefinition>>& blocks) :
+    mesh(geo), effects(effect_stack), object_uniforms(blocks)
+{
 }

@@ -30,7 +30,7 @@ void TransformBlock::updateBuffer() const
     auto normal_matrix_ptr = value_ptr(normal_matrix);
 
     // Create buffer to hold data
-    float buffer[sizeof(mat4) * 3];
+    float buffer[(sizeof(mat4) * 3) / sizeof(float)];
 
     // Copy values into buffer (following std140 layout rules)
     auto next = std::copy(mvp_ptr, mvp_ptr + 16, buffer);
@@ -39,6 +39,7 @@ void TransformBlock::updateBuffer() const
 
     // Push buffer to GPU
     glBufferData(GL_UNIFORM_BUFFER, sizeof(buffer), buffer, GL_DYNAMIC_DRAW);
+    glQuitOnError();
 }
 
 void PointLight::updateBuffer() const
@@ -51,7 +52,7 @@ void PointLight::updateBuffer() const
     auto in_ptr = value_ptr(intensity);
 
     // Create a buffer to hold data
-    float buffer[sizeof(vec4) * 2];
+    float buffer[(sizeof(vec4) * 2) / sizeof(float)];
 
     // Copy values into buffer (following std140 layout rules)
     auto next = std::copy(pos_ptr, pos_ptr + 3, buffer);
@@ -60,6 +61,7 @@ void PointLight::updateBuffer() const
 
     // Push buffer to GPU
     glBufferData(GL_UNIFORM_BUFFER, sizeof(buffer), buffer, GL_DYNAMIC_DRAW);
+    glQuitOnError();
 }
 
 void Material::updateBuffer() const
@@ -74,7 +76,7 @@ void Material::updateBuffer() const
     auto shiny_ptr = &shininess;
 
     // Create a buffer to hold data
-    float buffer[sizeof(vec4) * 3 + sizeof(float)];
+    float buffer[(sizeof(vec4) * 3 + sizeof(float)) / sizeof(float)];
 
     // Copy values into buffer (following std140 layout rules
     auto next = std::copy(am_ptr, am_ptr + 4, buffer);
@@ -84,4 +86,5 @@ void Material::updateBuffer() const
 
     // Push buffer to GPU
     glBufferData(GL_UNIFORM_BUFFER, sizeof(buffer), buffer, GL_DYNAMIC_DRAW);
+    glQuitOnError();
 }

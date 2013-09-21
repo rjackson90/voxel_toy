@@ -28,13 +28,13 @@ void PhongShading::bind()
     program.bind();
 
     // Bind textures and samplers to texture units
-    glActiveTexture(tex_unit_start);
+    glActiveTexture(tex_unit_start + 0);
     color.bind();
-    color_sampler.bind(tex_unit_start);
+    color_sampler.bind(0);
 
     glActiveTexture(tex_unit_start + 1);
     normal.bind();
-    normal_sampler.bind(tex_unit_start + 1);
+    normal_sampler.bind(1);
 
     // Bind program uniform blocks and buffers to binding points
     glUniformBlockBinding(p, transform_idx, uniform_binding_start);

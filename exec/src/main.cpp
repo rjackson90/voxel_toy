@@ -72,8 +72,13 @@ int main()
     Rendering::UniformBuffer light_buffer;
     Rendering::UniformBuffer material_buffer;
 
+    // Bind blocks to the buffers
+    transform_buffer.setBlock(transform);
+    light_buffer.setBlock(point_light);
+    material_buffer.setBlock(material);
+
     // Wrap it all up into an Effect
-    GLuint texunit = 0, bindpoint = 0;
+    GLuint texunit = GL_TEXTURE0, bindpoint = 0;
     std::shared_ptr<Rendering::PhongShading>phong_shading(
             new Rendering::PhongShading(
                 texunit, bindpoint, 

@@ -22,7 +22,7 @@ namespace Rendering
 
         void genTestCube();
 
-        void draw();
+        void draw() const;
         void setDrawMode(GLenum);
         void loadData(Vertex*, int, short*, int);
 

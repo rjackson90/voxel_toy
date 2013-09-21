@@ -16,6 +16,7 @@
 #include "glwindow.h"
 #include "effect.h"
 #include "geometry.h"
+#include "error.h"
 
 // Forward declarations
 namespace Rendering
@@ -48,7 +49,10 @@ class RenderSystem : public System
     private:
     struct RenderNode : Node
     {
-        Rendering::Geometry mesh;
+        RenderNode(const Rendering::Geometry&, 
+                std::vector<std::shared_ptr<Rendering::Effect>> &,
+                std::vector<std::shared_ptr<Rendering::BlockDefinition>>&);
+        const Rendering::Geometry& mesh;
         std::vector<std::shared_ptr<Rendering::Effect>> effects;
         std::vector<std::shared_ptr<Rendering::BlockDefinition>> object_uniforms;
     };

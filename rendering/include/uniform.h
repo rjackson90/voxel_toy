@@ -12,6 +12,9 @@ struct Subsystems;
 // Core headers
 #include "dispatch.h"
 
+// Rendering headers
+#include "error.h"
+
 namespace Rendering
 {
     // Forward declaration
