@@ -13,10 +13,10 @@
 #include "system.h"
 
 // Rendering headers
-#include "glwindow.h"
 #include "effect.h"
 #include "geometry.h"
 #include "error.h"
+#include "glwindow.h"
 
 // Forward declarations
 namespace Rendering
@@ -24,6 +24,7 @@ namespace Rendering
     class Geometry;
     class Effect;
     struct BlockDefinition;
+    class GLWindow;
 }
 struct Subsystems;
 
@@ -37,7 +38,7 @@ struct Subsystems;
 class RenderSystem : public System
 {
     public:
-    RenderSystem( int, int, string);
+    RenderSystem(int, int, const std::string&, const std::vector<std::pair<SDL_GLattr, int>>&);
     virtual void tick(const Subsystems &, const double)override;
     void addNode(int, const Rendering::Geometry&, 
             std::vector<std::shared_ptr<Rendering::Effect>>,
@@ -57,9 +58,9 @@ class RenderSystem : public System
         std::vector<std::shared_ptr<Rendering::BlockDefinition>> object_uniforms;
     };
 
+    Rendering::GLWindow window;
     glm::mat4 perspective;
-    GLWindow window;
-    unordered_map<int, RenderNode> nodes;
+    std::unordered_map<int, RenderNode> nodes;
 };
 
 #endif /* RENDER_SYSTEM_H */

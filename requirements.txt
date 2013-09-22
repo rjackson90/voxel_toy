@@ -7,3 +7,9 @@ REQUIRED LIBRARIES
     - UnitTest++ - A unit testing framework for C++ designed with game development in mind. Project is
       hosted on SourceForge. Download and build from source, copy libUnitTest++.a to /usr/lib, and the
       headers (with platform extensions) to /usr/include.
+    - SDL version 2.0 - SDL stands for Simple DirectMedia Layer, it provides an interface to perform
+      platform-dependent operations such as creating windows, interacting with audio resources, and
+      handling keyboard, mouse, and game pad input. Package libsdl2-dev is not available in the 
+      Ubuntu archives until 13.10 Saucy Salamander, so in the meantime download from libsdl.org and
+      compile from source. It is strongly recommended that if you download the library from the web,
+      you verify the GPG signature of the source code before building the library.

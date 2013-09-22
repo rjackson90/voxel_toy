@@ -6,35 +6,36 @@
 #ifndef DISPATCH_H
 #define DISPATCH_H
 
+// SDL includes
+#define SDL_MAIN_HANDLED
+#include <SDL2/SDL.h>
+
+// Other system includes
 #include <GL/glew.h>
 #include <string>
-#include <time.h>
 #include <iostream>
-#include <signal.h>
 #include <memory>
 
+// Subsystem includes
 class RenderSystem;
-
 #include "rendersystem.h"
 #include "physicssystem.h"
 
-// This function wraps the highest-available resolution timer provided by the platform
-double hires_time_seconds();
+// Core includes
+#include "timer.h"
 
 class Dispatch
 {
     public:
     Dispatch();
+    ~Dispatch();
     void run(const Subsystems&);
 
-    // UNIX only. Used to handle Ctrl+C events (possibly others?)
-    static void signal_handler(int);
-
     // If the program needs to quit, call this method
-    static void quit() { isRunning = false; }
+    void quit();
 
     private:
-    static bool isRunning;
+    bool isRunning;
 };
 
 /* This struct holds unique pointers to the various subsystems. 

@@ -44,10 +44,15 @@ endforeach()
 add_executable(DeepCore ${MODULE_LIBS} exec/src/main.cpp)
 add_executable(DeepCoreTests ${MODULE_LIBS} ${MODULE_TEST_LIBS} exec/src/tests.cpp)
 
-# Link the source objects to finish building the executables
-set(LIBRARIES GLEW GLU GL X11)
-target_link_libraries(DeepCore ${LIBRARIES} )
-target_link_libraries(DeepCoreTests ${LIBRARIES} UnitTest++)
+# Find required libraries
+include(FindPkgConfig)
+pkg_check_modules(SYSTEM_LIBS REQUIRED glew glu gl sdl2)
+include_directories(${SYSTEM_LIBS_INCLUDE_DIRS})
+
+# Link executables using found system libraries
+target_link_libraries(DeepCore ${SYSTEM_LIBS_LIBRARIES})
+target_link_libraries(DeepCoreTests ${SYSTEM_LIBS_LIBRARIES} UnitTest++)
+
 
 # Run the tests after they (successfully) build
 add_custom_target(tests ALL DeepCoreTests 

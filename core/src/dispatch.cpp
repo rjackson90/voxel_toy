@@ -1,38 +1,37 @@
 #include "dispatch.h"
 
-/* 'Magic Bool' which keeps track of program state.
- */
-bool Dispatch::isRunning = false;
-
-/* UNIX ONLY
- * This function handles signals from the platform, such as SIGINT, SIGTERM, etc.
- * The most obvious benefit is that Ctrl+C causes a clean shutdown instead of an abort
- */
-void Dispatch::signal_handler(int signum)
-{
-    switch(signum)
-    {
-        case SIGINT:
-            std::cout << "Recieved SIGINT: Shutting down." << std::endl;
-            Dispatch::isRunning = false;
-            break;
-        default:
-            std::cout << "Recieved signal for which no action is defined: " << signum << std::endl;
-    }
-        
-}
-
 /* The constructor for the Dispatch object simply initializes the platform's
  * high resolution timer.
  */
-Dispatch::Dispatch()
+Dispatch::Dispatch() : isRunning(true)
 {
-    std::cout << "Starting up..." << std::endl;
+    // Initialize SDL
+    std::cout << "Starting up...";
+    SDL_SetMainReady();
+    if(SDL_Init(SDL_INIT_VIDEO) != 0)
+    {
+        std::cout << " FAIL: " << SDL_GetError() << std::endl;
+        isRunning = false;
+        return;
+    }
+    std::cout << " OK!" << std::endl;
+}
 
-    timespec ts;
-    clock_getres(CLOCK_MONOTONIC_RAW, &ts);
-    double time_sec = ts.tv_sec + (ts.tv_nsec * 0.000000001);
-    std::cout << "Resolution of CLOCK_MONOTONIC_RAW is: " << time_sec << std::endl;
+Dispatch::~Dispatch()
+{
+    // Clean up SDL
+    SDL_Quit();
+}
+
+/* This method pushes an SQL_QUIT event onto the event queue, signalling the program to 
+ * gracefully terminate ASAP
+ */
+void Dispatch::quit()
+{
+    SDL_Event *quit = new SDL_Event();
+    quit->type = SDL_QUIT;
+    SDL_PushEvent(quit);
+    delete quit;
 }
 
 /* This member function acts as the "main loop" for the game. The while loop in this function
@@ -46,14 +45,17 @@ void Dispatch::run(const Subsystems &systems)
     double t = 0.0;
     const double dt = 0.015;
 
-    double lastTime = hires_time_seconds();
+    Core::Timer frame_timer;
+    frame_timer.start();
+
     double accumulator = 0.0;
 
-    isRunning = true;
+    SDL_Event ev_buffer;
+    
     while(isRunning)
     {
-        double now = hires_time_seconds();
-        double elapsed = now - lastTime;
+        double elapsed = frame_timer.time_since_start();
+        frame_timer.start();
         
         /* Accumulate time between frames. Think of this as a 'Time Supplier'.
          * Accumulator growth capped at 250ms, at which point frames will be skipped. This is 
@@ -61,12 +63,18 @@ void Dispatch::run(const Subsystems &systems)
          */
         if ( elapsed > 0.250 )
             elapsed = 0.250;
-        lastTime = now;
         accumulator += elapsed;
 
-        /* NOT IMPLEMENTED
-         * Poll input devices in sync with screen draws
-         */
+        // Poll SDL Events, dispatch or handle as appropriate
+        while(SDL_PollEvent(&ev_buffer))
+        {
+            switch(ev_buffer.type)
+            {
+                case SDL_QUIT:
+                    isRunning=false;
+                    return;
+            }
+        }
 
         /* This loop consumes time from the accumulator in dt sized chunks. Most of the time,
          * the physics simulation will be run once per drawn frame, but occaisonally we need to 
@@ -93,13 +101,4 @@ void Dispatch::run(const Subsystems &systems)
          */
         systems.render->tick(systems, dt);
     }
-}
-
-/* This function provides a wrapper around the platform-dependent high resolution timer
- */
-double hires_time_seconds()
-{
-    static timespec ts;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
-    return (ts.tv_sec * 1.0) + (ts.tv_nsec / 1000000000.0);
 }
