@@ -2,32 +2,57 @@
 
 using namespace std;
 
-bool _check_gl_error(const char *file, int line)
+void FormatDebugOutputARB(string& outString, GLenum source, GLenum type,
+        GLuint id, GLenum severity, const char *msg)
 {
-    GLenum error = GL_NO_ERROR;
-    bool no_error = true;
+    stringstream message;
+    message << "OpenGL: " << msg << " [";
 
-    while((error = glGetError()) != GL_NO_ERROR)
+    // Push error source into stream
+    message << " source=";
+    switch(source)
     {
-        no_error = false;
-        string errText;
-
-        switch(error)
-        {
-            case GL_INVALID_OPERATION:  errText="INVALID_OPERATION";    break;
-            case GL_INVALID_ENUM:       errText="INVALID_ENUM";         break;
-            case GL_INVALID_VALUE:      errText="INVALID_VALUE";        break;
-            case GL_OUT_OF_MEMORY:      errText="OUT_OF_MEMORY";        break;
-            case GL_INVALID_FRAMEBUFFER_OPERATION:  errText="INVALID_FRAMEBUFFER_OPERATION";    break;
-        }
-
-        cerr << "GL_" << errText << " at \"" << file << "\":" << line << endl;
+    case GL_DEBUG_SOURCE_API_ARB:               message << "API";              break;
+    case GL_DEBUG_SOURCE_WINDOW_SYSTEM_ARB:     message << "WINDOW_SYSTEM";    break;
+    case GL_DEBUG_SOURCE_SHADER_COMPILER_ARB:   message << "SHADER_COMPILER";  break;
+    case GL_DEBUG_SOURCE_THIRD_PARTY_ARB:        message << "THIRD_PARTY";      break;
+    case GL_DEBUG_SOURCE_APPLICATION_ARB:       message << "APPLICATION";      break;
+    case GL_DEBUG_SOURCE_OTHER_ARB:             message << "OTHER";            break;
+    default:   message << "UNDEFINED(0x" << hex << source << dec << ")";  break;
     }
 
-    return no_error;
+    // Push error type into stream
+    message << " type=";
+    switch(type)
+    {
+    case GL_DEBUG_TYPE_ERROR_ARB:               message << "ERROR";                 break;
+    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_ARB: message << "DEPRECATED_BEHAVIOR";   break;
+    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB:  message << "UNDEFINED_BEHAVIOR";    break;
+    case GL_DEBUG_TYPE_PORTABILITY_ARB:         message << "PORTABILITY";           break;
+    case GL_DEBUG_TYPE_PERFORMANCE_ARB:         message << "PERFORMANCE";           break;
+    case GL_DEBUG_TYPE_OTHER_ARB:               message << "OTHER";                 break;
+    default:   message << "UNDEFINED(0x" << hex << type << dec << ")";
+    }
+
+    // Push severity into stream
+    message << " severity=";
+    switch(severity)
+    {
+    case GL_DEBUG_SEVERITY_HIGH_ARB:    message << "HIGH";      break;
+    case GL_DEBUG_SEVERITY_MEDIUM_ARB:  message << "MEDIUM";    break;
+    case GL_DEBUG_SEVERITY_LOW_ARB:     message << "LOW";       break;
+    }
+
+    // Finish up the string
+    message << " id=" << id << " ]";
+    outString = message.str();
 }
 
-void _quit_false(bool condition)
+void DebugCallBackARB(GLenum source, GLenum type, GLuint id, GLenum severity, 
+        __attribute__((unused))GLsizei length, const GLchar *message, 
+        __attribute__((unused))GLvoid *userParam)
 {
-    if(!condition) Dispatch::quit();
+    string text;
+    FormatDebugOutputARB(text, source, type, id, severity, message);
+    cerr << text << endl;
 }

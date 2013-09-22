@@ -59,6 +59,18 @@ GLWindow::GLWindow(int width, int height, const std::string& title,
         std::endl;
     std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << " GLSL Version " << 
         glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+
+    // Register a callback to handle debug output, if supported
+    std::cout << "Checking for GL_ARB_debug_output support...";
+    if(GLEW_ARB_debug_output)
+    {
+        std::cout << " OK!" << std::endl;
+        glDebugMessageCallbackARB(DebugCallBackARB, nullptr);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+    }else {
+        std::cout << " NOT SUPPORTED" << std::endl;
+    }
+    
 }
 
 GLWindow::~GLWindow()

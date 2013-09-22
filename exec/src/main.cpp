@@ -1,6 +1,5 @@
 #include <GL/glew.h>
 #include <iostream>
-#include <signal.h>
 
 #include "dispatch.h"
 
@@ -39,10 +38,6 @@ int main()
                 {SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE}
                 })
             );
-
-    // Register signal handler with the system
-    cout << "Setting system signal handler." << endl;
-    signal(SIGINT, Dispatch::signal_handler);
 
     // Generate geometry
     Rendering::Geometry cube;

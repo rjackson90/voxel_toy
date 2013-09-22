@@ -31,11 +31,8 @@ class Dispatch
     ~Dispatch();
     void run(const Subsystems&);
 
-    // UNIX only. Used to handle Ctrl+C events (possibly others?)
-    static void signal_handler(int);
-
     // If the program needs to quit, call this method
-    static void quit() { isRunning = false; }
+    void quit();
 
     private:
     static bool isRunning;

@@ -39,7 +39,6 @@ void TransformBlock::updateBuffer() const
 
     // Push buffer to GPU
     glBufferData(GL_UNIFORM_BUFFER, sizeof(buffer), buffer, GL_DYNAMIC_DRAW);
-    glQuitOnError();
 }
 
 void PointLight::updateBuffer() const
@@ -61,7 +60,6 @@ void PointLight::updateBuffer() const
 
     // Push buffer to GPU
     glBufferData(GL_UNIFORM_BUFFER, sizeof(buffer), buffer, GL_DYNAMIC_DRAW);
-    glQuitOnError();
 }
 
 void Material::updateBuffer() const
@@ -86,5 +84,4 @@ void Material::updateBuffer() const
 
     // Push buffer to GPU
     glBufferData(GL_UNIFORM_BUFFER, sizeof(buffer), buffer, GL_DYNAMIC_DRAW);
-    glQuitOnError();
 }

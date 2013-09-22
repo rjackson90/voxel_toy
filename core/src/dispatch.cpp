@@ -4,24 +4,6 @@
  */
 bool Dispatch::isRunning = true;
 
-/* UNIX ONLY
- * This function handles signals from the platform, such as SIGINT, SIGTERM, etc.
- * The most obvious benefit is that Ctrl+C causes a clean shutdown instead of an abort
- */
-void Dispatch::signal_handler(int signum)
-{
-    switch(signum)
-    {
-        case SIGINT:
-            std::cout << "Recieved SIGINT: Shutting down." << std::endl;
-            Dispatch::isRunning = false;
-            break;
-        default:
-            std::cout << "Recieved signal for which no action is defined: " << signum << std::endl;
-    }
-        
-}
-
 /* The constructor for the Dispatch object simply initializes the platform's
  * high resolution timer.
  */
@@ -45,6 +27,17 @@ Dispatch::~Dispatch()
     SDL_Quit();
 }
 
+/* This method pushes an SQL_QUIT event onto the event queue, signalling the program to 
+ * gracefully terminate ASAP
+ */
+void Dispatch::quit()
+{
+    SDL_Event *quit = new SDL_Event();
+    quit->type = SDL_QUIT;
+    SDL_PushEvent(quit);
+    delete quit;
+}
+
 /* This member function acts as the "main loop" for the game. The while loop in this function
  * determines the start and stop times for each tick, and is responsible for triggering each
  * subsystem in the proper order. Interpolation of game state also happens here to account for 
@@ -58,8 +51,9 @@ void Dispatch::run(const Subsystems &systems)
 
     double lastTime = hires_time_seconds();
     double accumulator = 0.0;
+
+    SDL_Event ev_buffer;
     
-    std::cout << "loop status: " << isRunning << std::endl;
     while(isRunning)
     {
         double now = hires_time_seconds();
@@ -74,9 +68,16 @@ void Dispatch::run(const Subsystems &systems)
         lastTime = now;
         accumulator += elapsed;
 
-        /* NOT IMPLEMENTED
-         * Poll input devices in sync with screen draws
-         */
+        // Poll SDL Events, dispatch or handle as appropriate
+        while(SDL_PollEvent(&ev_buffer))
+        {
+            switch(ev_buffer.type)
+            {
+                case SDL_QUIT:
+                    isRunning=false;
+                    return;
+            }
+        }
 
         /* This loop consumes time from the accumulator in dt sized chunks. Most of the time,
          * the physics simulation will be run once per drawn frame, but occaisonally we need to 

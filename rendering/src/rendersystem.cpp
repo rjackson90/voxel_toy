@@ -59,17 +59,12 @@ void RenderSystem::tick(__attribute__((unused)) const Subsystems &systems,
         for(const auto &effect : i->second.effects)
         {
             effect->bind();
-            glQuitOnError();
             i->second.mesh.draw();
-            glQuitOnError();
         }
     }
 
     // Swap front and rear buffers.
     window.swap();
-    
-    // Check for and report any errors that occured in the frame just completed
-    glQuitOnError();
 }
 
 RenderSystem::RenderNode::RenderNode(const Geometry& geo, 

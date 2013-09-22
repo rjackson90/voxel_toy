@@ -7,6 +7,9 @@
 #include <iostream>
 #include <vector>
 
+// Rendering includes
+#include "error.h"
+
 namespace Rendering
 {
     class GLWindow
