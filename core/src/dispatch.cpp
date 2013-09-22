@@ -1,24 +1,20 @@
 #include "dispatch.h"
 
-/* 'Magic Bool' which keeps track of program state.
- */
-bool Dispatch::isRunning = true;
-
 /* The constructor for the Dispatch object simply initializes the platform's
  * high resolution timer.
  */
-Dispatch::Dispatch()
+Dispatch::Dispatch() : isRunning(true)
 {
-    std::cout << "Starting up..." << std::endl;
-
     // Initialize SDL
+    std::cout << "Starting up...";
     SDL_SetMainReady();
-    SDL_Init(SDL_INIT_VIDEO);
-
-    timespec ts;
-    clock_getres(CLOCK_MONOTONIC_RAW, &ts);
-    double time_sec = ts.tv_sec + (ts.tv_nsec * 0.000000001);
-    std::cout << "Resolution of CLOCK_MONOTONIC_RAW is: " << time_sec << std::endl;
+    if(SDL_Init(SDL_INIT_VIDEO) != 0)
+    {
+        std::cout << " FAIL: " << SDL_GetError() << std::endl;
+        isRunning = false;
+        return;
+    }
+    std::cout << " OK!" << std::endl;
 }
 
 Dispatch::~Dispatch()
@@ -49,15 +45,17 @@ void Dispatch::run(const Subsystems &systems)
     double t = 0.0;
     const double dt = 0.015;
 
-    double lastTime = hires_time_seconds();
+    Core::Timer frame_timer;
+    frame_timer.start();
+
     double accumulator = 0.0;
 
     SDL_Event ev_buffer;
     
     while(isRunning)
     {
-        double now = hires_time_seconds();
-        double elapsed = now - lastTime;
+        double elapsed = frame_timer.time_since_start();
+        frame_timer.start();
         
         /* Accumulate time between frames. Think of this as a 'Time Supplier'.
          * Accumulator growth capped at 250ms, at which point frames will be skipped. This is 
@@ -65,7 +63,6 @@ void Dispatch::run(const Subsystems &systems)
          */
         if ( elapsed > 0.250 )
             elapsed = 0.250;
-        lastTime = now;
         accumulator += elapsed;
 
         // Poll SDL Events, dispatch or handle as appropriate
@@ -104,13 +101,4 @@ void Dispatch::run(const Subsystems &systems)
          */
         systems.render->tick(systems, dt);
     }
-}
-
-/* This function provides a wrapper around the platform-dependent high resolution timer
- */
-double hires_time_seconds()
-{
-    static timespec ts;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
-    return (ts.tv_sec * 1.0) + (ts.tv_nsec / 1000000000.0);
 }
