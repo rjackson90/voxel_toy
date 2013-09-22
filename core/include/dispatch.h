@@ -6,6 +6,9 @@
 #ifndef DISPATCH_H
 #define DISPATCH_H
 
+#define SDL_MAIN_HANDLED
+#include <SDL2/SDL.h>
+
 #include <GL/glew.h>
 #include <string>
 #include <time.h>
@@ -25,6 +28,7 @@ class Dispatch
 {
     public:
     Dispatch();
+    ~Dispatch();
     void run(const Subsystems&);
 
     // UNIX only. Used to handle Ctrl+C events (possibly others?)

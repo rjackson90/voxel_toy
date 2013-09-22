@@ -1,178 +1,79 @@
 #include "glwindow.h"
 
-/* These attributes determine what kind of window we request from the system on startup.
- * A future improvement is to expose this array to the user through an appropriate GUI, allowing
- * us to request a new rendering context on demand.
- */
-int GLWindow::attribs[] = 
-{
-    GLX_X_RENDERABLE    , True,
-    GLX_DRAWABLE_TYPE   , GLX_WINDOW_BIT,
-    GLX_RENDER_TYPE     , GLX_RGBA_BIT,
-    GLX_X_VISUAL_TYPE   , GLX_TRUE_COLOR,
-    GLX_CONFIG_CAVEAT   , GLX_NONE,
-    GLX_RED_SIZE        , 8,
-    GLX_GREEN_SIZE      , 8,
-    GLX_BLUE_SIZE       , 8,
-    GLX_ALPHA_SIZE      , 8,
-    GLX_DEPTH_SIZE      , 24,
-    GLX_STENCIL_SIZE    , 8,
-    GLX_DOUBLEBUFFER    , True,
-    GLX_SAMPLE_BUFFERS  , 0,
-    GLX_SAMPLES         , 0,
-    None
-};
+using namespace Rendering;
 
-/* This default constructor provides reasonable settings */
-GLWindow::GLWindow()
+GLWindow::GLWindow(int width, int height, const std::string& title, 
+        const std::vector<std::pair<SDL_GLattr, int>> &attribs)
 {
-    width = 1024;
-    height = 768;
-    title = "";
-
-    cout << "Requested a standard window, 1024x768, no title" << endl;
-    init();
-}
-
-/* Full constructor demands window dimmensions and title */
-GLWindow::GLWindow(int width, int height, string title)
-{
-    this->width = width;
-    this->height = height;
-    this->title = title;
-    
-    cout << "Requested a non-standard window, " << width << 'x' << height << ", '" << title
-         << "'" << endl;
-    init();
-}
-
-/* This is where the real setup work happens */
-void GLWindow::init()
-{
-    //Initialize context table
-    contexts = new GLXContext[MAX_THREADS];
-    for(int i = 0; i < MAX_THREADS; i++)
+    // Iterate over user-supplied attributes
+    for(const auto &pair : attribs)
     {
-        contexts[i] = NULL;
-    }
-
-    // Connect to the X server and get a pointer to a Display
-    display = XOpenDisplay(0);
-    int screen = DefaultScreen(display);
-    XSync(display, False);
-    cout << "Connected to X11 server." << endl;
-
-    // Get a list of available GLXFBConfigs matching the filter parameters
-    // Take the first one, because all members of the list meet requirements
-    // NOT IMPLEMENTED: Take the *best* one, might be able to get better AA or colors
-    int count = 0;
-    GLXFBConfig *configs = glXChooseFBConfig(display, screen, attribs, &count);
-    config = configs[0];
-    XSync(display, False);
-    cout << count << " display profiles matched requested settings, using the first one." << endl;
-    
-    XFree(configs);
-
-
-    // Get an X Visual from the selected GLXFBConfig
-    XVisualInfo *visual = glXGetVisualFromFBConfig(display, config);
-    Window root = RootWindow(display, visual->screen);
-    XSync(display, False);
-    if(visual != NULL)
-        cout << "Got a valid X11 Visual from the chosen framebuffer, ID: 0x" << hex 
-             << visual->visualid << dec << endl;
-    else
-        cout << "WARNING: retrieved an invalid X11 Visual from chosed framebuffer" << endl;
-
-    // Create an XSetWindowAttributes object and assign it a Colormap
-    XSetWindowAttributes swa;
-    swa.colormap =  cmap  = XCreateColormap(display, root, visual->visual, AllocNone);
-    swa.background_pixmap = None;
-    swa.border_pixel      = 0;
-    swa.event_mask        = StructureNotifyMask;
-    XSync(display, False);
-    cout << "Created colormap" << endl;
-
-    // Create an X Window using the previously created Visual and XSetWindowAttributes objects
-    window = XCreateWindow(display, root, 0, 0, width, height, 0, visual->depth, 
-                           InputOutput, visual->visual,
-                           CWBorderPixel | CWColormap | CWEventMask, &swa);
-    XSync(display, False);
-    if(window)
-        cout << "Created new X11 window, onscreen" << endl;
-    else
-        cout << "WARNING: Failed to create new X11 window" << endl;
-    
-    XStoreName(display, window, title.c_str());
-    XMapWindow(display, window);
-    XFree(visual);
-
-    // Create a GLXWindow using the GLXFBConfig and Window objects
-    glWindow = glXCreateWindow(display, config, window, NULL);
-    XSync(display, False);
-    if(glWindow)
-        cout << "Created a new GLX window" << endl;
-    else
-        cout << "WARNING: Failed to create a GLX window" << endl;
-}
-
-/* The destructor is responsible for cleaning up *every* OpenGL context, as well as the window */
-GLWindow::~GLWindow()
-{
-    cout << "Destroying GLWindow..." << endl;
-    makeCurrent(true);
-
-    for(int i = 0; i < MAX_THREADS; i++)
-    {
-        if(contexts[i] != NULL)
+        // Set the attribute
+        if(SDL_GL_SetAttribute(pair.first, pair.second) < 0)
         {
-            cout << "\t...destroying GLXContext " << i << endl;
-            glXDestroyContext(display, contexts[i]);
-            contexts[i] = NULL;
+            // An error occured
+            std::cerr << "Error: " << SDL_GetError() << std::endl;
         }
     }
-    delete[] contexts;
 
-    glXDestroyWindow(display, glWindow);
-    XDestroyWindow(display, window);
-    XFreeColormap(display, cmap);
-    XCloseDisplay(display);
-    cout << "Done" << endl;
-}
-
-/* This class supports the existence of multiple threads, each having its own OpenGL context.
- * Such things can be useful when it comes to tasks like texture loading.
- * The class destructor must then clean up all of these contexts
- */
-void GLWindow::makeCurrent(bool disconnect)
-{
-    if(disconnect)
+    // Create a window, checking for errors
+    std::cout << "Creating a new window...";
+    window = SDL_CreateWindow(
+            title.c_str(),
+            SDL_WINDOWPOS_UNDEFINED,
+            SDL_WINDOWPOS_UNDEFINED,
+            width,
+            height,
+            SDL_WINDOW_OPENGL
+            );
+    if(window == nullptr || window == NULL)
     {
-        glXMakeContextCurrent(display, None, None, NULL);
+        std::cout << " FAIL: " << SDL_GetError() << std::endl;
         return;
     }
+    std::cout << " OK!" << std::endl;
 
-    int id = (unsigned long)pthread_self % MAX_THREADS;
-    if(contexts[id] == NULL)
+    // Create a context, checking for errors
+    std::cout << "Creating a new OpenGL context...";
+    gl_context = SDL_GL_CreateContext(window);
+    if(gl_context == NULL)
     {
-        contexts[id] = glXCreateNewContext(display, config, GLX_RGBA_TYPE, NULL, True);
-        if(!contexts[id])
-        {
-            cout << "WARNING: Attempt to create GLXContext " << id << " failed" << endl;
-            return;
-        }
-        else
-        {
-            cout << "Created new GLXContext, id " << id << endl;
-        }
+        std::cout << " FAIL: " << SDL_GetError() << std::endl;
+        return;
     }
-    
-    cout << "Switching GLXContext, new context id: " << id << endl;
-    glXMakeContextCurrent(display, glWindow, glWindow, contexts[id]);
+    std::cout << " OK!" << std::endl;
+    SDL_GL_MakeCurrent(window, gl_context);
+
+    // Initialize GLEW
+    std::cout << "Binding pointers to available OpenGL functions...";
+    GLenum error = glewInit();
+    if(error != GLEW_OK)
+    {
+        std::cout << " FAIL: " << glewGetErrorString(error) << std::endl;
+        return;
+    }
+    std::cout << " OK!" << std::endl;
+
+    // Print information about the GL
+    std::cout << "OpenGL Platform: " << glGetString(GL_VENDOR) << " " << glGetString(GL_RENDERER) <<
+        std::endl;
+    std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << " GLSL Version " << 
+        glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 }
 
-/* wrapper around the platform-specific buffer swap function */
+GLWindow::~GLWindow()
+{
+    std::cout << "Destroying window" << std::endl;
+    SDL_GL_DeleteContext(gl_context);
+    SDL_DestroyWindow(window);
+}
+
+void GLWindow::makeCurrent()
+{
+    SDL_GL_MakeCurrent(window, gl_context);
+}
+
 void GLWindow::swap()
 {
-    glXSwapBuffers(display, glWindow);
+    SDL_GL_SwapWindow(window);
 }

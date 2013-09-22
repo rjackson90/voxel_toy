@@ -1,84 +1,26 @@
-#ifndef GL_WINDOW_H
+#ifndef GL_WINODW_H
 #define GL_WINDOW_H
 
-#include <list>
-#include <iostream>
-#include <pthread.h>
-#include <string>
-
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-
+// System includes
+#include <SDL2/SDL.h>
 #include <GL/glew.h>
-#include <GL/glx.h>
+#include <iostream>
+#include <vector>
 
-using namespace std;
-
-#define MAX_THREADS 10
-
-/* This class is a platform-independent wrapper around an OpenGL rendering context, as well as
- * the platform's conception of a window and any other ancillary data that needs to be hidden 
- * from the rest of the engine.
- */
-class GLWindow
+namespace Rendering
 {
+    class GLWindow
+    {
     public:
-        GLWindow();
-        GLWindow(int, int, string);
+        GLWindow(int, int, const std::string&, const std::vector<std::pair<SDL_GLattr, int>>&);
         ~GLWindow();
-        
-        void makeCurrent(bool=false);
+
+        void makeCurrent();
         void swap();
 
     private:
-        Display *display;
-        GLXFBConfig config;
-        Window window;
-        GLXWindow glWindow;
-        Colormap cmap;
-        int width, height;
-        string title;
-        static int attribs[];
-        GLXContext *contexts;
-        
-        void init();
-};
-#endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        SDL_Window* window;
+        SDL_GLContext gl_context;
+    };
+}
+#endif // GL_WINDOW_H

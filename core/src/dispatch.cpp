@@ -2,7 +2,7 @@
 
 /* 'Magic Bool' which keeps track of program state.
  */
-bool Dispatch::isRunning = false;
+bool Dispatch::isRunning = true;
 
 /* UNIX ONLY
  * This function handles signals from the platform, such as SIGINT, SIGTERM, etc.
@@ -29,10 +29,20 @@ Dispatch::Dispatch()
 {
     std::cout << "Starting up..." << std::endl;
 
+    // Initialize SDL
+    SDL_SetMainReady();
+    SDL_Init(SDL_INIT_VIDEO);
+
     timespec ts;
     clock_getres(CLOCK_MONOTONIC_RAW, &ts);
     double time_sec = ts.tv_sec + (ts.tv_nsec * 0.000000001);
     std::cout << "Resolution of CLOCK_MONOTONIC_RAW is: " << time_sec << std::endl;
+}
+
+Dispatch::~Dispatch()
+{
+    // Clean up SDL
+    SDL_Quit();
 }
 
 /* This member function acts as the "main loop" for the game. The while loop in this function
@@ -48,8 +58,8 @@ void Dispatch::run(const Subsystems &systems)
 
     double lastTime = hires_time_seconds();
     double accumulator = 0.0;
-
-    isRunning = true;
+    
+    std::cout << "loop status: " << isRunning << std::endl;
     while(isRunning)
     {
         double now = hires_time_seconds();

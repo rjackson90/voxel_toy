@@ -5,20 +5,10 @@ using namespace Rendering;
 /* The constuctor initializes GLEW, a critical library which makes loading
  * function pointers for OpenGL functionality REALLY EASY
  */
-RenderSystem::RenderSystem(int width, int height, string title) 
-    : frame_uniforms(), window(GLWindow(width, height, title))
+RenderSystem::RenderSystem(int width, int height, const std::string& title, 
+        const std::vector<std::pair<SDL_GLattr, int>>& attr) : frame_uniforms(), 
+    window(width, height, title, attr)
 {
-    // Run GLEW init here, after context creation and before just about anything else
-    cout << "Getting OpenGL bindings...";
-    window.makeCurrent();
-    GLenum err = glewInit();
-    if ( err == GLEW_OK )
-    {
-        cout << " OK!" << endl;
-    } else {
-        cout << " FAIL: " << glewGetErrorString(err) << endl;
-    }
-    
     // Orthographic projection
     float aspect = (float) width / (float) height;
     perspective = glm::ortho(-2.5f, 2.5f, -2.5f / aspect, 2.5f / aspect, -100.0f, 100.0f);
@@ -26,13 +16,12 @@ RenderSystem::RenderSystem(int width, int height, string title)
     glEnable(GL_DEPTH_TEST);
 }
 
-
 /* This function adds another node to the batch
  */
 void RenderSystem::addNode(int key, 
         const Geometry& geo, 
-        vector<shared_ptr<Effect>> effect_list, 
-        vector<shared_ptr<BlockDefinition>> block_list)
+        std::vector<std::shared_ptr<Effect>> effect_list, 
+        std::vector<std::shared_ptr<BlockDefinition>> block_list)
 {
     RenderNode newNode(geo, effect_list, block_list);
     nodes.insert({{key, newNode}});
@@ -76,7 +65,7 @@ void RenderSystem::tick(__attribute__((unused)) const Subsystems &systems,
         }
     }
 
-    // Swap front and rear buffers. In other words, display the just-rendered scene
+    // Swap front and rear buffers.
     window.swap();
     
     // Check for and report any errors that occured in the frame just completed
@@ -84,7 +73,8 @@ void RenderSystem::tick(__attribute__((unused)) const Subsystems &systems,
 }
 
 RenderSystem::RenderNode::RenderNode(const Geometry& geo, 
-        vector<shared_ptr<Effect>>& effect_stack, vector<shared_ptr<BlockDefinition>>& blocks) :
+        std::vector<std::shared_ptr<Effect>>& effect_stack, 
+        std::vector<std::shared_ptr<BlockDefinition>>& blocks) :
     mesh(geo), effects(effect_stack), object_uniforms(blocks)
 {
 }
