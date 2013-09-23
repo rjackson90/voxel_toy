@@ -7,19 +7,18 @@
 #include <GL/glew.h>
 #include <algorithm>
 
-struct Subsystems;
+// Forward declarations
+namespace Rendering
+{
+    struct BlockDefinition;
+    class UniformBuffer;
+}
 
 // Core headers
 #include "dispatch.h"
 
-// Rendering headers
-#include "error.h"
-
 namespace Rendering
 {
-    // Forward declaration
-    struct BlockDefinition;
-
     /* This class describes a uniform buffer. It holds a reference to a BlockDefinition 
      * (or more likely, a struct that inherits from BlockDefinition) which represents the uniform
      * block inside a shader program. This class manages the buffer backing the uniform block
@@ -27,13 +26,16 @@ namespace Rendering
     class UniformBuffer
     {
     public:
-        UniformBuffer();
+        UniformBuffer(BlockDefinition&, GLuint);
         ~UniformBuffer();
-        void bind(GLuint) const;
-        void setBlock(std::shared_ptr<BlockDefinition>);
-    
+        GLuint getBindPoint() const { return index; }
+
+        void updateContents(const Subsystems&, int key);
+            
     private:
         GLuint buffer;
+        GLuint index;
+        BlockDefinition& block;
     };
 
     /* This struct describes the minimum requirements of a uniform block definition,

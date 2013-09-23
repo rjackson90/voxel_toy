@@ -23,7 +23,7 @@ namespace Rendering
 {
     class Geometry;
     class Effect;
-    struct BlockDefinition;
+    struct UniformBuffer;
     class GLWindow;
 }
 struct Subsystems;
@@ -41,21 +41,23 @@ class RenderSystem : public System
     RenderSystem(int, int, const std::string&, const std::vector<std::pair<SDL_GLattr, int>>&);
     virtual void tick(const Subsystems &, const double)override;
     void addNode(int, const Rendering::Geometry&, 
-            std::vector<std::shared_ptr<Rendering::Effect>>,
-            std::vector<std::shared_ptr<Rendering::BlockDefinition>>);
-    glm::mat4 getCameraMatrix() { return glm::mat4(1.0f); }
+            const std::vector<std::shared_ptr<Rendering::Effect>>&,
+            const std::vector<std::shared_ptr<Rendering::UniformBuffer>>&);
+    glm::mat4 getCameraMatrix() { 
+        return glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f)); 
+    }
     glm::mat4 getPerspectiveMatrix() { return perspective; }
 
-    std::vector<std::shared_ptr<Rendering::BlockDefinition>> frame_uniforms;
+    std::vector<std::shared_ptr<Rendering::UniformBuffer>> frame_uniforms;
     private:
     struct RenderNode : Node
     {
         RenderNode(const Rendering::Geometry&, 
-                std::vector<std::shared_ptr<Rendering::Effect>> &,
-                std::vector<std::shared_ptr<Rendering::BlockDefinition>>&);
+                const std::vector<std::shared_ptr<Rendering::Effect>>&,
+                const std::vector<std::shared_ptr<Rendering::UniformBuffer>>&);
         const Rendering::Geometry& mesh;
-        std::vector<std::shared_ptr<Rendering::Effect>> effects;
-        std::vector<std::shared_ptr<Rendering::BlockDefinition>> object_uniforms;
+        const std::vector<std::shared_ptr<Rendering::Effect>> effects;
+        const std::vector<std::shared_ptr<Rendering::UniformBuffer>> object_uniforms;
     };
 
     Rendering::GLWindow window;

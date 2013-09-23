@@ -6,6 +6,10 @@
 #ifndef DISPATCH_H
 #define DISPATCH_H
 
+// Forward declarations
+class Rendersystem;
+struct Subsystems;
+
 // SDL includes
 #define SDL_MAIN_HANDLED
 #include <SDL2/SDL.h>
