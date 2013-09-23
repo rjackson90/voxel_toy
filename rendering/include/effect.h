@@ -23,11 +23,11 @@ namespace Rendering
     class Effect
     {
     public:
-        Effect(GLuint);
+        Effect(int);
         virtual void bind() = 0;
 
     protected:
-        GLuint tex_unit_start;
+        int tex_unit_start;
     };
     
     /* This class is an implementation of an Effect. It implements simple Phong shading, with
@@ -36,7 +36,7 @@ namespace Rendering
     class PhongShading : public Effect
     {
     public:
-        PhongShading(GLuint&,
+        PhongShading(int,
                 const Program&, 
                 const Texture&, const Texture&, 
                 const Sampler&, const Sampler&,

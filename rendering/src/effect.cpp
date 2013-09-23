@@ -2,7 +2,7 @@
 
 using namespace Rendering;
 
-PhongShading::PhongShading(GLuint& tex_unit_begin, 
+PhongShading::PhongShading(int tex_unit_begin, 
         const Program& prog, 
         const Texture& col, const Texture& norm,
         const Sampler& color_samp, const Sampler& norm_samp,
@@ -39,17 +39,17 @@ void PhongShading::bind()
     program.bind();
 
     // Bind textures and samplers to texture units
-    glActiveTexture(tex_unit_start + 0);
+    glActiveTexture(GL_TEXTURE0 + tex_unit_start + 0);
     color.bind();
-    glUniform1i(color_samplerID, 0);
-    color_sampler.bind(0);
+    glUniform1i(color_samplerID, tex_unit_start + 0);
+    color_sampler.bind(tex_unit_start + 0);
 
-    glActiveTexture(tex_unit_start + 1);
+    glActiveTexture(GL_TEXTURE0 + tex_unit_start + 1);
     normal.bind();
-    glUniform1i(normal_samplerID, 1);
-    normal_sampler.bind(1);
+    glUniform1i(normal_samplerID, tex_unit_start + 1);
+    normal_sampler.bind(tex_unit_start + 1);
 }
 
-Effect::Effect(GLuint tex_idx) : tex_unit_start(tex_idx)
+Effect::Effect(int tex_idx) : tex_unit_start(tex_idx)
 {
 }

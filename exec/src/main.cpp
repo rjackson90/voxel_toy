@@ -44,9 +44,17 @@ int main()
     cube.genTestCube();
     cube.setDrawMode(GL_TRIANGLES);
 
-    // Load program and textures
+    // Load textures
     Rendering::Texture stonebrick(GL_TEXTURE_2D, Paths::rendering+"stonebrick.tga");
     Rendering::Texture stonebrickn(GL_TEXTURE_2D, Paths::rendering+"stonebrickn.tga");
+    
+    Rendering::Texture woodplank(GL_TEXTURE_2D, Paths::rendering+"woodplank.tga");
+    Rendering::Texture woodplankn(GL_TEXTURE_2D, Paths::rendering+"woodplankn.tga");
+    
+    Rendering::Texture obsidian(GL_TEXTURE_2D, Paths::rendering+"obsidian.tga");
+    Rendering::Texture obsidiann(GL_TEXTURE_2D, Paths::rendering+"obsidiann.tga");
+
+    // Load program
     Rendering::Program phong_program(Paths::shaders+"phong.vs", Paths::shaders+"phong.fs");
     if(!phong_program.isValid())
     {
@@ -77,7 +85,7 @@ int main()
     point_light.position = glm::vec3(0.0f, 0.0f, 0.0f);
     point_light.intensity = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
-    material.ambient = glm::vec4(0.2f, 0.15f, 0.25f, 1.0f);
+    material.ambient = glm::vec4(0.02f, 0.02f, 0.02f, 1.0f);
     material.diffuse = glm::vec4(0.6f, 0.65f, 0.6f, 1.0f);
     material.specular = glm::vec4(0.95f, 0.9f, 0.99f, 1.0f);
     material.shininess = 20.0f;
@@ -92,19 +100,34 @@ int main()
     systems.render->frame_uniforms.push_back(point_light_buffer);
     systems.render->frame_uniforms.push_back(material_buffer);
 
-    // Wrap it all up into an Effect
-    GLuint texunit = GL_TEXTURE0;
-    std::shared_ptr<Rendering::PhongShading>phong_shading(
-            new Rendering::PhongShading(texunit, 
-                phong_program,
-                stonebrick, stonebrickn,
-                linear_blend, nearest_sample,
-                transform_buffer, point_light_buffer, material_buffer
-                )
+    // Wrap it all up into Effects
+    auto phong_stone = std::make_shared<Rendering::PhongShading>(
+            0, 
+            phong_program,
+            stonebrick, stonebrickn,
+            linear_blend, nearest_sample,
+            transform_buffer, point_light_buffer, material_buffer
+            );
+    auto phong_wood = std::make_shared<Rendering::PhongShading>(
+            2,
+            phong_program,
+            woodplank, woodplankn,
+            linear_blend, nearest_sample,
+            transform_buffer, point_light_buffer, material_buffer
+            );
+    auto phong_obsidian = std::make_shared<Rendering::PhongShading>(
+            4,
+            phong_program,
+            obsidian, obsidiann,
+            linear_blend, nearest_sample,
+            transform_buffer, point_light_buffer, material_buffer
             );
 
-    // Create a new RenderNode
-    systems.render->addNode(1, cube, {{phong_shading}}, {{transform_buffer}});
+    // Create new RenderNodes
+    systems.render->addNode(1, cube, {{phong_stone}}, {{transform_buffer}});
+    systems.render->addNode(2, cube, {{phong_stone}}, {{transform_buffer}});
+    systems.render->addNode(3, cube, {{phong_wood}}, {{transform_buffer}});
+    systems.render->addNode(4, cube, {{phong_obsidian}}, {{transform_buffer}});
 
     // Add rigid bodies to the physics system
     cout << "Creating rigid bodies" << endl;
@@ -113,7 +136,7 @@ int main()
 
     State start;
     start.orientation = Quaternion( 1.0, Constants::ORIGIN );
-    start.position = Vector(-1.0f, 1.0f, 5.0f);
+    start.position = Vector(-1.25f, 1.25f, -0.0002f);
     start.momentum = Constants::ORIGIN;
     start.angular_momentum = Constants::ORIGIN;
     start.mass = 1.0f;
@@ -123,18 +146,19 @@ int main()
     systems.physics->addNode(1, start);
 
     State cube2 = start;
-    cube2.position.x = 1.0f;
-    cube2.angular_momentum = Vector(0.0f, 0.0025f, 0.0f);
+    cube2.position.x = 1.25f;
+    cube2.angular_momentum = Vector(0.0f, 0.05f, 0.0f);
     systems.physics->addNode(2, cube2);
 
     State cube3 = start;
-    cube3.position.y = -1.0f;
-    cube3.angular_momentum = Vector(0.0f, 0.0f, 0.0025f);
+    cube3.position.x = -3.75f;
+    cube3.position.y = -1.75f;
+    cube3.angular_momentum = Vector(0.0f, 0.0f, 0.05f);
     systems.physics->addNode(3, cube3);
 
     State cube4 = cube2;
-    cube4.position.y = -1.0f;
-    cube4.angular_momentum = Vector(0.0025f, 0.0f, 0.0f);
+    cube4.position.y = -1.25f;
+    cube4.angular_momentum = Vector(0.05f, 0.0f, 0.0f);
     systems.physics->addNode(4, cube4);
 
     /* GO */
