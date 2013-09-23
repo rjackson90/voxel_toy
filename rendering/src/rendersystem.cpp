@@ -11,7 +11,9 @@ RenderSystem::RenderSystem(int width, int height, const std::string& title,
 {
     // Orthographic projection
     float aspect = (float) width / (float) height;
-    perspective = glm::ortho(-2.5f, 2.5f, -2.5f / aspect, 2.5f / aspect, -100.0f, 100.0f);
+
+    float left = -5.0f, right = 5.0f;
+    perspective = glm::ortho(left, right, left / aspect, right / aspect, -100.0f, 100.0f);
     
     glEnable(GL_DEPTH_TEST);
 }
@@ -20,10 +22,10 @@ RenderSystem::RenderSystem(int width, int height, const std::string& title,
  */
 void RenderSystem::addNode(int key, 
         const Geometry& geo, 
-        std::vector<std::shared_ptr<Effect>> effect_list, 
-        std::vector<std::shared_ptr<BlockDefinition>> block_list)
+        const std::vector<std::shared_ptr<Effect>>& effect_list, 
+        const std::vector<std::shared_ptr<UniformBuffer>>& uniform_list)
 {
-    RenderNode newNode(geo, effect_list, block_list);
+    RenderNode newNode(geo, effect_list, uniform_list);
     nodes.insert({{key, newNode}});
 }
 
@@ -38,21 +40,19 @@ void RenderSystem::tick(__attribute__((unused)) const Subsystems &systems,
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     // Update uniforms which are at frame scope
-    for(const auto &uniform : frame_uniforms)
+    for(auto uniform : frame_uniforms)
     {
         // Pass invalid key to cause errors for buffers which aren't actually frame-scope
-        uniform->getData(systems, -1);
-        uniform->updateBuffer();
+        uniform->updateContents(systems, -1);
     }
 
     // Iterate over the RenderNodes
     for(auto i = nodes.begin(); i != nodes.end(); ++i)
     {
         // Update node-scope uniforms
-        for(const auto &uniform : i->second.object_uniforms)
+        for(auto uniform : i->second.object_uniforms)
         {
-            uniform->getData(systems, i->first);
-            uniform->updateBuffer();
+            uniform->updateContents(systems, i->first);
         }
 
         // For every effect in the list: bind it then draw the geometry
@@ -68,8 +68,8 @@ void RenderSystem::tick(__attribute__((unused)) const Subsystems &systems,
 }
 
 RenderSystem::RenderNode::RenderNode(const Geometry& geo, 
-        std::vector<std::shared_ptr<Effect>>& effect_stack, 
-        std::vector<std::shared_ptr<BlockDefinition>>& blocks) :
-    mesh(geo), effects(effect_stack), object_uniforms(blocks)
+        const std::vector<std::shared_ptr<Effect>>& effect_stack, 
+        const std::vector<std::shared_ptr<UniformBuffer>>& buffers) :
+    mesh(geo), effects(effect_stack), object_uniforms(buffers)
 {
 }

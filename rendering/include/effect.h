@@ -23,12 +23,11 @@ namespace Rendering
     class Effect
     {
     public:
-        Effect(GLuint&, GLuint, GLuint&, GLuint);
+        Effect(GLuint);
         virtual void bind() = 0;
 
     protected:
         GLuint tex_unit_start;
-        GLuint uniform_binding_start;
     };
     
     /* This class is an implementation of an Effect. It implements simple Phong shading, with
@@ -37,11 +36,14 @@ namespace Rendering
     class PhongShading : public Effect
     {
     public:
-        PhongShading(GLuint&, GLuint&, 
+        PhongShading(GLuint&,
                 const Program&, 
                 const Texture&, const Texture&, 
                 const Sampler&, const Sampler&,
-                const UniformBuffer&, const UniformBuffer&, const UniformBuffer&);
+                std::shared_ptr<UniformBuffer>, 
+                std::shared_ptr<UniformBuffer>, 
+                std::shared_ptr<UniformBuffer>
+                );
         virtual void bind();
 
     private:
@@ -53,12 +55,11 @@ namespace Rendering
         const Sampler &color_sampler;
         const Sampler &normal_sampler;
 
-        const UniformBuffer &transform;
-        const UniformBuffer &point_light;
-        const UniformBuffer &material;
+        std::shared_ptr<UniformBuffer> transform;
+        std::shared_ptr<UniformBuffer> point_light;
+        std::shared_ptr<UniformBuffer> material;
 
-        GLuint p;
-        GLuint transform_idx, light_idx, material_idx;
+        GLuint color_samplerID, normal_samplerID;
     };
 }
 #endif // EFFECT_H

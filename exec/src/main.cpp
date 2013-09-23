@@ -65,47 +65,46 @@ int main()
     Rendering::Sampler nearest_sample(params);
 
     // Create uniform blocks
-    auto transform = std::make_shared<Rendering::TransformBlock>();
-    auto point_light = std::make_shared<Rendering::PointLight>();
-    auto material = std::make_shared<Rendering::Material>();
+    Rendering::TransformBlock transform;
+    Rendering::PointLight point_light;
+    Rendering::Material material;
 
     // Set initial values for uniforms
-    transform->mvp = glm::mat4(1.0f);
-    transform->mv = glm::mat4(1.0f);
-    transform->normal_matrix = glm::mat4(1.0f);
+    transform.mvp = glm::mat4(1.0f);
+    transform.mv = glm::mat4(1.0f);
+    transform.normal_matrix = glm::mat4(1.0f);
 
-    point_light->position = glm::vec3(0.0f, 0.0f, 0.0f);
-    point_light->intensity = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    point_light.position = glm::vec3(0.0f, 0.0f, 0.0f);
+    point_light.intensity = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
-    material->ambient = glm::vec4(0.2f, 0.15f, 0.25f, 1.0f);
-    material->diffuse = glm::vec4(0.6f, 0.65f, 0.6f, 1.0f);
-    material->specular = glm::vec4(0.95f, 0.9f, 0.99f, 1.0f);
-    material->shininess = 20.0f;
+    material.ambient = glm::vec4(0.2f, 0.15f, 0.25f, 1.0f);
+    material.diffuse = glm::vec4(0.6f, 0.65f, 0.6f, 1.0f);
+    material.specular = glm::vec4(0.95f, 0.9f, 0.99f, 1.0f);
+    material.shininess = 20.0f;
 
-    // Create uniform buffers to back the blocks
-    Rendering::UniformBuffer transform_buffer;
-    Rendering::UniformBuffer light_buffer;
-    Rendering::UniformBuffer material_buffer;
+    // Load the blocks into buffers
+    GLuint bindpoint = 0;
+    auto transform_buffer = make_shared<Rendering::UniformBuffer>(transform, bindpoint++);
+    auto point_light_buffer = make_shared<Rendering::UniformBuffer>(point_light, bindpoint++);
+    auto material_buffer = make_shared<Rendering::UniformBuffer>(material, bindpoint++);
 
-    // Bind blocks to the buffers
-    transform_buffer.setBlock(transform);
-    light_buffer.setBlock(point_light);
-    material_buffer.setBlock(material);
+    // Add buffers to Rendersystem's list of updates-per-frame
+    systems.render->frame_uniforms.push_back(point_light_buffer);
+    systems.render->frame_uniforms.push_back(material_buffer);
 
     // Wrap it all up into an Effect
-    GLuint texunit = GL_TEXTURE0, bindpoint = 0;
+    GLuint texunit = GL_TEXTURE0;
     std::shared_ptr<Rendering::PhongShading>phong_shading(
-            new Rendering::PhongShading(
-                texunit, bindpoint, 
+            new Rendering::PhongShading(texunit, 
                 phong_program,
                 stonebrick, stonebrickn,
                 linear_blend, nearest_sample,
-                transform_buffer, light_buffer, material_buffer
+                transform_buffer, point_light_buffer, material_buffer
                 )
             );
 
     // Create a new RenderNode
-    systems.render->addNode(0, cube, {{phong_shading}}, {{transform}, {point_light}, {material}});
+    systems.render->addNode(1, cube, {{phong_shading}}, {{transform_buffer}});
 
     // Add rigid bodies to the physics system
     cout << "Creating rigid bodies" << endl;
@@ -114,7 +113,7 @@ int main()
 
     State start;
     start.orientation = Quaternion( 1.0, Constants::ORIGIN );
-    start.position = Vector(-1.0f, 1.0f, -1.5f);
+    start.position = Vector(-1.0f, 1.0f, 5.0f);
     start.momentum = Constants::ORIGIN;
     start.angular_momentum = Constants::ORIGIN;
     start.mass = 1.0f;

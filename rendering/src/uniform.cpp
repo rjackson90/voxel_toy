@@ -2,6 +2,29 @@
 
 using namespace Rendering;
 
+// Implementation of UniformBuffer
+
+UniformBuffer::UniformBuffer(BlockDefinition &blk, GLuint bind_point) : index(bind_point), block(blk)
+{
+    glGenBuffers(1, &buffer);
+    glBindBuffer(GL_UNIFORM_BUFFER, buffer);
+    block.updateBuffer();
+    glBindBufferBase(GL_UNIFORM_BUFFER, index, buffer);
+}
+
+UniformBuffer::~UniformBuffer()
+{
+    glDeleteBuffers(1, &buffer);
+}
+
+void UniformBuffer::updateContents(const Subsystems& systems, int key)
+{
+    glBindBuffer(GL_UNIFORM_BUFFER, buffer);
+    block.getData(systems, key);
+    block.updateBuffer();
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
 // BlockDefinition implementations
 
 void TransformBlock::getData(const Subsystems &systems, int key)

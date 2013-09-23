@@ -2,24 +2,35 @@
 
 using namespace Rendering;
 
-PhongShading::PhongShading(GLuint& tex_unit_begin, GLuint& uniform_binding_begin, 
+PhongShading::PhongShading(GLuint& tex_unit_begin, 
         const Program& prog, 
         const Texture& col, const Texture& norm,
         const Sampler& color_samp, const Sampler& norm_samp,
-        const UniformBuffer& trans, const UniformBuffer& light, const UniformBuffer& mat) :
-    Effect(tex_unit_begin, 2, uniform_binding_begin, 3),
+        std::shared_ptr<UniformBuffer> trans, 
+        std::shared_ptr<UniformBuffer> light, 
+        std::shared_ptr<UniformBuffer> mat
+        ) : Effect(tex_unit_begin), 
     program(prog), 
     color(col), normal(norm), 
     color_sampler(color_samp), normal_sampler(norm_samp),
     transform(trans), point_light(light), material(mat)
 {
-    // Store the ID of the associated program object
-    p = program.getProgramObj();
+    // Id of program object for this effect
+    GLuint p = program.getProgramObj();
 
     // Get the block index for all uniform blocks in the program
-    transform_idx = glGetUniformBlockIndex(p, "TransformBlock");
-    light_idx = glGetUniformBlockIndex(p, "PointLight");
-    material_idx = glGetUniformBlockIndex(p, "Material");
+    GLuint transform_idx = glGetUniformBlockIndex(p, "TransformBlock");
+    GLuint light_idx = glGetUniformBlockIndex(p, "PointLight");
+    GLuint material_idx = glGetUniformBlockIndex(p, "Material");
+
+    // Get the uniform location for the textures in the program
+    color_samplerID = glGetUniformLocation(p, "texColor");
+    normal_samplerID = glGetUniformLocation(p, "texNormal");
+
+    // Bind uniform blocks to binding points
+    glUniformBlockBinding(p, transform_idx, transform->getBindPoint());
+    glUniformBlockBinding(p, light_idx, point_light->getBindPoint());
+    glUniformBlockBinding(p, material_idx, material->getBindPoint());
 }
 
 void PhongShading::bind()
@@ -30,28 +41,15 @@ void PhongShading::bind()
     // Bind textures and samplers to texture units
     glActiveTexture(tex_unit_start + 0);
     color.bind();
+    glUniform1i(color_samplerID, 0);
     color_sampler.bind(0);
 
     glActiveTexture(tex_unit_start + 1);
     normal.bind();
+    glUniform1i(normal_samplerID, 1);
     normal_sampler.bind(1);
-
-    // Bind program uniform blocks and buffers to binding points
-    glUniformBlockBinding(p, transform_idx, uniform_binding_start);
-    transform.bind(uniform_binding_start);
-
-    glUniformBlockBinding(p, light_idx, uniform_binding_start + 1);
-    point_light.bind(uniform_binding_start + 1);
-
-    glUniformBlockBinding(p, material_idx, uniform_binding_start + 2);
-    material.bind(uniform_binding_start + 2);
 }
 
-Effect::Effect(GLuint &tex_idx, GLuint tex_size, GLuint &uniform_idx, GLuint uniform_size)
+Effect::Effect(GLuint tex_idx) : tex_unit_start(tex_idx)
 {
-    tex_unit_start = tex_idx;
-    tex_idx += tex_size;
-
-    uniform_binding_start = uniform_idx;
-    uniform_idx += uniform_size;
 }
