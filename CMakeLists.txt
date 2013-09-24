@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 project(GLDemo CXX)
 
 # List of modules in the project
-set(MODULES core physics rendering)
+set(MODULES core physics rendering input)
 
 # Set appropriate flags for g++
 if(CMAKE_COMPILER_IS_GNUCXX)
