@@ -15,6 +15,7 @@ struct Subsystems;
 #include "SDL.h"
 
 // Other system includes
+#include <boost/python.hpp>
 #include <GL/glew.h>
 #include <string>
 #include <iostream>

@@ -5,6 +5,8 @@
  */
 Dispatch::Dispatch() : isRunning(true)
 {
+    namespace py = boost::python;
+
     // Initialize SDL
     std::cout << "Starting up...";
     SDL_SetMainReady();
@@ -15,6 +17,15 @@ Dispatch::Dispatch() : isRunning(true)
         return;
     }
     std::cout << " OK!" << std::endl;
+
+    // Initialize Python interpreter
+    Py_Initialize();
+
+    // Print a string to show Python works
+    py::object main_module = py::import("__main__");
+    py::object main_namespace = main_module.attr("__dict__");
+    py::exec("print 'Hello from Python, World!'", main_namespace);
+
 }
 
 Dispatch::~Dispatch()
@@ -23,7 +34,7 @@ Dispatch::~Dispatch()
     SDL_Quit();
 }
 
-/* This method pushes an SQL_QUIT event onto the event queue, signalling the program to 
+/* This method pushes an SDL_QUIT event onto the event queue, signalling the program to 
  * gracefully terminate ASAP
  */
 void Dispatch::quit()
