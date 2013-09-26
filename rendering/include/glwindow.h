@@ -2,7 +2,7 @@
 #define GL_WINDOW_H
 
 // System includes
-#include <SDL2/SDL.h>
+#include "SDL.h"
 #include <GL/glew.h>
 #include <iostream>
 #include <vector>

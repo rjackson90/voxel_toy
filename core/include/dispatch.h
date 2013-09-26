@@ -12,9 +12,10 @@ struct Subsystems;
 
 // SDL includes
 #define SDL_MAIN_HANDLED
-#include <SDL2/SDL.h>
+#include "SDL.h"
 
 // Other system includes
+#include <boost/python.hpp>
 #include <GL/glew.h>
 #include <string>
 #include <iostream>
@@ -27,6 +28,9 @@ class RenderSystem;
 
 // Core includes
 #include "timer.h"
+#include "data_paths.h"
+#include "py_error.hpp"
+#include "rconsole.h"
 
 class Dispatch
 {
@@ -41,6 +45,8 @@ class Dispatch
     private:
     bool isRunning;
 };
+
+bool py_setPath(const std::string&);
 
 /* This struct holds unique pointers to the various subsystems. 
  * Instead of relying on global state, this struct is passed down as needed, making code that needs

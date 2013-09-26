@@ -5,6 +5,8 @@
  */
 Dispatch::Dispatch() : isRunning(true)
 {
+    namespace py = boost::python;
+
     // Initialize SDL
     std::cout << "Starting up...";
     SDL_SetMainReady();
@@ -15,6 +17,39 @@ Dispatch::Dispatch() : isRunning(true)
         return;
     }
     std::cout << " OK!" << std::endl;
+
+    // Initialize Python interpreter
+    Py_Initialize();
+
+    // Add Python source tree to interpreter import path
+    try
+    {
+    bool result = py_safe_call<bool>(boost::bind(&py_setPath, Paths::python),
+            "Error adding python source tree to import path: ");
+    if(!result)
+        throw std::runtime_error("Failed to add python source tree to import path - no errors");
+    }
+    catch(const std::runtime_error &ex)
+    {
+        std::cerr << ex.what() << std::endl;
+        this->quit();
+    }    
+
+}
+
+/* Add a path to the python import path. Retrun true if the operation succeeds, 
+ * false if the path does not appear in sys.path
+ */
+bool py_setPath(const std::string& path)
+{
+    namespace py = boost::python;
+
+    py::object main = py::import("__main__");
+    py::dict globals = py::extract<py::dict>(main.attr("__dict__"));
+    globals["py_path"] = path;
+    py::exec("import sys; sys.path.append(py_path); py_path = py_path in sys.path",globals);
+    bool result = py::extract<bool>(globals["py_path"]);
+    return result;
 }
 
 Dispatch::~Dispatch()
@@ -23,7 +58,7 @@ Dispatch::~Dispatch()
     SDL_Quit();
 }
 
-/* This method pushes an SQL_QUIT event onto the event queue, signalling the program to 
+/* This method pushes an SDL_QUIT event onto the event queue, signalling the program to 
  * gracefully terminate ASAP
  */
 void Dispatch::quit()
@@ -51,7 +86,10 @@ void Dispatch::run(const Subsystems &systems)
     double accumulator = 0.0;
 
     SDL_Event ev_buffer;
-    
+
+    // Initialize remote Pyhton console
+    Core::RemoteConsole rcon;
+
     while(isRunning)
     {
         double elapsed = frame_timer.time_since_start();
@@ -64,6 +102,9 @@ void Dispatch::run(const Subsystems &systems)
         if ( elapsed > 0.250 )
             elapsed = 0.250;
         accumulator += elapsed;
+
+        // Tick the remote console
+        rcon.tick();
 
         // Poll SDL Events, dispatch or handle as appropriate
         while(SDL_PollEvent(&ev_buffer))
