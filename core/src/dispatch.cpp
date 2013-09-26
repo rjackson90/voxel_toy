@@ -21,11 +21,35 @@ Dispatch::Dispatch() : isRunning(true)
     // Initialize Python interpreter
     Py_Initialize();
 
-    // Print a string to show Python works
-    py::object main_module = py::import("__main__");
-    py::object main_namespace = main_module.attr("__dict__");
-    py::exec("print 'Hello from Python, World!'", main_namespace);
+    // Add Python source tree to interpreter import path
+    try
+    {
+    bool result = py_safe_call<bool>(boost::bind(&py_setPath, Paths::python),
+            "Error adding python source tree to import path: ");
+    if(!result)
+        throw std::runtime_error("Failed to add python source tree to import path - no errors");
+    }
+    catch(const std::runtime_error &ex)
+    {
+        std::cerr << ex.what() << std::endl;
+        this->quit();
+    }    
 
+}
+
+/* Add a path to the python import path. Retrun true if the operation succeeds, 
+ * false if the path does not appear in sys.path
+ */
+bool py_setPath(const std::string& path)
+{
+    namespace py = boost::python;
+
+    py::object main = py::import("__main__");
+    py::dict globals = py::extract<py::dict>(main.attr("__dict__"));
+    globals["py_path"] = path;
+    py::exec("import sys; sys.path.append(py_path); py_path = py_path in sys.path",globals);
+    bool result = py::extract<bool>(globals["py_path"]);
+    return result;
 }
 
 Dispatch::~Dispatch()
@@ -62,7 +86,7 @@ void Dispatch::run(const Subsystems &systems)
     double accumulator = 0.0;
 
     SDL_Event ev_buffer;
-    
+
     while(isRunning)
     {
         double elapsed = frame_timer.time_since_start();

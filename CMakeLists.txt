@@ -68,7 +68,7 @@ else(${SDL2_FOUND})
     message(SEND_ERROR "SDL2 not found")
 endif(${SDL2_FOUND})
 
-# ... for Boost.Python
+# ... for Boost 
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
@@ -77,7 +77,7 @@ if(${Boost_FOUND})
     include_directories(${Boost_INCLUDE_DIRS})
     set(LIB_DIRS ${LIB_DIRS} ${Boost_LIBRARIES})
 else(${Boost_FOUND})
-    message(SEND_ERROR "Boost.Python not found")
+    message(SEND_ERROR "One or more Boost libraries not found")
 endif(${Boost_FOUND})
 
 # Create the special "data-path" header
@@ -85,6 +85,7 @@ foreach( MODULE ${MODULES})
     set( "${MODULE}_data_path" "${CMAKE_SOURCE_DIR}/${MODULE}/data/" )
 endforeach()
 set( "rendering_shaders_path" "${CMAKE_SOURCE_DIR}/rendering/shaders/" )
+set( "python_path" "${CMAKE_SOURCE_DIR}/python/" )
 configure_file( exec/include/data_paths.h.in ${CMAKE_BINARY_DIR}/exec/include/data_paths.h )
 include_directories( ${CMAKE_BINARY_DIR}/exec/include/ )
 

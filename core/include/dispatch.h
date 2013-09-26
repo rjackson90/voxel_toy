@@ -28,6 +28,9 @@ class RenderSystem;
 
 // Core includes
 #include "timer.h"
+#include "data_paths.h"
+#include "py_error.hpp"
+#include "rconsole.h"
 
 class Dispatch
 {
@@ -42,6 +45,8 @@ class Dispatch
     private:
     bool isRunning;
 };
+
+bool py_setPath(const std::string&);
 
 /* This struct holds unique pointers to the various subsystems. 
  * Instead of relying on global state, this struct is passed down as needed, making code that needs
