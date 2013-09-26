@@ -87,6 +87,9 @@ void Dispatch::run(const Subsystems &systems)
 
     SDL_Event ev_buffer;
 
+    // Initialize remote Pyhton console
+    Core::RemoteConsole rcon;
+
     while(isRunning)
     {
         double elapsed = frame_timer.time_since_start();
@@ -99,6 +102,9 @@ void Dispatch::run(const Subsystems &systems)
         if ( elapsed > 0.250 )
             elapsed = 0.250;
         accumulator += elapsed;
+
+        // Tick the remote console
+        rcon.tick();
 
         // Poll SDL Events, dispatch or handle as appropriate
         while(SDL_PollEvent(&ev_buffer))
