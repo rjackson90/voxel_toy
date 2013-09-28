@@ -4,7 +4,7 @@ project(GLDemo CXX C)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/exec/cmake_modules")
 
 # List of modules in the project
-set(MODULES core physics rendering)
+set(MODULES core physics rendering python)
 
 # Set appropriate flags for g++
 if(CMAKE_COMPILER_IS_GNUCXX)
@@ -99,11 +99,6 @@ endforeach()
 # Compile the main executable
 add_executable(DeepCore ${MODULE_LIBS} exec/src/main.cpp)
 add_executable(DeepCoreTests ${MODULE_LIBS} ${MODULE_TEST_LIBS} exec/src/tests.cpp)
-
-# Find required libraries
-#include(FindPkgConfig)
-#pkg_check_modules(SYSTEM_LIBS REQUIRED glew glu gl sdl2)
-#include_directories(${SYSTEM_LIBS_INCLUDE_DIRS})
 
 # Link executables using found system libraries
 target_link_libraries(DeepCore ${LIB_DIRS})

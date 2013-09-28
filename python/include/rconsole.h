@@ -1,18 +1,17 @@
 #ifndef RCONSOLE_H
 #define RCONSOLE_H
 
-#include <boost/python.hpp>
-#include "py_error.hpp"
+#include "interpreter.h"
 
-namespace Core
+namespace Python
 {
-    class RemoteConsole
+    class RemoteConsole : public IScript
     {
     public:
         RemoteConsole();
         ~RemoteConsole();
 
-        void tick();
+        virtual void tick(const Subsystems &) override;
 
     private:
         void py_init();

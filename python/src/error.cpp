@@ -1,4 +1,4 @@
-#include "py_error.hpp"
+#include "error.hpp"
 
 namespace py = boost::python;
 
