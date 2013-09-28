@@ -7,7 +7,8 @@
 #define DISPATCH_H
 
 // Forward declarations
-class Rendersystem;
+class RenderSystem;
+class Interpreter;
 struct Subsystems;
 
 // SDL includes
@@ -15,22 +16,19 @@ struct Subsystems;
 #include "SDL.h"
 
 // Other system includes
-#include <boost/python.hpp>
 #include <GL/glew.h>
 #include <string>
 #include <iostream>
 #include <memory>
 
 // Subsystem includes
-class RenderSystem;
 #include "rendersystem.h"
 #include "physicssystem.h"
+#include "interpreter.h"
 
 // Core includes
 #include "timer.h"
 #include "data_paths.h"
-#include "py_error.hpp"
-#include "rconsole.h"
 
 class Dispatch
 {
@@ -57,6 +55,7 @@ struct Subsystems
     std::unique_ptr<RenderSystem> render;
     std::unique_ptr<PhysicsSystem> physics;
     std::unique_ptr<Dispatch> dispatch;
+    std::unique_ptr<Interpreter> python;
 };
 
 #endif
