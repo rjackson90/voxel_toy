@@ -7,7 +7,8 @@
 #define DISPATCH_H
 
 // Forward declarations
-class Rendersystem;
+class RenderSystem;
+class InputSystem;
 struct Subsystems;
 
 // SDL includes
@@ -21,9 +22,9 @@ struct Subsystems;
 #include <memory>
 
 // Subsystem includes
-class RenderSystem;
 #include "rendersystem.h"
 #include "physicssystem.h"
+#include "inputsystem.h"
 
 // Core includes
 #include "timer.h"
@@ -51,6 +52,7 @@ struct Subsystems
     std::unique_ptr<RenderSystem> render;
     std::unique_ptr<PhysicsSystem> physics;
     std::unique_ptr<Dispatch> dispatch;
+    std::unique_ptr<InputSystem> input;
 };
 
 #endif

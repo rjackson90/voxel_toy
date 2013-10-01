@@ -11,7 +11,7 @@ struct Subsystems;
 class Dispatch;
 class RenderSystem;
 class PhysicsSystem;
-
+class InputSystem;
 
 int main()
 {
@@ -20,6 +20,7 @@ int main()
     // Create container struct and initialize subsystems
     Subsystems systems;
     systems.dispatch = std::unique_ptr<Dispatch>(new Dispatch());
+    systems.input = std::unique_ptr<InputSystem>(new InputSystem());
     systems.physics = std::unique_ptr<PhysicsSystem>(new PhysicsSystem());
     systems.render = std::unique_ptr<RenderSystem>(
             new RenderSystem(
@@ -32,8 +33,8 @@ int main()
                 {SDL_GL_BLUE_SIZE, 8},
                 {SDL_GL_ALPHA_SIZE, 8},
                 {SDL_GL_ACCELERATED_VISUAL, 1},
-                {SDL_GL_CONTEXT_MAJOR_VERSION, 3},
-                {SDL_GL_CONTEXT_MINOR_VERSION, 3},
+//                {SDL_GL_CONTEXT_MAJOR_VERSION, 3},
+//                {SDL_GL_CONTEXT_MINOR_VERSION, 3},
                 {SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG},
                 {SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE}
                 })

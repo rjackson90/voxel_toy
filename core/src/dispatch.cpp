@@ -64,18 +64,25 @@ void Dispatch::run(const Subsystems &systems)
         if ( elapsed > 0.250 )
             elapsed = 0.250;
         accumulator += elapsed;
-
         // Poll SDL Events, dispatch or handle as appropriate
         while(SDL_PollEvent(&ev_buffer))
         {
             switch(ev_buffer.type)
             {
+                case SDL_KEYDOWN:
+                    systems.input->addEvent(ev_buffer);
+                    break;
+
+                case SDL_KEYUP:
+                    systems.input->addEvent(ev_buffer);
+                    break;
+
                 case SDL_QUIT:
                     isRunning=false;
                     return;
             }
         }
-
+        systems.input->tick(systems, dt);
         /* This loop consumes time from the accumulator in dt sized chunks. Most of the time,
          * the physics simulation will be run once per drawn frame, but occaisonally we need to 
          * run the physical simulation multiple times to catch up to the present time. This happens
