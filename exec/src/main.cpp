@@ -7,11 +7,15 @@
 // paths to module data directories
 #include "data_paths.h"
 
+// We need to initialize a remote terminal, apparently this header doesn't get 
+// #included anywhere else
+#include "rconsole.h"
+
 struct Subsystems;
 class Dispatch;
 class RenderSystem;
 class PhysicsSystem;
-
+class Interpreter;
 
 int main()
 {
@@ -20,6 +24,7 @@ int main()
     // Create container struct and initialize subsystems
     Subsystems systems;
     systems.dispatch = std::unique_ptr<Dispatch>(new Dispatch());
+    systems.python = std::unique_ptr<Interpreter>(new Interpreter());
     systems.physics = std::unique_ptr<PhysicsSystem>(new PhysicsSystem());
     systems.render = std::unique_ptr<RenderSystem>(
             new RenderSystem(
@@ -38,6 +43,14 @@ int main()
                 {SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE}
                 })
             );
+
+    // Add python sources to import search tree
+    systems.python->addPath(Paths::python);
+    systems.python->importModule("core");
+
+    // Start remote console
+    auto console = std::make_shared<Python::RemoteConsole>();
+    systems.python->addScript(console);
 
     // Generate geometry
     Rendering::Geometry cube;

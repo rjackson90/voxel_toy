@@ -23,7 +23,7 @@ Dispatch::~Dispatch()
     SDL_Quit();
 }
 
-/* This method pushes an SQL_QUIT event onto the event queue, signalling the program to 
+/* This method pushes an SDL_QUIT event onto the event queue, signalling the program to 
  * gracefully terminate ASAP
  */
 void Dispatch::quit()
@@ -51,7 +51,7 @@ void Dispatch::run(const Subsystems &systems)
     double accumulator = 0.0;
 
     SDL_Event ev_buffer;
-    
+
     while(isRunning)
     {
         double elapsed = frame_timer.time_since_start();
@@ -75,6 +75,9 @@ void Dispatch::run(const Subsystems &systems)
                     return;
             }
         }
+
+        // Execute scripts
+        systems.python->tick(systems, dt);
 
         /* This loop consumes time from the accumulator in dt sized chunks. Most of the time,
          * the physics simulation will be run once per drawn frame, but occaisonally we need to 
