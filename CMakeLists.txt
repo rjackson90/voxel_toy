@@ -4,7 +4,7 @@ project(GLDemo CXX C)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/exec/cmake_modules")
 
 # List of modules in the project
-set(MODULES core physics rendering python)
+set(MODULES core physics rendering python input)
 
 # Set appropriate flags for g++
 if(CMAKE_COMPILER_IS_GNUCXX)
