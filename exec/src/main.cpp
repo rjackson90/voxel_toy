@@ -59,6 +59,10 @@ int main()
     cube.genTestCube();
     cube.setDrawMode(GL_TRIANGLES);
 
+    Rendering::Geometry quad;
+    quad.genTestQuad();
+    quad.setDrawMode(GL_TRIANGLES);
+
     // Load textures
     Rendering::Texture stonebrick(GL_TEXTURE_2D, Paths::rendering+"stonebrick.tga");
     Rendering::Texture stonebrickn(GL_TEXTURE_2D, Paths::rendering+"stonebrickn.tga");
@@ -139,10 +143,10 @@ int main()
             );
 
     // Create new RenderNodes
-    systems.render->addNode(1, cube, {{phong_stone}}, {{transform_buffer}});
-    systems.render->addNode(2, cube, {{phong_stone}}, {{transform_buffer}});
-    systems.render->addNode(3, cube, {{phong_wood}}, {{transform_buffer}});
-    systems.render->addNode(4, cube, {{phong_obsidian}}, {{transform_buffer}});
+    systems.render->addNode(1, quad, {{phong_stone}}, {{transform_buffer}});
+    systems.render->addNode(2, quad, {{phong_stone}}, {{transform_buffer}});
+    systems.render->addNode(3, quad, {{phong_wood}}, {{transform_buffer}});
+    systems.render->addNode(4, quad, {{phong_obsidian}}, {{transform_buffer}});
 
     // Add rigid bodies to the physics system
     cout << "Creating rigid bodies" << endl;
