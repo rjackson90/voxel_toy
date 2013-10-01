@@ -64,17 +64,27 @@ void Dispatch::run(const Subsystems &systems)
         if ( elapsed > 0.250 )
             elapsed = 0.250;
         accumulator += elapsed;
-
         // Poll SDL Events, dispatch or handle as appropriate
         while(SDL_PollEvent(&ev_buffer))
         {
             switch(ev_buffer.type)
             {
+                case SDL_KEYDOWN:
+                    systems.input->addEvent(ev_buffer);
+                    break;
+
+                case SDL_KEYUP:
+                    systems.input->addEvent(ev_buffer);
+                    break;
+
                 case SDL_QUIT:
                     isRunning=false;
                     return;
             }
         }
+
+        // Handle input events
+        systems.input->tick(systems, dt);
 
         // Execute scripts
         systems.python->tick(systems, dt);

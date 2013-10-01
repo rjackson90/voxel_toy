@@ -9,6 +9,7 @@
 // Forward declarations
 class RenderSystem;
 class Interpreter;
+class InputSystem;
 struct Subsystems;
 
 // SDL includes
@@ -25,6 +26,7 @@ struct Subsystems;
 #include "rendersystem.h"
 #include "physicssystem.h"
 #include "interpreter.h"
+#include "inputsystem.h"
 
 // Core includes
 #include "timer.h"
@@ -56,6 +58,7 @@ struct Subsystems
     std::unique_ptr<PhysicsSystem> physics;
     std::unique_ptr<Dispatch> dispatch;
     std::unique_ptr<Interpreter> python;
+    std::unique_ptr<InputSystem> input;
 };
 
 #endif
