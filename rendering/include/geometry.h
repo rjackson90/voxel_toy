@@ -21,6 +21,7 @@ namespace Rendering
         ~Geometry();
 
         void genTestCube();
+        void genTestQuad();
 
         void draw() const;
         void setDrawMode(GLenum);

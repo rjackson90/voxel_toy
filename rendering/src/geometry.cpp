@@ -109,3 +109,36 @@ void Geometry::genTestCube()
     loadData(&verts[0], 8, &indices[0], index_length);
 }
 
+/* Load unit quad geometry for testing
+ */
+void Geometry::genTestQuad()
+{
+    using glm::vec3;
+    using glm::vec2;
+
+    // Only 4 verts in a quad
+    Vertex verts[4];
+
+    verts[0].position = vec3(-1.0f, -1.0f, 0.0f);
+    verts[1].position = vec3( 1.0f, -1.0f, 0.0f);
+    verts[2].position = vec3( 1.0f,  1.0f, 0.0f);
+    verts[3].position = vec3(-1.0f,  1.0f, 0.0f);
+
+    // Texture coordinates happen to be the first two components 
+    // of the position
+    for(int i = 0; i < 4; i++)
+    {
+        verts[i].texture = vec2(verts[i].position);
+    }
+
+    // Configure indicies for GL_TRIANGLES
+    int index_length = 2 * 3;
+    short indices[] =
+    {
+        0, 1, 2,
+        3, 0, 2
+    };
+
+    loadData(&verts[0], 4, &indices[0], index_length);
+}
+
