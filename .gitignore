@@ -1,6 +1,15 @@
+# Swap files
 *.swp
 *~
+
+# Binaries
 *.o
+*.a
+*.so
+*.lib
+*.dylib
+
+# Data
 *.dat
 *.tga
 
