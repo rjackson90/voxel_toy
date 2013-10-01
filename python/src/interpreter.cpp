@@ -17,6 +17,13 @@ Interpreter::Interpreter() : scripts(), nodes()
 
 void Interpreter::tick(const Subsystems &systems, __attribute__((unused))const double dt)
 {
+    // Tick scripts which run every frame
+    for(const std::shared_ptr<IScript>& script : scripts)
+    {
+        script->tick(systems);
+    }
+
+    // Tick scripts associated with nodes
     for(std::pair<int, ScriptNode> script : nodes)
     {
         script.second.script->tick(systems);

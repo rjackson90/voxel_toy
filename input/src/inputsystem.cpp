@@ -11,7 +11,7 @@ void InputSystem::tick(__attribute__((unused)) const Subsystems& systems, __attr
             for(const std::shared_ptr<SDL_Event> & event : events)
             {
         
-                if(event->keysym->sym==key)
+                if(event->key.keysym.sym==key)
                 {
                     activate = true;
                     break;
@@ -24,14 +24,14 @@ void InputSystem::tick(__attribute__((unused)) const Subsystems& systems, __attr
             }
             if(!activate)
             {
-                &node->active = false;
+                node.active = false;
                 break;
             }
 
        }
-       if(activate&&!(&node->active))
+       if(activate && !(node.active))
        {
-         *node.func();
+         node.func();
          node.active = true;
        }
 
@@ -39,35 +39,19 @@ void InputSystem::tick(__attribute__((unused)) const Subsystems& systems, __attr
     events.clear();
     return;
 }
-/*bool InputSystem::evaluate(int num)
-{
-    InputNode *node = &nodes.at(num);
-    for(auto it = node->keys.begin(); it !=node->keys.end(); ++it)
-    {
-        auto event = events.begin(); 
-        while(event->keysym->sym!=*it&&event!=events->end())
-        {
-            event++;
-            if(event==events->end()&&event.keysym->sym!=*it)
-            {
-                node->active = false;
-                return false;    
-            }
-        }
-    }
-    return true;
-}
-*/
-void InputSystem::addNode(std::vector<SDL_Keycode> keyst, void (*funct)());
+
+void InputSystem::addNode(int key, std::vector<SDL_Keycode> keyst, void (*funct)())
 {
     InputNode node;
+    node.key = key;
     node.keys = keyst;
     node.func = funct;
-    node->active = false;
-    nodes.insert({{key, node}});
+    node.active = false;
+    nodes.insert(nodes.begin() + key, node);
 }
+
 void InputSystem::addEvent(const SDL_Event& event)
 {
-    events.push_back(&event);
+    events.push_back(std::make_shared<SDL_Event>(event));
     return;
 }

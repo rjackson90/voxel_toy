@@ -1,6 +1,6 @@
 # Declare minimum CMake version, project name
 cmake_minimum_required(VERSION 2.8.8)
-project(GLDemo CXX C)
+project(Llyrdin CXX C)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/exec/cmake_modules")
 
 # List of modules in the project
@@ -19,7 +19,7 @@ else(CMAKE_COMPILER_IS_GNUCXX)
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
 # Binary artifacts should all be in build/bin
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${GLDemo_BINARY_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${Llyrdin_BINARY_DIR}/bin)
 
 # Tell CMake where the includes (and external library binaries) are
 foreach( MODULE ${MODULES})
@@ -92,21 +92,21 @@ include_directories( ${CMAKE_BINARY_DIR}/exec/include/ )
 # Compile each module, get the name of each library
 foreach( MODULE ${MODULES})
     add_subdirectory(${MODULE})
-    set( MODULE_LIBS ${MODULE_LIBS} "$<TARGET_OBJECTS:GLDemo-${MODULE}>" )
-    set( MODULE_TEST_LIBS ${MODULE_TEST_LIBS} "$<TARGET_OBJECTS:GLDemo-${MODULE}-tests>" )
+    set( MODULE_LIBS ${MODULE_LIBS} "$<TARGET_OBJECTS:Llyrdin-${MODULE}>" )
+    set( MODULE_TEST_LIBS ${MODULE_TEST_LIBS} "$<TARGET_OBJECTS:Llyrdin-${MODULE}-tests>" )
 endforeach()
 
 # Compile the main executable
-add_executable(DeepCore ${MODULE_LIBS} exec/src/main.cpp)
-add_executable(DeepCoreTests ${MODULE_LIBS} ${MODULE_TEST_LIBS} exec/src/tests.cpp)
+add_executable(Llyrdin ${MODULE_LIBS} exec/src/main.cpp)
+add_executable(LlyrdinTests ${MODULE_LIBS} ${MODULE_TEST_LIBS} exec/src/tests.cpp)
 
 # Link executables using found system libraries
-target_link_libraries(DeepCore ${LIB_DIRS})
-target_link_libraries(DeepCoreTests ${LIB_DIRS} UnitTest++)
+target_link_libraries(Llyrdin ${LIB_DIRS})
+target_link_libraries(LlyrdinTests ${LIB_DIRS} UnitTest++)
 
 
 # Run the tests after they (successfully) build
-add_custom_target(tests ALL DeepCoreTests 
+add_custom_target(tests ALL LlyrdinTests 
     COMMENT "############### Running Unit Tests ###############")
-add_dependencies(tests DeepCoreTests)
+add_dependencies(tests LlyrdinTests)
 

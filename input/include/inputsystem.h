@@ -9,8 +9,7 @@ class InputSystem : public System{
     public:
         void addEvent(const SDL_Event&);
         virtual void tick(const Subsystems&,double);
-       // bool evaluate(int);
-        void addNode(std::vector<SDL_Keycode>, void (*)());
+        void addNode(int, std::vector<SDL_Keycode>, void (*)());
     private:
         struct InputNode : Node
         {

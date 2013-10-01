@@ -27,6 +27,9 @@ void RemoteConsole::py_tick()
     if(shell == NULL || shell.is_none())
     {
         shell = rconsole.attr("accept")(listen_socket, globals);
+        if (!shell.is_none()){
+            std::cout << "Remote console connected to client" << std::endl;
+        }
         return;
     }
 
