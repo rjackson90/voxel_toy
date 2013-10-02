@@ -1,9 +1,11 @@
 #include "glwindow.h"
 
 using namespace Rendering;
+using std::pair;
+using std::vector;
 
 GLWindow::GLWindow(int width, int height, const std::string& title, 
-        const std::vector<std::pair<SDL_GLattr, int>> &attribs)
+        const vector<pair<SDL_GLattr, int>> &attribs)
 {
     // Iterate over user-supplied attributes
     for(const auto &pair : attribs)

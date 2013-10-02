@@ -17,6 +17,12 @@ UniformBuffer::~UniformBuffer()
     glDeleteBuffers(1, &buffer);
 }
 
+void UniformBuffer::bind(GLuint program, const GLchar* text)
+{
+    GLuint idx = glGetUniformBlockIndex(program, text);
+    glUniformBlockBinding(program, idx, index);
+}
+
 void UniformBuffer::updateContents(const Subsystems& systems, int key)
 {
     glBindBuffer(GL_UNIFORM_BUFFER, buffer);

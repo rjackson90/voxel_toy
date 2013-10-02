@@ -6,6 +6,7 @@
 #include <GL/glew.h>
 #include <iostream>
 #include <vector>
+#include <memory>
 
 // Rendering includes
 #include "error.h"

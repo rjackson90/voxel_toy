@@ -2,54 +2,42 @@
 
 using namespace Rendering;
 
-PhongShading::PhongShading(int tex_unit_begin, 
-        const Program& prog, 
-        const Texture& col, const Texture& norm,
-        const Sampler& color_samp, const Sampler& norm_samp,
-        std::shared_ptr<UniformBuffer> trans, 
-        std::shared_ptr<UniformBuffer> light, 
-        std::shared_ptr<UniformBuffer> mat
-        ) : Effect(tex_unit_begin), 
-    program(prog), 
-    color(col), normal(norm), 
-    color_sampler(color_samp), normal_sampler(norm_samp),
-    transform(trans), point_light(light), material(mat)
-{
-    // Id of program object for this effect
-    GLuint p = program.getProgramObj();
-
-    // Get the block index for all uniform blocks in the program
-    GLuint transform_idx = glGetUniformBlockIndex(p, "TransformBlock");
-    GLuint light_idx = glGetUniformBlockIndex(p, "PointLight");
-    GLuint material_idx = glGetUniformBlockIndex(p, "Material");
-
-    // Get the uniform location for the textures in the program
-    color_samplerID = glGetUniformLocation(p, "texColor");
-    normal_samplerID = glGetUniformLocation(p, "texNormal");
-
-    // Bind uniform blocks to binding points
-    glUniformBlockBinding(p, transform_idx, transform->getBindPoint());
-    glUniformBlockBinding(p, light_idx, point_light->getBindPoint());
-    glUniformBlockBinding(p, material_idx, material->getBindPoint());
-}
-
-void PhongShading::bind()
-{
-    // Bind program and get its object ID
-    program.bind();
-
-    // Bind textures and samplers to texture units
-    glActiveTexture(GL_TEXTURE0 + tex_unit_start + 0);
-    color.bind();
-    glUniform1i(color_samplerID, tex_unit_start + 0);
-    color_sampler.bind(tex_unit_start + 0);
-
-    glActiveTexture(GL_TEXTURE0 + tex_unit_start + 1);
-    normal.bind();
-    glUniform1i(normal_samplerID, tex_unit_start + 1);
-    normal_sampler.bind(tex_unit_start + 1);
-}
-
 Effect::Effect(int tex_idx) : tex_unit_start(tex_idx)
 {
+}
+
+GenericEffect::GenericEffect(int tex_begin, 
+        ProgramPtr p_ptr, VecTexDataTuplePtr vtdp, VecUniformPairPtr vup
+        ) : Effect(tex_begin), program(p_ptr), textures(vtdp), uniforms(vup)
+{
+    // Program object ID
+    GLuint p = program->getProgramObj();
+
+    // Bind the uniform blocks and buffers to common bind points
+    for(const UniformPairPtr& pair : uniforms)
+    {
+        pair->first->bind(p, pair->second.c_str());
+    }
+
+    // Get the location of texture sampler uniforms
+    for(const TexDataTuplePtr& data : textures)
+    {
+        std::get<3>(*data) = glGetUniformLocation(p, std::get<2>(*data).c_str());
+    }
+}
+
+void GenericEffect::bind()
+{
+    // Bind program
+    program->bind();
+
+    // Bind textures and samplers to texture units
+    for(unsigned int i = 0; i < textures.size(); i++)
+    {
+        TexDataTuple data = *(textures[i]);
+        glActiveTexture(GL_TEXTURE0 + tex_unit_start + i);
+        std::get<0>(data)->bind();
+        std::get<1>(data)->bind(tex_unit_start + i);
+        glUniform1i(std::get<3>(data), tex_unit_start + i);
+    }
 }

@@ -2,16 +2,15 @@
 #define EFFECT_H
 
 #include <GL/glew.h>
+#include <tuple>
+#include <memory>
+#include <vector>
 
-#include "texture.h"
-#include "sampler.h"
+#include "rendering.h"
 #include "program.h"
 #include "uniform.h"
-
-namespace Rendering
-{
-    class UniformBuffer;
-}
+#include "texture.h"
+#include "sampler.h"
 
 namespace Rendering
 {
@@ -29,37 +28,20 @@ namespace Rendering
     protected:
         int tex_unit_start;
     };
-    
-    /* This class is an implementation of an Effect. It implements simple Phong shading, with
-     * support for a single point light
+
+    /* This class covers the common case for an Effect 
      */
-    class PhongShading : public Effect
+    class GenericEffect : public Effect
     {
     public:
-        PhongShading(int,
-                const Program&, 
-                const Texture&, const Texture&, 
-                const Sampler&, const Sampler&,
-                std::shared_ptr<UniformBuffer>, 
-                std::shared_ptr<UniformBuffer>, 
-                std::shared_ptr<UniformBuffer>
-                );
+        GenericEffect(int, ProgramPtr, VecTexDataTuplePtr, VecUniformPairPtr);
         virtual void bind();
 
     private:
-        const Program &program;
-        
-        const Texture &color;
-        const Texture &normal;
-
-        const Sampler &color_sampler;
-        const Sampler &normal_sampler;
-
-        std::shared_ptr<UniformBuffer> transform;
-        std::shared_ptr<UniformBuffer> point_light;
-        std::shared_ptr<UniformBuffer> material;
-
-        GLuint color_samplerID, normal_samplerID;
+        ProgramPtr program;
+        VecTexDataTuplePtr textures;
+        VecUniformPairPtr uniforms;
     };
+
 }
 #endif // EFFECT_H

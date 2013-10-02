@@ -28,8 +28,8 @@ namespace Rendering
     public:
         UniformBuffer(BlockDefinition&, GLuint);
         ~UniformBuffer();
-        GLuint getBindPoint() const { return index; }
 
+        void bind(GLuint, const GLchar*);
         void updateContents(const Subsystems&, int key);
             
     private:

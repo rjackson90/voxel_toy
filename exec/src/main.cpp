@@ -18,6 +18,9 @@ class PhysicsSystem;
 class Interpreter;
 class InputSystem;
 
+// Use snazzy render object typedefs
+#include "rendering.h"
+
 int main()
 {
     using namespace std;
@@ -55,27 +58,34 @@ int main()
     systems.python->addScript(console);
 
     // Generate geometry
-    Rendering::Geometry cube;
-    cube.genTestCube();
-    cube.setDrawMode(GL_TRIANGLES);
+    auto cube = std::make_shared<Rendering::Geometry>();
+    cube->genTestCube();
+    cube->setDrawMode(GL_TRIANGLES);
 
-    Rendering::Geometry quad;
-    quad.genTestQuad();
-    quad.setDrawMode(GL_TRIANGLES);
+    auto quad = std::make_shared<Rendering::Geometry>();
+    quad->genTestQuad();
+    quad->setDrawMode(GL_TRIANGLES);
 
     // Load textures
-    Rendering::Texture stonebrick(GL_TEXTURE_2D, Paths::rendering+"stonebrick.tga");
-    Rendering::Texture stonebrickn(GL_TEXTURE_2D, Paths::rendering+"stonebrickn.tga");
+    auto stonebrick = std::make_shared<Rendering::Texture>(
+            GL_TEXTURE_2D, Paths::rendering+"stonebrick.tga");
+    auto stonebrickn = std::make_shared<Rendering::Texture>(
+            GL_TEXTURE_2D, Paths::rendering+"stonebrickn.tga");
     
-    Rendering::Texture woodplank(GL_TEXTURE_2D, Paths::rendering+"woodplank.tga");
-    Rendering::Texture woodplankn(GL_TEXTURE_2D, Paths::rendering+"woodplankn.tga");
+    auto woodplank = std::make_shared<Rendering::Texture>(
+            GL_TEXTURE_2D, Paths::rendering+"woodplank.tga");
+    auto woodplankn = std::make_shared<Rendering::Texture>(
+            GL_TEXTURE_2D, Paths::rendering+"woodplankn.tga");
     
-    Rendering::Texture obsidian(GL_TEXTURE_2D, Paths::rendering+"obsidian.tga");
-    Rendering::Texture obsidiann(GL_TEXTURE_2D, Paths::rendering+"obsidiann.tga");
+    auto obsidian = std::make_shared<Rendering::Texture>(
+            GL_TEXTURE_2D, Paths::rendering+"obsidian.tga");
+    auto obsidiann = std::make_shared<Rendering::Texture>(
+            GL_TEXTURE_2D, Paths::rendering+"obsidiann.tga");
 
     // Load program
-    Rendering::Program phong_program(Paths::shaders+"phong.vs", Paths::shaders+"phong.fs");
-    if(!phong_program.isValid())
+    auto phong_program = std::make_shared<Rendering::Program>(
+            Paths::shaders+"phong.vs", Paths::shaders+"phong.fs");
+    if(!phong_program->isValid())
     {
         return 1;
     }
@@ -84,69 +94,79 @@ int main()
     Rendering::SamplerParams params;
     params.min_filter = GL_LINEAR;
     
-    Rendering::Sampler linear_blend(params);
+    auto linear_blend = std::make_shared<Rendering::Sampler>(params);
 
     params.min_filter = GL_NEAREST;
     params.mag_filter = GL_NEAREST;
 
-    Rendering::Sampler nearest_sample(params);
+    auto nearest_sample = std::make_shared<Rendering::Sampler>(params);
+
+    // Bundle texture data into VecTexDataTuplePtr objects
+    auto stone_color = std::make_shared<Rendering::TexDataTuple>(
+            stonebrick, linear_blend, "texColor", -1);
+    auto stone_normal = std::make_shared<Rendering::TexDataTuple>(
+            stonebrickn, nearest_sample, "texNormal", -1);
+    Rendering::VecTexDataTuplePtr stone_data{stone_color, stone_normal};
+
+    auto wood_color = std::make_shared<Rendering::TexDataTuple>(
+            woodplank, linear_blend, "texColor", -1);
+    auto wood_normal = std::make_shared<Rendering::TexDataTuple>(
+            woodplankn, nearest_sample, "texNormal", -1);
+    Rendering::VecTexDataTuplePtr wood_data{wood_color, wood_normal};
+
+    auto obsidian_color = std::make_shared<Rendering::TexDataTuple>(
+            obsidian, linear_blend, "texColor", -1);
+    auto obsidian_normal = std::make_shared<Rendering::TexDataTuple>(
+            obsidiann, nearest_sample, "texNormal", -1);
+    Rendering::VecTexDataTuplePtr obsidian_data{obsidian_color, obsidian_normal};
 
     // Create uniform blocks
-    Rendering::TransformBlock transform;
-    Rendering::PointLight point_light;
-    Rendering::Material material;
+    Rendering::TransformBlock transform_block;
+    Rendering::PointLight point_light_block;
+    Rendering::Material material_block;
 
     // Set initial values for uniforms
-    transform.mvp = glm::mat4(1.0f);
-    transform.mv = glm::mat4(1.0f);
-    transform.normal_matrix = glm::mat4(1.0f);
+    transform_block.mvp = glm::mat4(1.0f);
+    transform_block.mv = glm::mat4(1.0f);
+    transform_block.normal_matrix = glm::mat4(1.0f);
 
-    point_light.position = glm::vec3(0.0f, 0.0f, 0.0f);
-    point_light.intensity = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    point_light_block.position = glm::vec3(0.0f, 0.0f, 0.0f);
+    point_light_block.intensity = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
-    material.ambient = glm::vec4(0.02f, 0.02f, 0.02f, 1.0f);
-    material.diffuse = glm::vec4(0.6f, 0.65f, 0.6f, 1.0f);
-    material.specular = glm::vec4(0.95f, 0.9f, 0.99f, 1.0f);
-    material.shininess = 20.0f;
+    material_block.ambient = glm::vec4(0.02f, 0.02f, 0.02f, 1.0f);
+    material_block.diffuse = glm::vec4(0.6f, 0.65f, 0.6f, 1.0f);
+    material_block.specular = glm::vec4(0.95f, 0.9f, 0.99f, 1.0f);
+    material_block.shininess = 20.0f;
 
-    // Load the blocks into buffers
+    // Load the blocks into buffers, then into UniformPairPtrs
     GLuint bindpoint = 0;
-    auto transform_buffer = make_shared<Rendering::UniformBuffer>(transform, bindpoint++);
-    auto point_light_buffer = make_shared<Rendering::UniformBuffer>(point_light, bindpoint++);
-    auto material_buffer = make_shared<Rendering::UniformBuffer>(material, bindpoint++);
+    auto transform_buffer = make_shared<Rendering::UniformBuffer>(transform_block, bindpoint++);
+    auto point_light_buffer = make_shared<Rendering::UniformBuffer>(point_light_block, bindpoint++);
+    auto material_buffer = make_shared<Rendering::UniformBuffer>(material_block, bindpoint++);
+
+    auto transform = std::make_shared<Rendering::UniformPair>(transform_buffer, "TransformBlock");
+    auto point_light = std::make_shared<Rendering::UniformPair>(point_light_buffer, "PointLight");
+    auto material = std::make_shared<Rendering::UniformPair>(material_buffer, "Material");
+
+    Rendering::VecUniformPairPtr phong_uniforms{transform, point_light, material};
 
     // Add buffers to Rendersystem's list of updates-per-frame
-    systems.render->frame_uniforms.push_back(point_light_buffer);
-    systems.render->frame_uniforms.push_back(material_buffer);
+    systems.render->addFrameUniform(point_light);
+    systems.render->addFrameUniform(material);
 
     // Wrap it all up into Effects
-    auto phong_stone = std::make_shared<Rendering::PhongShading>(
-            0, 
-            phong_program,
-            stonebrick, stonebrickn,
-            linear_blend, nearest_sample,
-            transform_buffer, point_light_buffer, material_buffer
-            );
-    auto phong_wood = std::make_shared<Rendering::PhongShading>(
-            2,
-            phong_program,
-            woodplank, woodplankn,
-            linear_blend, nearest_sample,
-            transform_buffer, point_light_buffer, material_buffer
-            );
-    auto phong_obsidian = std::make_shared<Rendering::PhongShading>(
-            4,
-            phong_program,
-            obsidian, obsidiann,
-            linear_blend, nearest_sample,
-            transform_buffer, point_light_buffer, material_buffer
-            );
+    auto phong_stone = std::make_shared<Rendering::GenericEffect>(
+            0, phong_program, stone_data, phong_uniforms);
+    auto phong_wood = std::make_shared<Rendering::GenericEffect>(
+            2, phong_program, wood_data, phong_uniforms);
+    auto phong_obsidian = std::make_shared<Rendering::GenericEffect>(
+            4, phong_program, obsidian_data, phong_uniforms);
 
     // Create new RenderNodes
-    systems.render->addNode(1, quad, {{phong_stone}}, {{transform_buffer}});
-    systems.render->addNode(2, quad, {{phong_stone}}, {{transform_buffer}});
-    systems.render->addNode(3, quad, {{phong_wood}}, {{transform_buffer}});
-    systems.render->addNode(4, quad, {{phong_obsidian}}, {{transform_buffer}});
+    systems.render->addNode(1, quad, {{phong_stone}}, {{transform}});
+    systems.render->addNode(2, quad, {{phong_stone}}, {{transform}});
+    systems.render->addNode(3, quad, {{phong_wood}}, {{transform}});
+    systems.render->addNode(4, quad, {{phong_obsidian}}, {{transform}});
 
     // Add rigid bodies to the physics system
     cout << "Creating rigid bodies" << endl;
