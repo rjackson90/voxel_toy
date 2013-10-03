@@ -11,12 +11,12 @@ Texture::Texture(GLenum tg, std::string path) : target(tg)
     glGenTextures(1, &tex_obj);
 
     // If the path is good, load texture file
-    int length = getLength(path);
+    int length = Core::getLength(path);
     if(length > 0)
     {
         // Allocate a buffer to hold the file contents
         char* buffer = new char[length];
-        getBlob(path, buffer, length);
+        Core::getBlob(path, buffer, length);
 
         // Push file contents to GPU
         loadTGA(buffer);
@@ -42,9 +42,9 @@ void Texture::loadTGA(char *buffer)
     TGAHeader header;
 
     // Read the first three header fields
-    blobRead(header.id_len, buffer);
-    blobRead(header.color_map_type, buffer);
-    blobRead(header.image_type, buffer);
+    Core::blobRead(header.id_len, buffer);
+    Core::blobRead(header.color_map_type, buffer);
+    Core::blobRead(header.image_type, buffer);
 
     // Skip reading the colormap spec if there is no colormap
     if( header.color_map_type == 0)
@@ -65,12 +65,12 @@ void Texture::loadTGA(char *buffer)
     }
 
     // Read the image spec
-    blobRead(header.x_origin, buffer);
-    blobRead(header.y_origin, buffer);
-    blobRead(header.width, buffer);
-    blobRead(header.height, buffer);
-    blobRead(header.depth, buffer);
-    blobRead(header.descriptor, buffer);
+    Core::blobRead(header.x_origin, buffer);
+    Core::blobRead(header.y_origin, buffer);
+    Core::blobRead(header.width, buffer);
+    Core::blobRead(header.height, buffer);
+    Core::blobRead(header.depth, buffer);
+    Core::blobRead(header.descriptor, buffer);
 
     // Check for compatibility, print image properties
     if(header.width != header.height)

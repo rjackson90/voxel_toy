@@ -1,8 +1,15 @@
-/* This file forward declares classes in the project, as well as various 
- * combinations of pointers-to-type and containers-of-pointer-to-type
+/* This file forward declares classes in the Rendering module. It also provides
+ * convenient typedefs for shared pointers to those types and common containers
+ * holding said pointers.
  */
 #ifndef RENDERING_H
 #define RENDERING_H
+
+// System headers required by the types in this header
+#include <memory>
+#include <vector>
+#include <tuple>
+#include <utility>
 
 namespace Rendering
 {
@@ -25,6 +32,7 @@ namespace Rendering
 
     // Uniform buffers
     class UniformBuffer;
+    class BlockDefinition;
     typedef std::shared_ptr<UniformBuffer> UniformPtr;
     typedef std::vector<UniformPtr> VecUniformPtr;
 

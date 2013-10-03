@@ -10,7 +10,7 @@
 #include <memory>
 
 // Core headers
-#include "dispatch.h"
+#include "core.h"
 #include "system.h"
 
 // Rendering headers
@@ -31,7 +31,7 @@ class RenderSystem : public System
 {
     public:
     RenderSystem(int, int, const std::string&, std::vector<std::pair<SDL_GLattr, int>>);
-    virtual void tick(const Subsystems &, const double)override;
+    virtual void tick(const SubsystemsPtr &, const double)override;
     void addNode(int, Rendering::GeometryPtr, Rendering::VecEffectPtr, Rendering::VecUniformPairPtr);
     void addFrameUniform(Rendering::UniformPairPtr ptr) { frame_uniforms.push_back(ptr); }
     

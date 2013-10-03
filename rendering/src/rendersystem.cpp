@@ -36,7 +36,7 @@ void RenderSystem::addNode(int key,
 /* RenderSystem's tick simply draws the whole scene, calling upon the PhysicsSystem 
  * to provide correct world coordinates.
  */
-void RenderSystem::tick(__attribute__((unused)) const Subsystems &systems, 
+void RenderSystem::tick(const SubsystemsPtr &systems, 
         __attribute__((unused)) const double dt)
 {
     // Clear the frame buffer, depth buffer, and stencil buffer

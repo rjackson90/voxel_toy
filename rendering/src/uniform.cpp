@@ -23,7 +23,7 @@ void UniformBuffer::bind(GLuint program, const GLchar* text)
     glUniformBlockBinding(program, idx, index);
 }
 
-void UniformBuffer::updateContents(const Subsystems& systems, int key)
+void UniformBuffer::updateContents(const SubsystemsPtr &systems, int key)
 {
     glBindBuffer(GL_UNIFORM_BUFFER, buffer);
     block.getData(systems, key);
@@ -33,15 +33,15 @@ void UniformBuffer::updateContents(const Subsystems& systems, int key)
 
 // BlockDefinition implementations
 
-void TransformBlock::getData(const Subsystems &systems, int key)
+void TransformBlock::getData( const SubsystemsPtr &systems, int key)
 {
     using glm::mat4;
     using glm::inverse;
     using glm::transpose;
 
-    mat4 m = systems.physics->getWorldCoords(key);
-    mat4 v = systems.render->getCameraMatrix();
-    mat4 p = systems.render->getPerspectiveMatrix();
+    mat4 m = systems->physics->getWorldCoords(key);
+    mat4 v = systems->render->getCameraMatrix();
+    mat4 p = systems->render->getPerspectiveMatrix();
 
     mvp = p * v * m;
     mv = v * m;

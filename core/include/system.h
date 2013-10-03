@@ -1,7 +1,7 @@
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
-#include <list>
+#include "core.h"
 
 struct Subsystems;
 
@@ -12,7 +12,7 @@ struct Subsystems;
 class System
 {
     public:
-    virtual void tick(const Subsystems &,const double) = 0;
+    virtual void tick(const SubsystemsPtr &,const double) = 0;
 
     protected:
     struct Node
