@@ -8,14 +8,12 @@
 #include <algorithm>
 
 // Forward declarations
-namespace Rendering
-{
-    struct BlockDefinition;
-    class UniformBuffer;
-}
+#include "core.h"
+#include "rendering.h"
 
-// Core headers
-#include "dispatch.h"
+// Called subsystems
+#include "physicssystem.h"
+#include "rendersystem.h"
 
 namespace Rendering
 {
@@ -28,9 +26,9 @@ namespace Rendering
     public:
         UniformBuffer(BlockDefinition&, GLuint);
         ~UniformBuffer();
-        GLuint getBindPoint() const { return index; }
 
-        void updateContents(const Subsystems&, int key);
+        void bind(GLuint, const GLchar*);
+        void updateContents(const SubsystemsPtr &, int key);
             
     private:
         GLuint buffer;
@@ -44,7 +42,7 @@ namespace Rendering
      */
     struct BlockDefinition
     {
-        virtual void getData(const Subsystems&, __attribute__((unused))int key) {return;}
+        virtual void getData(const SubsystemsPtr &, __attribute__((unused))int key) {return;}
         virtual void updateBuffer() const = 0;
     };
 
@@ -53,7 +51,7 @@ namespace Rendering
      */
     struct TransformBlock : BlockDefinition
     {
-        virtual void getData(const Subsystems&, int key);
+        virtual void getData(const SubsystemsPtr &, int key);
         virtual void updateBuffer() const;
 
         glm::mat4 mvp;

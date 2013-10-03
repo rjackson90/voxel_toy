@@ -1,14 +1,16 @@
 #ifndef INPUT_SYSTEM_H
 #define INPUT_SYSTEM_H
-#include "dispatch.h"
+
 #include <SDL2/SDL.h>
-#include <vector>
-#include <stdarg.h>
-#include <memory>
+
+#include "core.h"
+#include "system.h"
+
+
 class InputSystem : public System{
     public:
         void addEvent(const SDL_Event&);
-        virtual void tick(const Subsystems&,double);
+        virtual void tick(const SubsystemsPtr &,double);
         void addNode(int, std::vector<SDL_Keycode>, void (*)());
     private:
         struct InputNode : Node

@@ -39,7 +39,7 @@ void Dispatch::quit()
  * subsystem in the proper order. Interpolation of game state also happens here to account for 
  * sync errors.
  */
-void Dispatch::run(const Subsystems &systems)
+void Dispatch::run(const SubsystemsPtr &systems)
 {
     /* Times are in seconds */
     double t = 0.0;
@@ -70,11 +70,11 @@ void Dispatch::run(const Subsystems &systems)
             switch(ev_buffer.type)
             {
                 case SDL_KEYDOWN:
-                    systems.input->addEvent(ev_buffer);
+                    systems->input->addEvent(ev_buffer);
                     break;
 
                 case SDL_KEYUP:
-                    systems.input->addEvent(ev_buffer);
+                    systems->input->addEvent(ev_buffer);
                     break;
 
                 case SDL_QUIT:
@@ -84,10 +84,10 @@ void Dispatch::run(const Subsystems &systems)
         }
 
         // Handle input events
-        systems.input->tick(systems, dt);
+        systems->input->tick(systems, dt);
 
         // Execute scripts
-        systems.python->tick(systems, dt);
+        systems->script->tick(systems, dt);
 
         /* This loop consumes time from the accumulator in dt sized chunks. Most of the time,
          * the physics simulation will be run once per drawn frame, but occaisonally we need to 
@@ -97,7 +97,7 @@ void Dispatch::run(const Subsystems &systems)
         while ( accumulator >= dt )
         {
             // physics runs until the simulation is accurate for the present time. 
-            systems.physics->tick(systems, dt);
+            systems->physics->tick(systems, dt);
 
             t += dt;
             accumulator -= dt;
@@ -112,6 +112,6 @@ void Dispatch::run(const Subsystems &systems)
         
         /* Render the scene
          */
-        systems.render->tick(systems, dt);
+        systems->render->tick(systems, dt);
     }
 }

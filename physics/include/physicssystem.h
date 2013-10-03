@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "core.h"
 #include "math_ext.h"
 #include "system.h"
 
@@ -54,8 +55,6 @@ void integrate(State &, double);
 
 // Physics Subsystem
 
-struct Subsystems;
-
 /* Like other subsystems, the Physics subsystem is surprisingly simple.
  * Put simply, it consists of a data structure which holds RigidBodyNodes.
  * The id associated with each RigidBodyNode identifies the in-game object
@@ -64,7 +63,7 @@ struct Subsystems;
 class PhysicsSystem : public System
 {
     public:
-        virtual void tick(const Subsystems&, const double) override;
+        virtual void tick(const SubsystemsPtr &, const double) override;
         void addNode(int, State&);
         glm::mat4 getWorldCoords(int);
     private:

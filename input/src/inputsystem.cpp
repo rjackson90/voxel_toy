@@ -1,6 +1,6 @@
 #include "inputsystem.h"
 
-void InputSystem::tick(__attribute__((unused)) const Subsystems& systems, __attribute__((unused))double dt)
+void InputSystem::tick(__attribute__((unused)) const SubsystemsPtr& systems, __attribute__((unused))double dt)
 {
     bool activate;
     for(InputNode & node : nodes)

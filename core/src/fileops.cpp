@@ -1,6 +1,6 @@
 #include "fileops.h"
 
-int getLength(const std::string &path)
+int Core::getLength(const std::string &path)
 {
     using namespace std;
     ifstream file(path, ifstream::binary | ifstream::ate);
@@ -15,7 +15,7 @@ int getLength(const std::string &path)
     return length;
 }
 
-bool getBlob(const std::string &path, char *buffer, int buflen)
+bool Core::getBlob(const std::string &path, char *buffer, int buflen)
 {
     using namespace std;
 
@@ -43,7 +43,7 @@ bool getBlob(const std::string &path, char *buffer, int buflen)
     }
 }
 
-std::string getText(const std::string &path)
+std::string Core::getText(const std::string &path)
 {
     using namespace std;
 

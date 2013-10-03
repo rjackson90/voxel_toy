@@ -3,7 +3,7 @@
 /* This is where the magic happens. During each subsystem tick the physics
  * simulation is advanced by dt
  */
-void PhysicsSystem::tick(__attribute__((unused)) const Subsystems &systems, const double dt)
+void PhysicsSystem::tick(__attribute__((unused)) const SubsystemsPtr &systems, const double dt)
 {
     // Advance the physics simulation by dt
     for(auto it = nodes.begin(); it != nodes.end(); ++it)

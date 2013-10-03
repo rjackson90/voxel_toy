@@ -1,7 +1,7 @@
 #include "rconsole.h"
 
 namespace py = boost::python;
-using namespace Python;
+using namespace Script;
 
 RemoteConsole::RemoteConsole() : rconsole(), globals(), listen_socket(), shell()
 {
@@ -15,7 +15,7 @@ RemoteConsole::~RemoteConsole()
             "Error stopping remote shell server: ");
 }
 
-void RemoteConsole::tick(__attribute__((unused))const Subsystems &systems)
+void RemoteConsole::tick(__attribute__((unused))const SubsystemsPtr &systems)
 {
     py_call_nothrow<void>(boost::bind(&RemoteConsole::py_tick, this),
             "Error in the remote shell interactive loop: ");
