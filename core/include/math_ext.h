@@ -16,7 +16,9 @@ struct Vector
     Vector(float, float, float);
     Vector(const glm::vec3 &);
     Vector operator+(const Vector &) const;
+    Vector& operator+=(const Vector &);
     Vector operator*(float) const;
+    Vector operator/(float) const;
     float dot(const Vector &) const;
     Vector cross(const Vector &) const;
     float norm() const;
@@ -37,6 +39,7 @@ struct Quaternion
     Quaternion operator*(float) const;
     Quaternion operator*(const Quaternion &) const;
     Quaternion operator+(const Quaternion &) const;
+    Quaternion& operator+=(const Quaternion &);
     Quaternion conjugate() const; // NOTE: for unit quaternions, conjugate == inverse
     float dot(const Quaternion &) const;
     Quaternion slerp(const Quaternion &, float) const;

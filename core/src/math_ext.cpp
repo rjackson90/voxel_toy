@@ -41,11 +41,17 @@ Vector::Vector(const glm::vec3 &vec)
 
 Vector Vector::operator+(const Vector &v) const
 {
-    Vector result;
-    result.x = x + v.x;
-    result.y = y + v.y;
-    result.z = z + v.z;
+    Vector result = *this;
+    result += v;
     return result;
+}
+
+Vector& Vector::operator+=(const Vector &v)
+{
+    this->x += v.x;
+    this->y += v.y;
+    this->z += v.z;
+    return *this;
 }
 
 Vector Vector::operator*(float scalar) const
@@ -54,6 +60,15 @@ Vector Vector::operator*(float scalar) const
     result.x = x * scalar;
     result.y = y * scalar;
     result.z = z * scalar;
+    return result;
+}
+
+Vector Vector::operator/(float scalar) const
+{
+    Vector result;
+    result.x = x / scalar;
+    result.y = y / scalar;
+    result.z = z / scalar;
     return result;
 }
 
@@ -145,12 +160,18 @@ Quaternion Quaternion::operator*(const Quaternion &q) const
 
 Quaternion Quaternion::operator+(const Quaternion &q) const
 {
-    Quaternion result;
-    result.w = w+q.w;
-    result.x = x+q.x;
-    result.y = y+q.y;
-    result.z = z+q.z;
+    Quaternion result = *this;
+    result += q;
     return result;
+}
+
+Quaternion& Quaternion::operator+=(const Quaternion &q)
+{
+    this->w += q.w;
+    this->x += q.x;
+    this->y += q.y;
+    this->z += q.z;
+    return *this;
 }
 
 Quaternion Quaternion::conjugate() const

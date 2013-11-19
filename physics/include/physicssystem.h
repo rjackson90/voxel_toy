@@ -20,23 +20,27 @@
 class PhysicsSystem : public System
 {
     public:
+        // Required to implement System interface
         virtual void tick(const SubsystemsPtr &, const double) override;
-        
         void addNode(int, Physics::State&);
+
+        // Provide a 4x4 matrix describing the precise position and 
+        // orientation of each node to other subsystems
+        glm::mat4 getWorldCoords(int);
         
+        // Methods to manage forces
         void addForce(int, const Vector&);
         void clearForces(int);
 
-        void addImpulse(int, const Vector&);
-        Vector getStopImpulse(int);
+        // Methods to manage changes in velocity (delta-V or dV)
+        void addDeltaV(int, const Vector&);
+        Vector getStopDeltaV(int);
 
-        glm::mat4 getWorldCoords(int);
     private:
     struct RigidBodyNode : Node
     {
         /* RigidBodyNodes know about both their present and past states.
-         * This knowledge makes interpolating between them for a smooth 
-         * result super easy.
+         * This fact makes smooth interpolation between states possible
          */
         Physics::State past;
         Physics::State present;

@@ -10,8 +10,18 @@ void PhysicsSystem::tick(__attribute__((unused)) const SubsystemsPtr &systems, c
     // Advance the physics simulation by dt
     for(auto it = nodes.begin(); it != nodes.end(); ++it)
     {
+        // Swap State buffers
         it->second.past = it->second.present;
-        RK4::integrate(it->second.present, dt);
+
+        // Apply impulses before integrating forces
+        for(const Vector &impulse : it->second.impulses)
+        {
+            it->second.present.momentum += impulse;
+        }
+        it->second.impulses.clear();
+
+        // Integrate forces
+        RK4::integrate(it->second.present, it->second.forces, dt);
     }
 }
 
@@ -41,14 +51,14 @@ void PhysicsSystem::clearForces(int node)
     nodes[node].forces.clear();
 }
 
-void PhysicsSystem::addImpulse(int node, const Vector &impulse)
+void PhysicsSystem::addDeltaV(int node, const Vector &dV)
 {
-    nodes[node].impulses.push_back(impulse);
+    nodes[node].impulses.push_back(dV * nodes[node].present.mass);
 }
 
-Vector PhysicsSystem::getStopImpulse(int node)
+Vector PhysicsSystem::getStopDeltaV(int node)
 {
-    Vector stop = nodes[node].present.momentum * -1.0f;
+    Vector stop = nodes[node].present.momentum * -1.0f / nodes[node].present.mass;
     return stop;
 }
 

@@ -21,15 +21,15 @@ namespace Physics
     {
     public:
         // This function is the interface to the RK4 integrator implementation
-        static void integrate(State &, double);
+        static void integrate(State &, const std::vector<Vector> &, double);
 
     private:
         // This class cannot be instantiated
         Integrator() {}
 
         // These functions actually perform the integration
-        static Derivative evaluate( State &, double, const Derivative &);
-        static Derivative evaluate(const State &);
+        static Derivative evaluate( State &, double, const Derivative &, const Vector &);
+        static Derivative evaluate(const State &, const Vector &);
     };
 }
 

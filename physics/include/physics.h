@@ -7,6 +7,7 @@
 
 #include "math_ext.h"
 #include <glm/glm.hpp>
+#include <vector>
 
 namespace Physics
 {
@@ -47,6 +48,20 @@ namespace Physics
 
             // Coordinates
             world_coords = orientation.toMatrix(position);
+        }
+
+        /* Create a new State by smoothly interpolating between this State
+         * and one other State
+         */
+        State interpolate(const State &other, float alpha) const
+        {
+            State result = other;
+            result.position = position*(1-alpha) + other.position*alpha;
+            result.momentum = momentum*(1-alpha) + other.momentum*alpha;
+            // result.orientation = slerp(orientation, other.orientation, alpha);
+            result.angular_momentum = angular_momentum*(1-alpha) + other.angular_momentum*alpha;
+            result.recalculate();
+            return result;
         }
     };
 }
