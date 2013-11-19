@@ -5,56 +5,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "core.h"
 #include "math_ext.h"
 #include "system.h"
 
-/* This struct represents all of the state information required to physically
- * simulate a single rigid body. Constants need to be set prior to runtime, primary
- * values should be set before simulation begins
- */
-struct State
-{
-    // primary
-    Quaternion orientation;
-    Vector position;
-    Vector momentum;
-    Vector angular_momentum;
-
-    // secondary
-    Quaternion spin;
-    Vector velocity;
-    Vector angular_velocity;
-    glm::mat4 world_coords;
-
-    // constant
-    glm::mat3 inertia;
-    glm::mat3 inverse_inertia;
-    float mass;
-    float inverse_mass;
-
-    void recalculate();
-};
-
-/* This struct is not user facing, as its members are all
- * calculated from the State struct defined above.
- */
-struct Derivative
-{
-    Vector velocity;
-    Vector force;
-    Quaternion spin;
-    Vector torque;
-
-};
-
-// These functions make up the RK4 integrator
-Derivative evaluate(const State &, double, const Derivative &);
-Derivative evaluate(const State &);
-void integrate(State &, double);
-
-// Physics Subsystem
-
-struct Subsystems;
+#include "physics.h"
+#include "integrator.h"
 
 /* Like other subsystems, the Physics subsystem is surprisingly simple.
  * Put simply, it consists of a data structure which holds RigidBodyNodes.
@@ -64,18 +20,33 @@ struct Subsystems;
 class PhysicsSystem : public System
 {
     public:
-        virtual void tick(const Subsystems&, const double) override;
-        void addNode(int, State&);
+        // Required to implement System interface
+        virtual void tick(const SubsystemsPtr &, const double) override;
+        void addNode(int, Physics::State&);
+
+        // Provide a 4x4 matrix describing the precise position and 
+        // orientation of each node to other subsystems
         glm::mat4 getWorldCoords(int);
+        
+        // Methods to manage forces
+        void addForce(int, const Vector&);
+        void clearForces(int);
+
+        // Methods to manage changes in velocity (delta-V or dV)
+        void addDeltaV(int, const Vector&);
+        Vector getStopDeltaV(int);
+
     private:
     struct RigidBodyNode : Node
     {
         /* RigidBodyNodes know about both their present and past states.
-         * This knowledge makes interpolating between them for a smooth 
-         * result super easy.
+         * This fact makes smooth interpolation between states possible
          */
-        State past;
-        State present;
+        Physics::State past;
+        Physics::State present;
+
+        std::vector<Vector> forces;
+        std::vector<Vector> impulses;
     };
 
     std::unordered_map<int, RigidBodyNode> nodes;

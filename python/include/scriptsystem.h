@@ -3,32 +3,36 @@
 
 // System includes
 #include <boost/python.hpp>
+#include <unordered_map>
+
+// Subsystem includes
+#include "core.h"
+#include "system.h"
 
 // Local includes
-#include "dispatch.h"
 #include "error.hpp"
 
-namespace Python
+namespace Script
 {
     class IScript
     {
     public:
         virtual ~IScript(){}
-        virtual void tick(const Subsystems&) = 0;
+        virtual void tick(const SubsystemsPtr&) = 0;
     };
 }
 
-class Interpreter : public System
+class ScriptSystem : public System
 {
 public:
-    Interpreter();
+    ScriptSystem();
 
-    virtual void tick(const Subsystems&, const double) override;
+    virtual void tick(const SubsystemsPtr &, const double) override;
 
     void addPath(const std::string&);
     void importModule(const std::string&);
-    void addScript(std::shared_ptr<Python::IScript>);
-    void addScriptNode(int, std::shared_ptr<Python::IScript>);
+    void addScript(std::shared_ptr<Script::IScript>);
+    void addScriptNode(int, std::shared_ptr<Script::IScript>);
 
 private:
     void py_addPath(const std::string&);
@@ -36,10 +40,10 @@ private:
 
     struct ScriptNode : Node
     {
-        std::shared_ptr<Python::IScript> script;
+        std::shared_ptr<Script::IScript> script;
     };
 
-    std::vector<std::shared_ptr<Python::IScript>> scripts;
+    std::vector<std::shared_ptr<Script::IScript>> scripts;
     std::unordered_map<int, ScriptNode> nodes;
     boost::python::dict globals;
 };

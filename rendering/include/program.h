@@ -9,19 +9,23 @@
 
 namespace Rendering
 {
+    enum ShaderType {
+        VertexShader = GL_VERTEX_SHADER,
+        FragmentShader = GL_FRAGMENT_SHADER
+    };
+
     class Program
     {
     public:
-        Program(const std::string&, const std::string&);
-        bool isValid() const;
+        Program();
+        bool attachShader(const std::string&, ShaderType);        
         void bind() const;
-        GLuint getProgramObj() const { return program_obj; }
+        GLuint getProgramObj() const;
+        bool link();
 
     private:
-        bool valid;
         GLuint program_obj;
 
-        bool link();
         bool compileShader(const std::string&, GLuint);
     };
 }

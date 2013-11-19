@@ -88,6 +88,7 @@ set( "rendering_shaders_path" "${CMAKE_SOURCE_DIR}/rendering/shaders/" )
 set( "python_path" "${CMAKE_SOURCE_DIR}/python/" )
 configure_file( exec/include/data_paths.h.in ${CMAKE_BINARY_DIR}/exec/include/data_paths.h )
 include_directories( ${CMAKE_BINARY_DIR}/exec/include/ )
+include_directories( ${CMAKE_SOURCE_DIR}/exec/include/ )
 
 # Compile each module, get the name of each library
 foreach( MODULE ${MODULES})

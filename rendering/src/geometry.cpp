@@ -2,7 +2,7 @@
 
 using namespace Rendering;
 
-Geometry::Geometry() : draw_mode(GL_POINTS), index_count(0), buffers{0,0}, vao(0)
+Geometry::Geometry() : method(ELEMENTS), draw_mode(GL_POINTS), index_count(0), buffers{0,0}, vao(0)
 {
     glGenBuffers(2, &buffers[0]);
     glGenVertexArrays(1, &vao);
@@ -30,20 +30,14 @@ void Geometry::setDrawMode(GLenum mode)
     draw_mode = mode;
 }
 
-void Geometry::loadData(Vertex *vert_buf, int vbuf_size, short* elem_buf, int ebuf_size)
+void Geometry::loadVertexArray(Vertex *vert_buf, int vbuf_size, GLenum usage = GL_STATIC_DRAW)
 {
-    // Store the number of elements
-    index_count = ebuf_size;
-
-    // Bind arrays and buffers
+    // Bind array and buffer
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, buffers[VERTEX_BUFFER_INDEX]);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[ELEMENT_BUFFER_INDEX]);
 
     // Fill the buffers
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vbuf_size, (void*) vert_buf, GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(short) * ebuf_size, 
-            (void*) elem_buf, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vbuf_size, (void*) vert_buf, usage);
 
     // Set vertex attribute pointers
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) 0);
@@ -53,9 +47,24 @@ void Geometry::loadData(Vertex *vert_buf, int vbuf_size, short* elem_buf, int eb
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
-    // Unbind the buffers
+    // Unbind the buffer
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void Geometry::loadElements(short* buf, int size, GLenum usage = GL_STATIC_DRAW)
+{
+    index_count = size;
+
+    // Bind the buffer
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[ELEMENT_BUFFER_INDEX]);
+
+    // Fill the buffer
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(short) * size, (void*) buf, usage);
+
+    // Unbind the buffer
+    glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
  
@@ -106,7 +115,8 @@ void Geometry::genTestCube()
         2, 6, 5
     };
      
-    loadData(&verts[0], 8, &indices[0], index_length);
+    loadVertexArray(&verts[0], 8);
+    loadElements(&indices[0], index_length);
 }
 
 /* Load unit quad geometry for testing
@@ -139,6 +149,53 @@ void Geometry::genTestQuad()
         3, 0, 2
     };
 
-    loadData(&verts[0], 4, &indices[0], index_length);
+    loadVertexArray(&verts[0], 4);
+    loadElements(&indices[0], index_length);
+}
+
+/* This function generates a series of vertices corresponding to the centers
+ * of hexagonal tiles. This function is appropriate to use with a geometry
+ * shader to create a tiled plane
+ */
+void Geometry::genHexGrid(int dimension, double scale)
+{
+    using glm::vec3;
+    using glm::vec2;
+
+    // Create an array of hexagonal tiles
+    int length = dimension * dimension;
+    Vertex* verts = new Vertex[length];
+
+    // Calculate tile parameters
+    double a = scale;
+    double h = 2.0 * sqrt(3.0/4.0 *a);
+
+    // Iterate over the tiles
+    int row, col, x, y; 
+    double z = a;
+    for(int i = 0; i < length; i++)
+    {
+        row = i / dimension;
+        col = i % dimension;
+
+        // Find the coordinates of the center point
+        x = ((1 + row % 2) + col * 2) * h;
+        y = (1 + row * 1) * a;
+
+        // The z-component is a vertical offset value. Default creates a
+        // flat surface out of the tops of tiles
+        z = z;
+
+        // Write tile position to buffer, texture coords used to pass tile
+        // parameters
+        verts[i].position = vec3((float)x, (float)y, (float)z);
+        verts[i].texture = vec2((float)a, (float)h);
+    }
+
+    // Load data then free buffer
+    loadVertexArray(&verts[0], length);
+    index_count = length;
+
+    delete[] verts;
 }
 

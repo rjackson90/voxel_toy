@@ -1,9 +1,9 @@
 #ifndef RCONSOLE_H
 #define RCONSOLE_H
 
-#include "interpreter.h"
+#include "scriptsystem.h"
 
-namespace Python
+namespace Script
 {
     class RemoteConsole : public IScript
     {
@@ -11,7 +11,7 @@ namespace Python
         RemoteConsole();
         ~RemoteConsole();
 
-        virtual void tick(const Subsystems &) override;
+        virtual void tick(const SubsystemsPtr &) override;
 
     private:
         void py_init();

@@ -6,12 +6,6 @@
 #ifndef DISPATCH_H
 #define DISPATCH_H
 
-// Forward declarations
-class RenderSystem;
-class Interpreter;
-class InputSystem;
-struct Subsystems;
-
 // SDL includes
 #define SDL_MAIN_HANDLED
 #include "SDL.h"
@@ -22,10 +16,13 @@ struct Subsystems;
 #include <iostream>
 #include <memory>
 
+// Forward declarations, typedefs
+#include "core.h"
+
 // Subsystem includes
 #include "rendersystem.h"
 #include "physicssystem.h"
-#include "interpreter.h"
+#include "scriptsystem.h"
 #include "inputsystem.h"
 
 // Core includes
@@ -37,28 +34,13 @@ class Dispatch
     public:
     Dispatch();
     ~Dispatch();
-    void run(const Subsystems&);
+    void run(const SubsystemsPtr&);
 
     // If the program needs to quit, call this method
     void quit();
 
     private:
     bool isRunning;
-};
-
-bool py_setPath(const std::string&);
-
-/* This struct holds unique pointers to the various subsystems. 
- * Instead of relying on global state, this struct is passed down as needed, making code that needs
- * direct access to subsystems much easier to mock out and test.
- */
-struct Subsystems
-{
-    std::unique_ptr<RenderSystem> render;
-    std::unique_ptr<PhysicsSystem> physics;
-    std::unique_ptr<Dispatch> dispatch;
-    std::unique_ptr<Interpreter> python;
-    std::unique_ptr<InputSystem> input;
 };
 
 #endif

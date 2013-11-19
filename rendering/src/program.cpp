@@ -2,52 +2,35 @@
 
 using namespace Rendering;
 
-Program::Program(const std::string &vertex_path, const std::string &fragment_path)
+Program::Program()
 {
-    valid = false;
-
     // Create program and shader objects
     program_obj = glCreateProgram();
-    GLuint vertex_obj = glCreateShader(GL_VERTEX_SHADER);
-    GLuint fragment_obj = glCreateShader(GL_FRAGMENT_SHADER);
-
-    // Compile shaders
-    valid = compileShader(vertex_path, vertex_obj) && compileShader(fragment_path, fragment_obj);
-    if(!valid)
-    {
-        glDeleteProgram(program_obj);
-        program_obj = 0;
-        return;
-    }
-
-    // Attach shaders and link program
-    glAttachShader(program_obj, vertex_obj);
-    glAttachShader(program_obj, fragment_obj);
-    valid = link();
-    if(!valid)
-    {
-        glDeleteProgram(program_obj);
-        program_obj = 0;
-        return;
-    }
 }
 
-bool Program::isValid() const
+bool Program::attachShader(const std::string &path, ShaderType shader_type)
 {
-    return valid;
+    GLuint shader_obj = glCreateShader(shader_type);
+    if(!compileShader(path, shader_obj)) return false;
+
+    glAttachShader(program_obj, shader_obj);
+    return true;
 }
 
-void Program::bind() const
-{
+void Program::bind() const {
     glUseProgram(program_obj);
+}
+
+GLuint Program::getProgramObj() const {
+    return program_obj;
 }
 
 bool Program::compileShader(const std::string &path, GLuint shader_obj)
 {
-    std::cout << "Compiling shader " << path << ".......... ";
+    std::cout << "Compiling shader " << path << "... ";
 
     // Get text from file
-    std::string source(getText(path));
+    std::string source(Core::getText(path));
 
     // Send source to GPU for compilation
     const char *source_ptr = source.c_str();
@@ -59,7 +42,7 @@ bool Program::compileShader(const std::string &path, GLuint shader_obj)
     glGetShaderiv(shader_obj, GL_COMPILE_STATUS, &compiled);
     if(!compiled)
     {
-        std::cout << "FAILURE!" << std::endl;
+        std::cout << "FAILURE:" << std::endl;
         GLint blen = 0;
         GLsizei slen = 0;
 
@@ -81,13 +64,13 @@ bool Program::compileShader(const std::string &path, GLuint shader_obj)
         return false;
     }
 
-    std::cout << "Done." << std::endl;
+    std::cout << "OK!" << std::endl;
     return true;
 }
 
 bool Program::link()
 {
-    std::cout << "Linking program.......... ";
+    std::cout << "Linking program... ";
     // Link program and check for errors
     glLinkProgram(program_obj);
 
@@ -118,7 +101,7 @@ bool Program::link()
         return false;
     }
 
-    std::cout << "Done." << std::endl;
+    std::cout << "OK!" << std::endl;
     return true;
 }
 
