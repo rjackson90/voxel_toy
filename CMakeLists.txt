@@ -19,14 +19,17 @@ else(CMAKE_COMPILER_IS_GNUCXX)
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
 # Binary artifacts should all be in build/bin
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${Llyrdin_BINARY_DIR}/bin)
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
-# Tell CMake where the includes (and external library binaries) are
+# Tell CMake what the library names, include paths, and external library paths are...
 foreach( MODULE ${MODULES})
     include_directories("${MODULE}/include/")
+    set(MODULE_LIBS ${MODULE_LIBS} Llyrdin-${MODULE})
+    set(MODULE_TEST_LIBS ${MODULE_TEST_LIBS} Llyrdin-${MODULE}-tests)
 endforeach()
-
 set(LIB_DIRS "")
+
 # ... for Python
 set(Python_ADDITIONAL_VERSIONS "2.7")
 find_package(PythonLibs)
@@ -69,10 +72,10 @@ else(${SDL2_FOUND})
 endif(${SDL2_FOUND})
 
 # ... for Boost 
-set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.49.0 COMPONENTS python)
+find_package(Boost 1.49.0 REQUIRED COMPONENTS python)
 if(${Boost_FOUND})
     include_directories(${Boost_INCLUDE_DIRS})
     set(LIB_DIRS ${LIB_DIRS} ${Boost_LIBRARIES})
@@ -85,7 +88,8 @@ foreach( MODULE ${MODULES})
     set( "${MODULE}_data_path" "${CMAKE_SOURCE_DIR}/${MODULE}/data/" )
 endforeach()
 set( "rendering_shaders_path" "${CMAKE_SOURCE_DIR}/rendering/shaders/" )
-set( "python_path" "${CMAKE_SOURCE_DIR}/python/" )
+set( "python_path" "${CMAKE_SOURCE_DIR}/exec/python" )
+set( "python_so" "${CMAKE_BINARY_DIR}/lib" )
 configure_file( exec/include/data_paths.h.in ${CMAKE_BINARY_DIR}/exec/include/data_paths.h )
 include_directories( ${CMAKE_BINARY_DIR}/exec/include/ )
 include_directories( ${CMAKE_SOURCE_DIR}/exec/include/ )
@@ -93,21 +97,26 @@ include_directories( ${CMAKE_SOURCE_DIR}/exec/include/ )
 # Compile each module, get the name of each library
 foreach( MODULE ${MODULES})
     add_subdirectory(${MODULE})
-    set( MODULE_LIBS ${MODULE_LIBS} "$<TARGET_OBJECTS:Llyrdin-${MODULE}>" )
-    set( MODULE_TEST_LIBS ${MODULE_TEST_LIBS} "$<TARGET_OBJECTS:Llyrdin-${MODULE}-tests>" )
 endforeach()
 
 # Compile the main executable
-add_executable(Llyrdin ${MODULE_LIBS} exec/src/main.cpp)
-add_executable(LlyrdinTests ${MODULE_LIBS} ${MODULE_TEST_LIBS} exec/src/tests.cpp)
+add_executable(Llyrdin exec/src/main.cpp)
+add_executable(LlyrdinTests exec/src/tests.cpp)
 
-# Link executables using found system libraries
+# Link the modules into the main executables
+target_link_libraries(Llyrdin ${MODULE_LIBS})
+target_link_libraries(LlyrdinTests ${MODULE_LIBS} ${MODULE_TEST_LIBS})
+
+# Link required system libraries into the main executables
 target_link_libraries(Llyrdin ${LIB_DIRS})
 target_link_libraries(LlyrdinTests ${LIB_DIRS} UnitTest++)
 
+# Link the Python API for all of the modules
+#foreach( EXTENSION ${MODULE_EXTENSIONS} )
+#    target_link_libraries( ${EXTENSION} ${MODULE_LIBS} ${LIB_DIRS} ${Boost_LIBRARIES} )
+#endforeach()
 
 # Run the tests after they (successfully) build
 add_custom_target(tests ALL LlyrdinTests 
     COMMENT "############### Running Unit Tests ###############")
 add_dependencies(tests LlyrdinTests)
-

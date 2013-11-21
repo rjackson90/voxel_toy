@@ -44,7 +44,10 @@ int main()
 
     // Add python sources to import search tree
     systems->script->addPath(Paths::python);
+    systems->script->addPath(Paths::python_lib);
     systems->script->importModule("core");
+    systems->script->importModule("script");
+    systems->script->setSubsystems(systems);
 
     // Start remote console
     auto console = std::make_shared<Script::RemoteConsole>();

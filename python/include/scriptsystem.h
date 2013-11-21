@@ -1,5 +1,5 @@
-#ifndef INTERPRETER_H
-#define INTERPRETER_H
+#ifndef SCRIPTSYSTEM_H
+#define SCRIPTSYSTEM_H
 
 // System includes
 #include <boost/python.hpp>
@@ -18,7 +18,7 @@ namespace Script
     {
     public:
         virtual ~IScript(){}
-        virtual void tick(const SubsystemsPtr&) = 0;
+        virtual void tick(const SubsystemsPtr &) = 0;
     };
 }
 
@@ -31,12 +31,15 @@ public:
 
     void addPath(const std::string&);
     void importModule(const std::string&);
+    void setSubsystems(const SubsystemsPtr &);
+
     void addScript(std::shared_ptr<Script::IScript>);
     void addScriptNode(int, std::shared_ptr<Script::IScript>);
 
 private:
     void py_addPath(const std::string&);
     void py_importModule(const std::string&);
+    void py_setSubsystems(const SubsystemsPtr &);
 
     struct ScriptNode : Node
     {
