@@ -47,6 +47,7 @@ int main()
     systems->script->addPath(Paths::python_lib);
     systems->script->importModule("core");
     systems->script->importModule("script");
+    systems->script->importModule("testpkg");
     systems->script->setSubsystems(systems);
 
     // Start remote console

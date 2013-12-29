@@ -6,7 +6,7 @@ namespace py = boost::python;
 
 BOOST_PYTHON_MODULE(_core)
 {
-    py::class_<Subsystems>("Subsystems")
+    py::class_<Subsystems, SubsystemsPtr, boost::noncopyable>("Subsystems")
         .def_readonly("render", &Subsystems::render)
         .def_readonly("physics", &Subsystems::physics)
         .def_readonly("input", &Subsystems::input)

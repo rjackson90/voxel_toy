@@ -11,16 +11,7 @@
 
 // Local includes
 #include "error.hpp"
-
-namespace Script
-{
-    class IScript
-    {
-    public:
-        virtual ~IScript(){}
-        virtual void tick(const SubsystemsPtr &) = 0;
-    };
-}
+#include "script.h"
 
 class ScriptSystem : public System
 {
@@ -33,8 +24,8 @@ public:
     void importModule(const std::string&);
     void setSubsystems(const SubsystemsPtr &);
 
-    void addScript(std::shared_ptr<Script::IScript>);
-    void addScriptNode(int, std::shared_ptr<Script::IScript>);
+    void addScript(const std::shared_ptr<Script::IScript>&);
+    void addScriptNode(int, std::shared_ptr<Script::IScript>&);
 
 private:
     void py_addPath(const std::string&);
