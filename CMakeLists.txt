@@ -61,6 +61,15 @@ else(${OPENGL_FOUND})
     message(SEND_ERROR "OpenGL not found")
 endif(${OPENGL_FOUND})
 
+# ... for GLM
+find_package(GLM)
+if(${GLM_FOUND})
+    message(STATUS "Found GLM")
+    include_directories(${GLM_INCLUDE_DIR})
+else(${GLM_FOUND})
+    message(SEND_ERROR "GLM not found")
+endif(${GLM_FOUND})
+
 # ... for SDL 2.0
 find_package(SDL2)
 if(${SDL2_FOUND})
