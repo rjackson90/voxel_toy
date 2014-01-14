@@ -2,8 +2,10 @@
 #define UNIFORM_H
 
 // System headers
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
 #include <GL/glew.h>
 #include <algorithm>
 
