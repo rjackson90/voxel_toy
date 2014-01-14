@@ -9,11 +9,8 @@ namespace Script
     class IScript
     {
         public:
-            virtual void tick(const SubsystemsPtr &systems)
-            {
-                // Default implementation is a no-op
-                (void)&systems;
-            }
+            virtual ~IScript() {}
+            virtual void tick(const SubsystemsPtr &systems) = 0;
     };
 }
 #endif // SCRIPT_H

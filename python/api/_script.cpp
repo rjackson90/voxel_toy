@@ -13,48 +13,21 @@ class ScriptWrapper : public Script::IScript, public py::wrapper<Script::IScript
     public:
     void tick(const SubsystemsPtr& systems)
     {
-        if(py::override tick = this->get_override("tick"))
-        {
-            tick(systems);
-            return;
-        }
-        return Script::IScript::tick(systems);
-    }
-
-    void default_tick(const SubsystemsPtr& systems) 
-    { 
-        return this->Script::IScript::tick(systems); 
+        this->get_override("tick")(systems);
+        return;
     }
 };
 
-class Implementation : public Script::IScript
-{
-    public:
-        virtual void tick(const SubsystemsPtr& systems) override
-        {
-            (void)&systems;
-            std::cout << "tick" << std::endl;
-        }
-};
-
+typedef std::shared_ptr<ScriptWrapper> ScriptWrapperPtr;
 
 BOOST_PYTHON_MODULE(_script)
 {
-
-    py::class_<Script::IScript>("Script");
-
-    py::class_<ScriptWrapper, std::shared_ptr<ScriptWrapper>, boost::noncopyable >(
-            "Script", py::no_init)
-        .def("tick", &Script::IScript::tick, &ScriptWrapper::default_tick);
-
-    py::class_<Implementation, std::shared_ptr<Implementation>, py::bases<Script::IScript>>(
-            "Implementation", py::init<>())
-        .def("tick", &Implementation::tick);
-
-    py::class_<ScriptSystem, ScriptPtr>("ScriptSystem", py::no_init)
+    py::class_<ScriptSystem, boost::noncopyable>("ScriptSystem", py::no_init)
         .def("add_script", &ScriptSystem::addScript)
         .def("add_script_node", &ScriptSystem::addScriptNode);
-    
-    py::implicitly_convertible<std::shared_ptr<Implementation>, std::shared_ptr<Script::IScript>>();
-    py::implicitly_convertible<std::shared_ptr<ScriptWrapper>, std::shared_ptr<Script::IScript>>();
+
+    py::class_<ScriptWrapper, ScriptWrapperPtr, boost::noncopyable>("Script")
+        .def("tick", py::pure_virtual(&Script::IScript::tick));
+
+    py::implicitly_convertible< ScriptWrapperPtr, std::shared_ptr<Script::IScript> >();
 }
