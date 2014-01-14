@@ -50,6 +50,9 @@ class RemoteShell(code.InteractiveConsole):
 
         except socket.error, e:
             print "[DEBUG] Socket error {}: {}".format(e.errno, e.strerror)
+            raise IOError
+        except IOError:
+            return False
         return True
 
     def write(self, data):
@@ -57,6 +60,7 @@ class RemoteShell(code.InteractiveConsole):
             self.sock.sendall(data)
         except socket.error, e:
             print "[DEBUG] Socket error on send. {}: {}".format(*e.args)
+            raise IOError
 
     def readline(self, size):
         try:
@@ -67,6 +71,7 @@ class RemoteShell(code.InteractiveConsole):
         except socket.error, e:
             if e.errno != 11:
                 print "[DEBUG] Socket error on recv. {}: {}".format(*e.args)
+                raise IOError
 
     def print_banner(self):
         """Set shell prompts if they are not already set, print the startup
