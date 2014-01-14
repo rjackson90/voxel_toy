@@ -18,7 +18,15 @@ RenderSystem::RenderSystem(int width, int height, const std::string& title,
     float left = -5.0f, right = 5.0f;
     perspective = glm::ortho(left, right, left / aspect, right / aspect, -100.0f, 100.0f);
     
+    // Enable depth testing
     glEnable(GL_DEPTH_TEST);
+
+    // Print info about the GL context
+    std::cout << "GL_VENDOR:\t"   << glGetString(GL_VENDOR) << std::endl <<
+                 "GL_RENDERER:\t" << glGetString(GL_RENDERER) << std::endl <<
+                 "GL_VERSION:\t"  << glGetString(GL_VERSION) << std::endl <<
+                 "GL_SHADING_LANGUAGE_VERSION:\t" << glGetString(GL_SHADING_LANGUAGE_VERSION) << 
+                 std::endl;
 }
 
 /* This function adds another node to the batch

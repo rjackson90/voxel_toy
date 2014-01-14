@@ -42,12 +42,18 @@ void ScriptSystem::importModule(const std::string& module)
                 "Error importing module: ");
 }
 
-void ScriptSystem::addScript(std::shared_ptr<Script::IScript> script_ptr)
+void ScriptSystem::setSubsystems(const SubsystemsPtr &systems)
+{
+    return py_call_nothrow<void>(boost::bind(&ScriptSystem::py_setSubsystems, this, systems),
+            "Error sharing Subsystems struct: ");
+}
+
+void ScriptSystem::addScript(const std::shared_ptr<Script::IScript>& script_ptr)
 {
     scripts.push_back(script_ptr);
 }
 
-void ScriptSystem::addScriptNode(int id, std::shared_ptr<Script::IScript> script_ptr)
+void ScriptSystem::addScriptNode(int id, std::shared_ptr<Script::IScript>& script_ptr)
 {
     ScriptSystem::ScriptNode node;
     node.key = id;
@@ -68,4 +74,10 @@ void ScriptSystem::py_importModule(const std::string &module)
 {
     py::str mod(module.c_str());
     globals[mod] = py::import(mod);
+}
+
+void ScriptSystem::py_setSubsystems(const SubsystemsPtr &systems)
+{
+    py::object py_sys(systems);
+    globals["systems"] = py_sys;
 }

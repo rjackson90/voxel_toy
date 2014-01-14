@@ -11,7 +11,7 @@ namespace Script
         RemoteConsole();
         ~RemoteConsole();
 
-        virtual void tick(const SubsystemsPtr &) override;
+        virtual void tick(const SubsystemsPtr &);
 
     private:
         void py_init();

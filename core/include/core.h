@@ -11,19 +11,19 @@
 
 // Forward declare subsystem classes, as well as unique pointer typedefs
 class Dispatch;
-typedef std::unique_ptr<Dispatch> DispatchPtr;
+typedef std::shared_ptr<Dispatch> DispatchPtr;
 
 class RenderSystem;
-typedef std::unique_ptr<RenderSystem> RenderPtr;
+typedef std::shared_ptr<RenderSystem> RenderPtr;
 
 class PhysicsSystem;
-typedef std::unique_ptr<PhysicsSystem> PhysicsPtr;
+typedef std::shared_ptr<PhysicsSystem> PhysicsPtr;
 
 class InputSystem;
-typedef std::unique_ptr<InputSystem> InputPtr;
+typedef std::shared_ptr<InputSystem> InputPtr;
 
 class ScriptSystem;
-typedef std::unique_ptr<ScriptSystem> ScriptPtr;
+typedef std::shared_ptr<ScriptSystem> ScriptPtr;
 
 // Define Subsystems struct
 
@@ -39,7 +39,7 @@ struct Subsystems
     ScriptPtr script;
     DispatchPtr dispatch;
 };
-typedef std::unique_ptr<Subsystems> SubsystemsPtr;
+typedef std::shared_ptr<Subsystems> SubsystemsPtr;
 
 // Names in the Core namespace
 namespace Core

@@ -44,9 +44,9 @@ class RemoteShell(code.InteractiveConsole):
        
             # Display an appropriate prompt
             if more:
-                self.write(sys.ps2)
+                self.write(sys.ps2+' ')
             else:
-                self.write(sys.ps1)
+                self.write(sys.ps1+' ')
 
         except socket.error, e:
             print "[DEBUG] Socket error {}: {}".format(e.errno, e.strerror)
@@ -89,7 +89,7 @@ class RemoteShell(code.InteractiveConsole):
         else:
             self.write("{}\n".format(self.banner))
         
-        self.write(sys.ps1)
+        self.write(sys.ps1+' ')
 
     def cleanup(self):
         """Close the connection to the client."""

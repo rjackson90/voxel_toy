@@ -11,6 +11,7 @@ namespace Paths
     const std::string physics("@physics_data_path@");
     const std::string core("@core_data_path@");
     const std::string python("@python_path@");
+    const std::string python_lib("@python_so@");
 }
 
 
