@@ -15,13 +15,13 @@ RemoteConsole::~RemoteConsole()
             "Error stopping remote shell server: ");
 }
 
-void RemoteConsole::tick(__attribute__((unused))const SubsystemsPtr &systems)
+void RemoteConsole::tick() const
 {
     py_call_nothrow<void>(boost::bind(&RemoteConsole::py_tick, this),
             "Error in the remote shell interactive loop: ");
 }
 
-void RemoteConsole::py_tick()
+void RemoteConsole::py_tick() const
 {
     // If we don't have a shell yet, call rconsole.accept()
     if(shell == NULL || shell.is_none())
@@ -34,8 +34,10 @@ void RemoteConsole::py_tick()
     }
 
     bool result = py::extract<bool>(shell.attr("tick")());
-    if(!result)
+    if(!result){
         shell = py::object();
+        std::cout << "Remote console disconnected from client" << std::endl;
+    }
 }
 
 void RemoteConsole::py_init()
@@ -44,6 +46,8 @@ void RemoteConsole::py_init()
     listen_socket = rconsole.attr("listen")();
 
     globals = py::extract<py::dict>(py::import("__main__").attr("__dict__"));
+
+    std::cout << "Initialized remote console" << std::endl;
 }
 
 void RemoteConsole::py_destroy()
@@ -53,4 +57,6 @@ void RemoteConsole::py_destroy()
         shell.attr("cleanup")();
     if(!listen_socket.is_none())
         listen_socket.attr("close")();
+
+    std::cout << "Cleaned up remote console" << std::endl;
 }

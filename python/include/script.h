@@ -10,7 +10,9 @@ namespace Script
     {
         public:
             virtual ~IScript() {}
-            virtual void tick(const SubsystemsPtr &systems) = 0;
+            virtual void tick() const {
+                std::cout << "Default implementation" << std::endl;
+            }
     };
 }
 #endif // SCRIPT_H

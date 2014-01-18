@@ -15,18 +15,26 @@ ScriptSystem::ScriptSystem() : scripts(), nodes()
     globals["sys"] = py::import("sys");
 }
 
-void ScriptSystem::tick(const SubsystemsPtr &systems, __attribute__((unused))const double dt)
+void ScriptSystem::tick(
+        __attribute__((unused)) const SubsystemsPtr &systems,
+        __attribute__((unused)) const double dt)
 {
     // Tick scripts which run every frame
     for(const std::shared_ptr<IScript>& script : scripts)
     {
-        script->tick(systems);
+        try {
+            script->tick();
+        } catch(const py::error_already_set &ex) {
+            std::cout << "A Python error occured: " 
+                      << parse_python_exception()
+                      << std::endl;
+        }
     }
 
     // Tick scripts associated with nodes
     for(std::pair<int, ScriptNode> script : nodes)
     {
-        script.second.script->tick(systems);
+        script.second.script->tick();
     }
 }
 
@@ -53,7 +61,7 @@ void ScriptSystem::addScript(const std::shared_ptr<Script::IScript>& script_ptr)
     scripts.push_back(script_ptr);
 }
 
-void ScriptSystem::addScriptNode(int id, std::shared_ptr<Script::IScript>& script_ptr)
+void ScriptSystem::addScriptNode(int id, const std::shared_ptr<Script::IScript>& script_ptr)
 {
     ScriptSystem::ScriptNode node;
     node.key = id;
@@ -78,6 +86,6 @@ void ScriptSystem::py_importModule(const std::string &module)
 
 void ScriptSystem::py_setSubsystems(const SubsystemsPtr &systems)
 {
-    py::object py_sys(systems);
-    globals["systems"] = py_sys;
+    py::object script_sys(systems->script);
+    globals["script_system"] = script_sys;
 }

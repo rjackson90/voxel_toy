@@ -25,7 +25,7 @@ public:
     void setSubsystems(const SubsystemsPtr &);
 
     void addScript(const std::shared_ptr<Script::IScript>&);
-    void addScriptNode(int, std::shared_ptr<Script::IScript>&);
+    void addScriptNode(int, const std::shared_ptr<Script::IScript>&);
 
 private:
     void py_addPath(const std::string&);
@@ -40,6 +40,7 @@ private:
     std::vector<std::shared_ptr<Script::IScript>> scripts;
     std::unordered_map<int, ScriptNode> nodes;
     boost::python::dict globals;
+    SubsystemsPtr sys_cache;
 };
 
 #endif // INTERPRETER_H

@@ -16,11 +16,14 @@ namespace Rendering
     class GLWindow
     {
     public:
-        GLWindow(int, int, const std::string&, const std::vector<std::pair<SDL_GLattr, int>>&);
+        GLWindow();
         ~GLWindow();
+        bool init(int, int, const std::string&);
 
         void makeCurrent();
         void swap();
+
+        std::pair<int,int> getDimensions();
 
     private:
         SDL_Window* window;

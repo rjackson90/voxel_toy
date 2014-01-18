@@ -32,7 +32,7 @@
 class RenderSystem : public System
 {
     public:
-    RenderSystem(int, int, const std::string&, std::vector<std::pair<SDL_GLattr, int>>);
+    RenderSystem(const Rendering::GLWindowPtr&);
     virtual void tick(const SubsystemsPtr &, const double)override;
     void addNode(int, Rendering::GeometryPtr, Rendering::VecEffectPtr, Rendering::VecUniformPairPtr);
     void addFrameUniform(Rendering::UniformPairPtr ptr) { frame_uniforms.push_back(ptr); }

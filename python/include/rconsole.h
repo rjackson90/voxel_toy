@@ -11,18 +11,18 @@ namespace Script
         RemoteConsole();
         ~RemoteConsole();
 
-        virtual void tick(const SubsystemsPtr &);
+        virtual void tick() const override;
 
     private:
         void py_init();
         void py_destroy();
-        void py_tick();
+        void py_tick() const;
 
         boost::python::object rconsole;
         boost::python::dict globals;
 
         boost::python::object listen_socket;
-        boost::python::object shell;
+        mutable boost::python::object shell;
     };
 }
 

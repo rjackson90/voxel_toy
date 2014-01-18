@@ -24,23 +24,21 @@ int main()
     systems->script = ScriptPtr(new ScriptSystem());
     systems->input = InputPtr(new InputSystem());
     systems->physics = PhysicsPtr(new PhysicsSystem());
-    systems->render = RenderPtr(
-            new RenderSystem(
-                1024, 
-                768, 
-                "Really Fun Game!",
-                {
-                {SDL_GL_RED_SIZE, 8},
-                {SDL_GL_GREEN_SIZE, 8},
-                {SDL_GL_BLUE_SIZE, 8},
-                {SDL_GL_ALPHA_SIZE, 8},
-                {SDL_GL_ACCELERATED_VISUAL, 1},
-//                {SDL_GL_CONTEXT_MAJOR_VERSION, 3},
-//                {SDL_GL_CONTEXT_MINOR_VERSION, 3},
-                {SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG},
-                {SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE}
-                })
-            );
+    
+    // Initialize hardware-accelerated window.
+    int width = 1024;
+    int height = 768;
+    const std::string title = "Really Fun Game!";
+    Rendering::GLWindowPtr window = make_shared<Rendering::GLWindow>();
+
+    // Quit if the window requirements cannot be met
+    if(!window->init(width, height, title)) {
+        cout << "Failed to initialize window. Please ensure your system "
+             << "meets minimum requirements for graphics hardware and that "
+             << "your hardware is properly configured." << endl;
+        return 1;
+    }
+    systems->render = RenderPtr(new RenderSystem(window));
 
     // Add python sources to import search tree
     systems->script->addPath(Paths::python);

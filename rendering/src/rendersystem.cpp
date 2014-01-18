@@ -7,13 +7,11 @@ using std::vector;
 /* The constuctor initializes GLEW, a critical library which makes loading
  * function pointers for OpenGL functionality REALLY EASY
  */
-RenderSystem::RenderSystem(int width, int height, const std::string& title, 
-        vector<pair<SDL_GLattr, int>> attr) : 
-    window(std::make_shared<GLWindow>(width, height, title, attr)), 
-    frame_uniforms()
+RenderSystem::RenderSystem(const GLWindowPtr &win) : window(win), frame_uniforms()
 {
     // Orthographic projection
-    float aspect = (float) width / (float) height;
+    std::pair<int, int> dimensions = window->getDimensions();
+    float aspect = (float) dimensions.first / (float) dimensions.second;
 
     float left = -5.0f, right = 5.0f;
     perspective = glm::ortho(left, right, left / aspect, right / aspect, -100.0f, 100.0f);
@@ -40,7 +38,7 @@ void RenderSystem::tick(const SubsystemsPtr &systems,
         __attribute__((unused)) const double dt)
 {
     // Clear the frame buffer, depth buffer, and stencil buffer
-    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glClearColor(1.0, 1.0, 1.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     // Update uniforms which are at frame scope
