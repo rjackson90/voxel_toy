@@ -11,7 +11,6 @@ namespace Script
         public:
             virtual ~IScript() {}
             virtual void tick() const {
-                std::cout << "Default implementation" << std::endl;
             }
     };
 }

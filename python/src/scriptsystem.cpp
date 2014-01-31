@@ -20,7 +20,7 @@ void ScriptSystem::tick(
         __attribute__((unused)) const double dt)
 {
     // Tick scripts which run every frame
-    for(const std::shared_ptr<IScript>& script : scripts)
+    for(auto script : scripts)
     {
         try {
             script->tick();
@@ -56,12 +56,12 @@ void ScriptSystem::setSubsystems(const SubsystemsPtr &systems)
             "Error sharing Subsystems struct: ");
 }
 
-void ScriptSystem::addScript(const std::shared_ptr<Script::IScript>& script_ptr)
+void ScriptSystem::addScript(const std::shared_ptr<IScript>  &script_ptr)
 {
     scripts.push_back(script_ptr);
 }
 
-void ScriptSystem::addScriptNode(int id, const std::shared_ptr<Script::IScript>& script_ptr)
+void ScriptSystem::addScriptNode(int id, IScript *script_ptr)
 {
     ScriptSystem::ScriptNode node;
     node.key = id;
@@ -86,6 +86,6 @@ void ScriptSystem::py_importModule(const std::string &module)
 
 void ScriptSystem::py_setSubsystems(const SubsystemsPtr &systems)
 {
-    py::object script_sys(systems->script);
+    py::object script_sys(py::ptr(systems->script.get()));
     globals["script_system"] = script_sys;
 }

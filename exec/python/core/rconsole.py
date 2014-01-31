@@ -59,7 +59,8 @@ class RemoteShell(code.InteractiveConsole):
         try:
             self.sock.sendall(data)
         except socket.error, e:
-            print "[DEBUG] Socket error on send. {}: {}".format(*e.args)
+            if e[0] != 32:
+                print "[DEBUG] Socket error on send. {}: {}".format(*e.args)
             raise IOError
 
     def readline(self, size):

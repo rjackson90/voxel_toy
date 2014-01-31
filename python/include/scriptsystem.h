@@ -24,8 +24,8 @@ public:
     void importModule(const std::string&);
     void setSubsystems(const SubsystemsPtr &);
 
-    void addScript(const std::shared_ptr<Script::IScript>&);
-    void addScriptNode(int, const std::shared_ptr<Script::IScript>&);
+    void addScript(const std::shared_ptr<Script::IScript> &);
+    void addScriptNode(int, Script::IScript *);
 
 private:
     void py_addPath(const std::string&);
@@ -34,13 +34,12 @@ private:
 
     struct ScriptNode : Node
     {
-        std::shared_ptr<Script::IScript> script;
+        Script::IScript * script;
     };
 
     std::vector<std::shared_ptr<Script::IScript>> scripts;
     std::unordered_map<int, ScriptNode> nodes;
     boost::python::dict globals;
-    SubsystemsPtr sys_cache;
 };
 
-#endif // INTERPRETER_H
+#endif // SCRIPTSYSTEM_H
