@@ -18,6 +18,30 @@ GLWindow::GLWindow(int width, int height, const std::string& title,
         }
     }
 
+    // Enumerate available displays
+    std::cout << "Available displays: " << std::endl;
+    
+    int displays = SDL_GetNumVideoDisplays();
+    SDL_Rect* dpy_bounds = new SDL_Rect();
+
+    for(int i = 0; i < displays; i++)
+    {
+        const char* dpy_name = SDL_GetDisplayName(i);
+
+        if(dpy_name != NULL){
+            SDL_GetDisplayBounds(i, dpy_bounds);
+            std::cout << "[" << i << "]: " << dpy_name << "\t"
+                      << "(" << dpy_bounds->w << "x" << dpy_bounds->h << ")@(" 
+                      << dpy_bounds->x << "," << dpy_bounds->y << ")" << std::endl;
+        } else {
+            std::cerr << "[ERROR]" <<  SDL_GetError() << std::endl;
+            break;
+        }
+    }
+
+    delete dpy_bounds;
+
+
     // Create a window, checking for errors
     std::cout << "Creating a new window...";
     window = SDL_CreateWindow(
