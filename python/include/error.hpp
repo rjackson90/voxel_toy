@@ -30,13 +30,16 @@ return_type py_call_ex(boost::function<return_type ()> callable, const std::stri
 template<typename return_type>
 return_type py_call_nothrow(boost::function<return_type ()> callable, const std::string& prefix)
 {
+    std::string error_string(prefix);
+
     try
     {
         return py_call_ex(callable, prefix);
     }
     catch(const std::runtime_error &ex)
     {
-        std::cerr << ex.what() << std::endl;
+        error_string = error_string + parse_python_exception();
+        std::cerr << ex.what() << std::endl << error_string << std::endl;;
     }
 }
 

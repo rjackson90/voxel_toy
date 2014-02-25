@@ -10,7 +10,8 @@ namespace Script
     {
         public:
             virtual ~IScript() {}
-            virtual void tick(const SubsystemsPtr &systems) = 0;
+            virtual void tick() const {
+            }
     };
 }
 #endif // SCRIPT_H
