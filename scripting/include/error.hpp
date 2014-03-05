@@ -4,6 +4,7 @@
 #include <boost/python.hpp>
 #include <boost/function.hpp>
 #include <string>
+#include <type_traits>
 
 std::string parse_python_exception();
 
@@ -39,8 +40,12 @@ return_type py_call_nothrow(boost::function<return_type ()> callable, const std:
     catch(const std::runtime_error &ex)
     {
         error_string = error_string + parse_python_exception();
-        std::cerr << ex.what() << std::endl << error_string << std::endl;;
+        std::cerr << ex.what() << std::endl << error_string << std::endl;
     }
+
+    // The function cannot return unless return_type is void. Unfortunately,
+    // an exception MUST be thrown. Probably for the best, I guess...
+    throw std::runtime_error("Previously reported Python error");
 }
 
 #endif // ERROR_HPP
