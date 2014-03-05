@@ -3,9 +3,18 @@
 #include "math_ext.h"
 
 static const float tolerance = 0.00001f;
+static const std::string serial("1.0 2.0 3.0");
 
 SUITE(VectorSuite)
 {
+    TEST(FromString)
+    {
+        Vector test = Vector::from_string(serial);
+        CHECK_CLOSE(test.x, 1.0f, tolerance);
+        CHECK_CLOSE(test.y, 2.0f, tolerance);
+        CHECK_CLOSE(test.z, 3.0f, tolerance);
+    }
+
     TEST(Construction)
     {
         Vector result;

@@ -170,34 +170,10 @@ int main()
     // Add rigid bodies to the physics system
     cout << "Creating rigid bodies" << endl;
 
-    float sixth = 1.0f/6.0f;
-
-    Physics::State start;
-    start.orientation = Quaternion( 1.0, Constants::ORIGIN );
-    start.position = Vector(-1.25f, 1.25f, -0.0002f);
-    start.momentum = Constants::ORIGIN;
-    start.angular_momentum = Constants::ORIGIN;
-    start.mass = 1.0f;
-    start.inverse_mass = 1.0f;
-    start.inertia_tensor = glm::mat3(sixth, 0.0f, 0.0f, 0.0f, sixth, 0.0f, 0.0f, 0.0f, sixth);
-    start.inverse_inertia_tensor = glm::inverse(start.inertia_tensor);
-    systems->physics->addNode(1, start);
-
-    Physics::State cube2 = start;
-    cube2.position.x = 1.25f;
-    cube2.angular_momentum = Vector(0.0f, 0.05f, 0.0f);
-    systems->physics->addNode(2, cube2);
-
-    Physics::State cube3 = start;
-    cube3.position.x = -3.75f;
-    cube3.position.y = -1.75f;
-    cube3.angular_momentum = Vector(0.0f, 0.0f, 0.05f);
-    systems->physics->addNode(3, cube3);
-
-    Physics::State cube4 = cube2;
-    cube4.position.y = -1.25f;
-    cube4.angular_momentum = Vector(0.05f, 0.0f, 0.0f);
-    systems->physics->addNode(4, cube4);
+    systems->physics->addNodeFromConfig(Paths::config_root+"static_stone.cfg");
+    systems->physics->addNodeFromConfig(Paths::config_root+"spinny_stone.cfg");
+    systems->physics->addNodeFromConfig(Paths::config_root+"turning_wood.cfg");
+    systems->physics->addNodeFromConfig(Paths::config_root+"obsidian.cfg");
 
     /* GO */
     cout << "Starting main loop" << endl;

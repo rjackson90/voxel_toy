@@ -31,20 +31,20 @@ SUITE(ConfigFileSuite)
 {
     TEST_FIXTURE(ConfigTestFixture, parseFile)
     {
-        Script::ConfigParser parser;
+        Core::ConfigParser parser;
         CHECK(parser.parse_file(config_file_path));
     }
 
     TEST_FIXTURE(ConfigTestFixture, readValue)
     {
-        Script::ConfigParser parser;
+        Core::ConfigParser parser;
         CHECK(parser.parse_file(config_file_path));
         CHECK_EQUAL(parser.get("stringValue", "Data"), hello_world);
     }
 
     TEST_FIXTURE(ConfigTestFixture, writeValue)
     {
-        Script::ConfigParser parser;
+        Core::ConfigParser parser;
         CHECK(parser.parse_file(config_file_path));
         
         parser.set("stringValue", hello_world, "Data");

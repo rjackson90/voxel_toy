@@ -2,15 +2,23 @@
 #define MATH_EXT_H
 
 #include <math.h>
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <string>
+#include <sstream>
 
+/* Free functions */
 double radians(double);
 double degrees(double);
+glm::mat3 mat3_from_string(const std::string &);
 
 /* Custom Vector object, because sometimes GLM sucks */
 struct Vector
 {
     float x, y, z;
+
+    static Vector from_string(const std::string &);
     
     Vector();
     Vector(float, float, float);
@@ -30,6 +38,8 @@ struct Vector
 struct Quaternion
 {
     float w, x, y, z;
+
+    static Quaternion from_string(const std::string &);
     
     Quaternion();
     Quaternion(float, const Vector &);

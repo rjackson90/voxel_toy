@@ -5,7 +5,7 @@
 
 namespace py = boost::python;
 using namespace std;
-using namespace Script;
+using namespace Core;
 
 /// PUBLIC METHODS
 

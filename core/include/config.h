@@ -1,9 +1,10 @@
 #ifndef CONFIGPARSER_H
 #define CONFIGPARSER_H
 
-#include "scriptsystem.h"
+#include <boost/python.hpp>
+#include "error.hpp"
 
-namespace Script
+namespace Core
 {
     class ConfigParser
     {
