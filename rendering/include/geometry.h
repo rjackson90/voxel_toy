@@ -7,6 +7,7 @@
 
 #include "math_ext.h"
 #include "config.h"
+#include "rendering.h"
 
 namespace Rendering
 {
@@ -24,8 +25,7 @@ namespace Rendering
         Geometry();
         ~Geometry();
 
-        static void GeometryFromConfig(
-                Geometry &, const Core::ConfigParser &, const std::string &);
+        static GeometryPtr GeometryFromConfig(const Core::ConfigParser &, const std::string &);
 
         void setDrawMethod(DrawMethod dm) { method = dm; }
 

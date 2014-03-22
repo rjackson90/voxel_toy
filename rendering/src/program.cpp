@@ -8,6 +8,42 @@ Program::Program()
     program_obj = glCreateProgram();
 }
 
+ProgramPtr Program::ProgramFromConfig(const Core::ConfigParser &parser, const std::string &section)
+{
+    auto pgm = std::make_shared<Program>();
+    bool result = false;
+    try
+    {
+        // compile vertex shader
+        if(parser.exists("vertexShader", section))
+        {
+            result = pgm->attachShader(
+                    parser.get("vertexShader", section), ShaderType::VertexShader);
+            if(!result) throw std::runtime_error("Failed to compile vertex shader");
+        }
+
+        // compile fragment shader
+        if(parser.exists("fragmentShader", section))
+        {
+            result = pgm->attachShader(
+                    parser.get("fragmentShader", section), ShaderType::FragmentShader);
+            if(!result) throw std::runtime_error("Failed to compile fragment shader");
+        }
+
+        // link the program if the shaders compiled
+        if(result)
+        {
+            if( (result = pgm->link()) ) throw std::runtime_error("Linking failed");
+        }
+    }
+    catch(const std::exception &ex)
+    {
+        std::cerr << "Error creating program: " << ex.what() << std::endl;
+    }
+
+    return pgm;
+}
+
 bool Program::attachShader(const std::string &path, ShaderType shader_type)
 {
     GLuint shader_obj = glCreateShader(shader_type);

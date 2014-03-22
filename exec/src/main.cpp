@@ -53,11 +53,10 @@ int main()
     systems->script->addScript(console);
 
     // Generate geometry
-
     Core::ConfigParser gparse;
+
     gparse.parse_file(Paths::config_root+"quad_geom.cfg");
-    auto quad = std::make_shared<Rendering::Geometry>();
-    Rendering::Geometry::GeometryFromConfig(*quad, gparse, "QuadGeometry");
+    auto quad = Rendering::Geometry::GeometryFromConfig(gparse, "QuadGeometry");
 
     // Load textures
     auto stonebrick = std::make_shared<Rendering::Texture>(

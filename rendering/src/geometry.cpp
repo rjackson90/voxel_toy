@@ -18,11 +18,13 @@ Geometry::~Geometry()
     glDeleteBuffers(2, &buffers[0]);
 }
 
-void Geometry::GeometryFromConfig(
-        Geometry &geo, const Core::ConfigParser &parser, const std::string &section)
+GeometryPtr Geometry::GeometryFromConfig(
+        const Core::ConfigParser &parser, const std::string &section)
 {
     using std::string;
     using std::stringstream;
+
+    auto geo = std::make_shared<Geometry>();
 
     try
     {
@@ -30,22 +32,22 @@ void Geometry::GeometryFromConfig(
         string method = parser.get("drawMethod", section);
         if(method.compare("ARRAYS") == 0)
         {
-            geo.setDrawMethod(DrawMethod::ARRAYS);
+            geo->setDrawMethod(DrawMethod::ARRAYS);
         }
         else
         {
-            geo.setDrawMethod(DrawMethod::ELEMENTS);
+            geo->setDrawMethod(DrawMethod::ELEMENTS);
         }
 
         // set draw_mode.
         string mode = parser.get("drawMode", section);
-        if(mode.compare("GL_POINTS") == 0)          geo.draw_mode = GL_POINTS;
-        if(mode.compare("GL_TRIANGLES") == 0)       geo.draw_mode = GL_TRIANGLES;
-        if(mode.compare("GL_TRIANGLE_STRIP") == 0)  geo.draw_mode = GL_TRIANGLE_STRIP;
-        if(mode.compare("GL_TRIANGLE_FAN") == 0)    geo.draw_mode = GL_TRIANGLE_FAN;
-        if(mode.compare("GL_LINES") == 0)           geo.draw_mode = GL_LINES;
-        if(mode.compare("GL_LINE_STRIP") == 0)      geo.draw_mode = GL_LINE_STRIP;
-        if(mode.compare("GL_LINE_LOOP") == 0)       geo.draw_mode = GL_LINE_LOOP;
+        if(mode.compare("GL_POINTS") == 0)          geo->draw_mode = GL_POINTS;
+        if(mode.compare("GL_TRIANGLES") == 0)       geo->draw_mode = GL_TRIANGLES;
+        if(mode.compare("GL_TRIANGLE_STRIP") == 0)  geo->draw_mode = GL_TRIANGLE_STRIP;
+        if(mode.compare("GL_TRIANGLE_FAN") == 0)    geo->draw_mode = GL_TRIANGLE_FAN;
+        if(mode.compare("GL_LINES") == 0)           geo->draw_mode = GL_LINES;
+        if(mode.compare("GL_LINE_STRIP") == 0)      geo->draw_mode = GL_LINE_STRIP;
+        if(mode.compare("GL_LINE_LOOP") == 0)       geo->draw_mode = GL_LINE_LOOP;
 
         // Read vertex data from file
         int vcount = stoi(parser.get("vertexCount", section));
@@ -74,7 +76,7 @@ void Geometry::GeometryFromConfig(
         }
 
         // Send vertex data to GPU, free memory
-        geo.loadVertexArray(verts, vcount, GL_STATIC_DRAW);
+        geo->loadVertexArray(verts, vcount, GL_STATIC_DRAW);
         delete[] verts;
 
         // Read element data from file
@@ -97,7 +99,7 @@ void Geometry::GeometryFromConfig(
         }
 
         // Send element data to GPU, free memory
-        geo.loadElements(elems, ecount, GL_STATIC_DRAW);
+        geo->loadElements(elems, ecount, GL_STATIC_DRAW);
         delete[] elems;
     }
     catch(const std::exception &ex)
@@ -105,6 +107,8 @@ void Geometry::GeometryFromConfig(
         std::cerr << "Error parsing config file " << ex.what()
                   << std::endl;
     }
+
+    return geo;
 }
 
 void Geometry::draw() const
