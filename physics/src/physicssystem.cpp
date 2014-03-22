@@ -43,9 +43,8 @@ void PhysicsSystem::addNode(int key, State &initial)
 
 // This method parses the config file located at the provided filesystem path
 // and creates a new RigidBodyNode from the data
-void PhysicsSystem::addNodeFromConfig(const std::string &path)
+void PhysicsSystem::addNodeFromConfig(const Core::ConfigParser &parser)
 {
-    Core::ConfigParser parser;
     Physics::State state;
     int nodeID = -1;
     bool status = false;
@@ -53,14 +52,8 @@ void PhysicsSystem::addNodeFromConfig(const std::string &path)
     // Eat exceptions. Node is created outside critical section
     try
     {
-        if(! parser.parse_file(path))
-        {
-            std::cerr << "Could not parse file " << path << std::endl;
-            return;
-        }
-
         // Get the NodeID from the Meta section
-        nodeID = atoi(parser.get("nodeID", "Meta").c_str());
+        nodeID = stoi(parser.get("nodeID", "Meta"));
 
         // Fill the state with values from the file
         state.orientation = Quaternion::from_string(
@@ -76,10 +69,9 @@ void PhysicsSystem::addNodeFromConfig(const std::string &path)
                 parser.get("inertia_tensor", "RigidBodyNode"));
         state.inverse_inertia_tensor = mat3_from_string(
                 parser.get("inverse_inertia_tensor", "RigidBodyNode"));
-        state.mass = (float) atof(
-                parser.get("mass", "RigidBodyNode").c_str());
-        state.inverse_mass = (float) atof(
-                parser.get("inverse_mass", "RigidBodyNode").c_str());
+        
+        state.mass = (float) stof(parser.get("mass", "RigidBodyNode"));
+        state.inverse_mass = (float) stof(parser.get("inverse_mass", "RigidBodyNode"));
 
         // Read all data, set status flag to "good"
         status = true;
@@ -87,7 +79,7 @@ void PhysicsSystem::addNodeFromConfig(const std::string &path)
     }
     catch(const std::exception &ex)
     {
-        std::cerr << "Error while parsing config file " << path << ex.what() 
+        std::cerr << "Error while parsing config file " << ex.what() 
                   << std::endl;
     }
 

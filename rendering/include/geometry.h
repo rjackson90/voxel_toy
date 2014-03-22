@@ -3,8 +3,10 @@
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+#include <sstream>
 
 #include "math_ext.h"
+#include "config.h"
 
 namespace Rendering
 {
@@ -21,6 +23,9 @@ namespace Rendering
     public:
         Geometry();
         ~Geometry();
+
+        static void GeometryFromConfig(
+                Geometry &, const Core::ConfigParser &, const std::string &);
 
         void setDrawMethod(DrawMethod dm) { method = dm; }
 

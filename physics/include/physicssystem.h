@@ -2,7 +2,6 @@
 #define PHYSICS_SYSTEM_H
 
 #include <unordered_map>
-#include <cstdlib>
 
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
@@ -27,7 +26,7 @@ class PhysicsSystem : public System
         // Required to implement System interface
         virtual void tick(const SubsystemsPtr &, const double) override;
         void addNode(int, Physics::State&);
-        void addNodeFromConfig(const std::string &);
+        void addNodeFromConfig(const Core::ConfigParser &);
 
         // Provide a 4x4 matrix describing the precise position and 
         // orientation of each node to other subsystems

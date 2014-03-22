@@ -51,4 +51,13 @@ SUITE(ConfigFileSuite)
 
         CHECK_EQUAL(parser.get("stringValue", "Data"), hello_world);
     }
+
+    TEST_FIXTURE(ConfigTestFixture, checkValue)
+    {
+        Core::ConfigParser parser;
+        CHECK(parser.parse_file(config_file_path));
+
+        CHECK(parser.exists("stringValue", "Data"));
+        CHECK(!parser.exists("notARealValue", "Data"));
+    }
 }

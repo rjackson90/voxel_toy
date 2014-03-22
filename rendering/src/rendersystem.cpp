@@ -39,6 +39,29 @@ void RenderSystem::addNode(int key,
     nodes.insert({{key, newNode}});
 }
 
+/* This function creates a new Node based on information in the provided config file.
+ */
+void addNodeFromConfig(const Core::ConfigParser &parser)
+{   
+    // Swallow exceptions
+    try
+    {
+        // The Node's ID is in the Meta section
+        int nodeID = stoi(parser.get("nodeID", "Meta"));
+        nodeID = nodeID + 1 - 1; // Prevent "unused variable" warning
+
+        // Geometry
+        std::string geom_section = parser.get("geom_section", "RenderNode");
+        Geometry geo;
+        Geometry::GeometryFromConfig(geo, parser, geom_section);
+    }
+    catch(const std::exception &ex)
+    {
+        std::cerr << "Error parsing config file " << ex.what()
+                  << std::endl;
+    }
+}
+
 /* RenderSystem's tick simply draws the whole scene, calling upon the PhysicsSystem 
  * to provide correct world coordinates.
  */

@@ -21,13 +21,19 @@ bool ConfigParser::parse_file(const string &filename)
             "Error parsing file: ");
 }
 
-string ConfigParser::get(const string &attr, const string &section)
+bool ConfigParser::exists(const string &attr, const string &section) const
+{
+    return py_call_nothrow<bool>(boost::bind(&ConfigParser::py_exists, this, attr, section),
+            "Error checking for attribute: ");
+}
+
+string ConfigParser::get(const string &attr, const string &section) const
 {
     return py_call_nothrow<string>(boost::bind(&ConfigParser::py_get, this, attr, section),
             "Error getting config attribute: ");
 }
 
-void ConfigParser::set(const string &attr, const string &value, const string &section)
+void ConfigParser::set(const string &attr, const string &value, const string &section) const
 {
     py_call_nothrow<void>(boost::bind(&ConfigParser::py_set, this, attr, value, section),
             "Error setting config attribute: ");
@@ -48,12 +54,17 @@ bool ConfigParser::py_parse_file(const string &filename)
     return py::len(conf_parser.attr("read")(filename)) == 1;
 }
 
-string ConfigParser::py_get(const string &attr, const string &section)
+bool ConfigParser::py_exists(const string &attr, const string &section) const
+{
+    return py::extract<bool>(conf_parser.attr("has_option")(section, attr));
+}
+
+string ConfigParser::py_get(const string &attr, const string &section) const
 {
     return py::extract<string>(conf_parser.attr("get")(section, attr));
 }
 
-void ConfigParser::py_set(const string &attr, const string &value, const string &section)
+void ConfigParser::py_set(const string &attr, const string &value, const string &section) const
 {
     conf_parser.attr("set")(section, attr, value);
 }

@@ -18,6 +18,95 @@ Geometry::~Geometry()
     glDeleteBuffers(2, &buffers[0]);
 }
 
+void Geometry::GeometryFromConfig(
+        Geometry &geo, const Core::ConfigParser &parser, const std::string &section)
+{
+    using std::string;
+    using std::stringstream;
+
+    try
+    {
+        // set DrawMethod. Check for ARRAYS, otherwise assume ELEMENTS
+        string method = parser.get("drawMethod", section);
+        if(method.compare("ARRAYS") == 0)
+        {
+            geo.setDrawMethod(DrawMethod::ARRAYS);
+        }
+        else
+        {
+            geo.setDrawMethod(DrawMethod::ELEMENTS);
+        }
+
+        // set draw_mode.
+        string mode = parser.get("drawMode", section);
+        if(mode.compare("GL_POINTS") == 0)          geo.draw_mode = GL_POINTS;
+        if(mode.compare("GL_TRIANGLES") == 0)       geo.draw_mode = GL_TRIANGLES;
+        if(mode.compare("GL_TRIANGLE_STRIP") == 0)  geo.draw_mode = GL_TRIANGLE_STRIP;
+        if(mode.compare("GL_TRIANGLE_FAN") == 0)    geo.draw_mode = GL_TRIANGLE_FAN;
+        if(mode.compare("GL_LINES") == 0)           geo.draw_mode = GL_LINES;
+        if(mode.compare("GL_LINE_STRIP") == 0)      geo.draw_mode = GL_LINE_STRIP;
+        if(mode.compare("GL_LINE_LOOP") == 0)       geo.draw_mode = GL_LINE_LOOP;
+
+        // Read vertex data from file
+        int vcount = stoi(parser.get("vertexCount", section));
+        Vertex* verts = new Vertex[vcount];
+        stringstream data(parser.get("vertexData", section));
+        float vec3buf[3];
+        float vec2buf[2];
+
+        for(int i = 0; i < vcount; i++)
+        {
+            // Fill the buffers
+            if(data.good())
+            {
+                data >> vec3buf[0] >> vec3buf[1] >> vec3buf[2]
+                     >> vec2buf[0] >> vec2buf[1];
+            }
+            else
+            {
+                throw std::runtime_error("Not enough data in stream. i = " + std::to_string(i)
+                        +"\n" + data.str()+"\nposition: "+std::to_string(data.tellg()));
+            }
+
+            // Make glm structures out of the buffers, assign to vertex
+            verts[i].position = glm::make_vec3(vec3buf);
+            verts[i].texture = glm::make_vec2(vec2buf);
+        }
+
+        // Send vertex data to GPU, free memory
+        geo.loadVertexArray(verts, vcount, GL_STATIC_DRAW);
+        delete[] verts;
+
+        // Read element data from file
+        int ecount = stoi(parser.get("elementCount", section));
+        short* elems = new short[ecount];
+        data.str(parser.get("elementData", section));
+        data.seekg(0, data.beg);
+
+        for(int i = 0; i < ecount; i++)
+        {
+            if(data.good()) 
+            {
+                data >> elems[i];
+            }
+            else
+            {
+                throw std::runtime_error("I/O stream failure. i = " + std::to_string(i)
+                        +"\n" + data.str());
+            }
+        }
+
+        // Send element data to GPU, free memory
+        geo.loadElements(elems, ecount, GL_STATIC_DRAW);
+        delete[] elems;
+    }
+    catch(const std::exception &ex)
+    {
+        std::cerr << "Error parsing config file " << ex.what()
+                  << std::endl;
+    }
+}
+
 void Geometry::draw() const
 {
     glBindVertexArray(vao);

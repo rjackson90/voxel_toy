@@ -53,13 +53,11 @@ int main()
     systems->script->addScript(console);
 
     // Generate geometry
-    auto cube = std::make_shared<Rendering::Geometry>();
-    cube->genTestCube();
-    cube->setDrawMode(GL_TRIANGLES);
 
+    Core::ConfigParser gparse;
+    gparse.parse_file(Paths::config_root+"quad_geom.cfg");
     auto quad = std::make_shared<Rendering::Geometry>();
-    quad->genTestQuad();
-    quad->setDrawMode(GL_TRIANGLES);
+    Rendering::Geometry::GeometryFromConfig(*quad, gparse, "QuadGeometry");
 
     // Load textures
     auto stonebrick = std::make_shared<Rendering::Texture>(
@@ -170,10 +168,19 @@ int main()
     // Add rigid bodies to the physics system
     cout << "Creating rigid bodies" << endl;
 
-    systems->physics->addNodeFromConfig(Paths::config_root+"static_stone.cfg");
-    systems->physics->addNodeFromConfig(Paths::config_root+"spinny_stone.cfg");
-    systems->physics->addNodeFromConfig(Paths::config_root+"turning_wood.cfg");
-    systems->physics->addNodeFromConfig(Paths::config_root+"obsidian.cfg");
+    Core::ConfigParser parser;
+    
+    parser.parse_file(Paths::config_root+"static_stone.cfg");
+    systems->physics->addNodeFromConfig(parser);
+
+    parser.parse_file(Paths::config_root+"spinny_stone.cfg");
+    systems->physics->addNodeFromConfig(parser);
+
+    parser.parse_file(Paths::config_root+"turning_wood.cfg");
+    systems->physics->addNodeFromConfig(parser);
+
+    parser.parse_file(Paths::config_root+"obsidian.cfg");
+    systems->physics->addNodeFromConfig(parser);
 
     /* GO */
     cout << "Starting main loop" << endl;
