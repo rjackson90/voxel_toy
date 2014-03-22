@@ -5,7 +5,9 @@
 #include <string>
 #include <iostream>
 
+#include "rendering.h"
 #include "fileops.h"
+#include "config.h"
 
 namespace Rendering
 {
@@ -18,6 +20,9 @@ namespace Rendering
     {
     public:
         Program();
+
+        static ProgramPtr ProgramFromConfig(const Core::ConfigParser &, const std::string &);
+
         bool attachShader(const std::string&, ShaderType);        
         void bind() const;
         GLuint getProgramObj() const;

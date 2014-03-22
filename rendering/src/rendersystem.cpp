@@ -52,8 +52,7 @@ void addNodeFromConfig(const Core::ConfigParser &parser)
 
         // Geometry
         std::string geom_section = parser.get("geom_section", "RenderNode");
-        Geometry geo;
-        Geometry::GeometryFromConfig(geo, parser, geom_section);
+        GeometryPtr geo = Geometry::GeometryFromConfig(parser, geom_section);
     }
     catch(const std::exception &ex)
     {

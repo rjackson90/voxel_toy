@@ -53,11 +53,10 @@ int main()
     systems->script->addScript(console);
 
     // Generate geometry
-
     Core::ConfigParser gparse;
+
     gparse.parse_file(Paths::config_root+"quad_geom.cfg");
-    auto quad = std::make_shared<Rendering::Geometry>();
-    Rendering::Geometry::GeometryFromConfig(*quad, gparse, "QuadGeometry");
+    auto quad = Rendering::Geometry::GeometryFromConfig(gparse, "QuadGeometry");
 
     // Load textures
     auto stonebrick = std::make_shared<Rendering::Texture>(
@@ -76,16 +75,9 @@ int main()
             GL_TEXTURE_2D, Paths::rendering+"obsidiann.tga");
 
     // Load program
-    auto phong_program = std::make_shared<Rendering::Program>();
-    if(!phong_program->attachShader(Paths::shaders+"phong.vs", Rendering::VertexShader)){
-        return 1;
-    }
-    if(!phong_program->attachShader(Paths::shaders+"phong.fs", Rendering::FragmentShader)){
-        return 1;
-    }
-    if(!phong_program->link()){
-        return 1;
-    }
+
+    gparse.parse_file(Paths::config_root+"phong_shading.cfg");
+    auto phong_program = Rendering::Program::ProgramFromConfig(gparse, "PhongShading");
 
     // Set texture sampling parameters
     Rendering::SamplerParams params;
