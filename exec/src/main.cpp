@@ -80,6 +80,11 @@ int main()
     auto phong_program = Rendering::Program::ProgramFromConfig(gparse, "PhongShading");
 
     // Set texture sampling parameters
+
+    gparse.parse_file(Paths::config_root+"sampler.cfg");
+    auto linear_blend = Rendering::Sampler::SamplerFromConfig(gparse, "LinearBlend");
+    auto nearest_sample = Rendering::Sampler::SamplerFromConfig(gparse, "NearestSample");
+/*
     Rendering::SamplerParams params;
     params.min_filter = GL_LINEAR;
     
@@ -89,7 +94,7 @@ int main()
     params.mag_filter = GL_NEAREST;
 
     auto nearest_sample = std::make_shared<Rendering::Sampler>(params);
-
+*/
     // Bundle texture data into VecTexDataTuplePtr objects
     auto stone_color = std::make_shared<Rendering::TexDataTuple>(
             stonebrick, linear_blend, "texColor", -1);

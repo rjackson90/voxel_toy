@@ -7,6 +7,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "config.h"
+#include "rendering.h"
+
 namespace Rendering
 {
     struct SamplerParams
@@ -25,12 +28,17 @@ namespace Rendering
 
         GLint compare_mode = GL_NONE;
         GLint compare_func = GL_LEQUAL;
+
+        GLint fromString(const std::string &);
     };
 
     class Sampler
     {
         public:
         Sampler(const SamplerParams&);
+
+        static SamplerPtr SamplerFromConfig(const Core::ConfigParser &, const std::string &);
+
         void bind(GLuint) const;
         const SamplerParams& getParams() const;
         void setParams(const SamplerParams&);

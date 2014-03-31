@@ -33,7 +33,7 @@ ProgramPtr Program::ProgramFromConfig(const Core::ConfigParser &parser, const st
         // link the program if the shaders compiled
         if(result)
         {
-            if( (result = pgm->link()) ) throw std::runtime_error("Linking failed");
+            if(! (result = pgm->link()) ) throw std::runtime_error("Linking failed");
         }
     }
     catch(const std::exception &ex)
