@@ -59,21 +59,17 @@ int main()
     auto quad = Rendering::Geometry::GeometryFromConfig(gparse, "QuadGeometry");
 
     // Load textures
-    auto stonebrick = std::make_shared<Rendering::Texture>(
-            GL_TEXTURE_2D, Paths::rendering+"stonebrick.tga");
-    auto stonebrickn = std::make_shared<Rendering::Texture>(
-            GL_TEXTURE_2D, Paths::rendering+"stonebrickn.tga");
-    
-    auto woodplank = std::make_shared<Rendering::Texture>(
-            GL_TEXTURE_2D, Paths::rendering+"woodplank.tga");
-    auto woodplankn = std::make_shared<Rendering::Texture>(
-            GL_TEXTURE_2D, Paths::rendering+"woodplankn.tga");
-    
-    auto obsidian = std::make_shared<Rendering::Texture>(
-            GL_TEXTURE_2D, Paths::rendering+"obsidian.tga");
-    auto obsidiann = std::make_shared<Rendering::Texture>(
-            GL_TEXTURE_2D, Paths::rendering+"obsidiann.tga");
 
+    gparse.parse_file(Paths::config_root+"textures.cfg");
+    auto stonebrick = Rendering::Texture::TextureFromConfig(gparse, "StoneBrick");
+    auto stonebrickn = Rendering::Texture::TextureFromConfig(gparse, "StoneBrickNormal");
+    
+    auto woodplank = Rendering::Texture::TextureFromConfig(gparse, "WoodPlank");
+    auto woodplankn = Rendering::Texture::TextureFromConfig(gparse, "WoodPlankNormal");
+    
+    auto obsidian = Rendering::Texture::TextureFromConfig(gparse, "Obsidian");
+    auto obsidiann = Rendering::Texture::TextureFromConfig(gparse, "ObsidianNormal");
+    
     // Load program
 
     gparse.parse_file(Paths::config_root+"phong_shading.cfg");
@@ -84,17 +80,7 @@ int main()
     gparse.parse_file(Paths::config_root+"sampler.cfg");
     auto linear_blend = Rendering::Sampler::SamplerFromConfig(gparse, "LinearBlend");
     auto nearest_sample = Rendering::Sampler::SamplerFromConfig(gparse, "NearestSample");
-/*
-    Rendering::SamplerParams params;
-    params.min_filter = GL_LINEAR;
     
-    auto linear_blend = std::make_shared<Rendering::Sampler>(params);
-
-    params.min_filter = GL_NEAREST;
-    params.mag_filter = GL_NEAREST;
-
-    auto nearest_sample = std::make_shared<Rendering::Sampler>(params);
-*/
     // Bundle texture data into VecTexDataTuplePtr objects
     auto stone_color = std::make_shared<Rendering::TexDataTuple>(
             stonebrick, linear_blend, "texColor", -1);

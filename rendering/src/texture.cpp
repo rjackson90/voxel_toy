@@ -29,6 +29,33 @@ Texture::~Texture()
     glDeleteTextures(1, &tex_obj);
 }
 
+TexturePtr Texture::TextureFromConfig(
+        const Core::ConfigParser &parser, const std::string &section)
+{
+    try
+    {
+        GLenum target;
+        std::string t_str = parser.get("target", section);
+        if(t_str.compare("GL_TEXTURE_1D") == 0) target = GL_TEXTURE_1D;
+        if(t_str.compare("GL_TEXTURE_2D") == 0) target = GL_TEXTURE_2D;
+        if(t_str.compare("GL_TEXTURE_3D") == 0) target = GL_TEXTURE_3D;
+        if(t_str.compare("GL_TEXTURE_1D_ARRAY") == 0) target = GL_TEXTURE_1D_ARRAY;
+        if(t_str.compare("GL_TEXTURE_2D_ARRAY") == 0) target = GL_TEXTURE_2D_ARRAY;
+        if(t_str.compare("GL_TEXTURE_RECTANGLE") == 0) target = GL_TEXTURE_RECTANGLE;
+        if(t_str.compare("GL_TEXTURE_CUBE_MAP") == 0) target = GL_TEXTURE_CUBE_MAP;
+
+        auto texPtr = std::make_shared<Texture>(target, Paths::rendering + 
+                parser.get("path", section));
+        return texPtr;
+    }
+    catch(const std::exception &ex)
+    {
+        std::cerr << "Error creating texture: " << ex.what() << std::endl;
+    }
+
+    auto error_tex = std::make_shared<Texture>(GL_TEXTURE_2D, Paths::rendering + "error.tga");
+    return error_tex;
+}
 
 void Texture::bind() const
 {
