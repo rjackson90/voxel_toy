@@ -12,6 +12,9 @@
 double radians(double);
 double degrees(double);
 glm::mat3 mat3_from_string(const std::string &);
+glm::mat4 mat4_from_string(const std::string &);
+glm::vec3 vec3_from_string(const std::string &);
+glm::vec4 vec4_from_string(const std::string &);
 
 /* Custom Vector object, because sometimes GLM sucks */
 struct Vector

@@ -33,6 +33,37 @@ glm::mat3 mat3_from_string(const std::string &str)
     return glm::make_mat3(data);
 }
 
+glm::mat4 mat4_from_string(const std::string &str)
+{
+    std::stringstream stream(str);
+    float data[16];
+
+    for(int i = 0; i < 16; i++)
+    {
+        stream >> data[i];
+    }
+
+    return glm::make_mat4(data);
+}
+
+glm::vec3 vec3_from_string(const std::string &str)
+{
+    return Vector::from_string(str).toGLMVec();
+}
+
+glm::vec4 vec4_from_string(const std::string &str)
+{
+    std::stringstream stream(str);
+    float data[4];
+
+    for(int i = 0; i < 4; i++)
+    {
+        stream >> data[i];
+    }
+
+    return glm::make_vec4(data);
+}
+
 /*
  * Vector methods
  */

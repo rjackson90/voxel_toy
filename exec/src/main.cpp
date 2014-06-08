@@ -26,8 +26,8 @@ int main()
     systems->physics = PhysicsPtr(new PhysicsSystem());
     
     // Initialize hardware-accelerated window.
-    int width = 1024;
-    int height = 768;
+    int width = 1280;
+    int height = 800;
     const std::string title = "Really Fun Game!";
     Rendering::GLWindowPtr window = make_shared<Rendering::GLWindow>();
 
@@ -101,22 +101,14 @@ int main()
     Rendering::VecTexDataTuplePtr obsidian_data{obsidian_color, obsidian_normal};
 
     // Create uniform blocks
-    Rendering::TransformBlock transform_block;
-    Rendering::PointLight point_light_block;
-    Rendering::Material material_block;
+    gparse.parse_file(Paths::config_root+"uniforms.cfg");
 
-    // Set initial values for uniforms
-    transform_block.mvp = glm::mat4(1.0f);
-    transform_block.mv = glm::mat4(1.0f);
-    transform_block.normal_matrix = glm::mat4(1.0f);
-
-    point_light_block.position = glm::vec3(0.0f, 0.0f, 0.0f);
-    point_light_block.intensity = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-
-    material_block.ambient = glm::vec4(0.02f, 0.02f, 0.02f, 1.0f);
-    material_block.diffuse = glm::vec4(0.6f, 0.65f, 0.6f, 1.0f);
-    material_block.specular = glm::vec4(0.95f, 0.9f, 0.99f, 1.0f);
-    material_block.shininess = 20.0f;
+    Rendering::TransformBlock transform_block = 
+        Rendering::TransformBlock::TransformFromConfig(gparse, "Transform");
+    Rendering::PointLight point_light_block = 
+        Rendering::PointLight::PointLightFromConfig(gparse, "PointLight");
+    Rendering::Material material_block = 
+        Rendering::Material::MaterialFromConfig(gparse, "Material");
 
     // Load the blocks into buffers, then into UniformPairPtrs
     GLuint bindpoint = 0;
