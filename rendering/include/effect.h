@@ -34,6 +34,9 @@ namespace Rendering
     class GenericEffect : public Effect
     {
     public:
+        static EffectPtr GenericEffectFromConfig(
+                const Core::ConfigParser &, const std::string &);
+
         GenericEffect(int, ProgramPtr, VecTexDataTuplePtr, VecUniformPairPtr);
         virtual void bind();
 

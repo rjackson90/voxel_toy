@@ -52,6 +52,16 @@ int main()
     auto console = std::make_shared<Script::RemoteConsole>();
     systems->script->addScript(console);
 
+    // Create ConfigParser
+    Core::ConfigParser parser;
+    parser.parse_file(Paths::config_root+"static_stone.cfg");
+
+    // Create RenderNodes
+    auto geometry = Rendering::Geometry::GeometryFromConfig(parser, "Geometry");
+    auto effect = Rendering::GenericEffect::GenericEffectFromConfig(parser, "Effect");
+    systems->render->addNode(1, geometry, {{effect}}, {});
+
+/*
     // Generate geometry
     Core::ConfigParser gparse;
 
@@ -139,11 +149,9 @@ int main()
     systems->render->addNode(2, quad, {{phong_stone}}, {{transform}});
     systems->render->addNode(3, quad, {{phong_wood}}, {{transform}});
     systems->render->addNode(4, quad, {{phong_obsidian}}, {{transform}});
-
+*/
     // Add rigid bodies to the physics system
     cout << "Creating rigid bodies" << endl;
-
-    Core::ConfigParser parser;
     
     parser.parse_file(Paths::config_root+"static_stone.cfg");
     systems->physics->addNodeFromConfig(parser);
