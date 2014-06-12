@@ -110,12 +110,6 @@ bool GLWindow::init(int width, int height, const std::string& title)
     }
     std::cout << " OK!" << std::endl;
 
-    // Print information about the GL
-    std::cout << "OpenGL Platform: " << glGetString(GL_VENDOR) << " " << glGetString(GL_RENDERER) <<
-        std::endl;
-    std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << " GLSL Version " << 
-        glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-
     // Register a callback to handle debug output, if supported
     std::cout << "Checking for GL_ARB_debug_output support...";
     if(GLEW_ARB_debug_output)

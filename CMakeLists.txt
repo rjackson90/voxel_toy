@@ -4,7 +4,7 @@ project(Llyrdin CXX C)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/exec/cmake_modules")
 
 # List of modules in the project
-set(MODULES core physics rendering python input)
+set(MODULES core physics rendering scripting input)
 
 # Set appropriate flags for g++
 if(CMAKE_COMPILER_IS_GNUCXX)
@@ -99,6 +99,7 @@ endforeach()
 set( "rendering_shaders_path" "${CMAKE_SOURCE_DIR}/rendering/shaders/" )
 set( "python_path" "${CMAKE_SOURCE_DIR}/exec/python" )
 set( "python_so" "${CMAKE_BINARY_DIR}/lib" )
+set( "cfg_path" "${CMAKE_SOURCE_DIR}/config/" )
 configure_file( exec/include/data_paths.h.in ${CMAKE_BINARY_DIR}/exec/include/data_paths.h )
 include_directories( ${CMAKE_BINARY_DIR}/exec/include/ )
 include_directories( ${CMAKE_SOURCE_DIR}/exec/include/ )
@@ -119,11 +120,6 @@ target_link_libraries(LlyrdinTests ${MODULE_LIBS} ${MODULE_TEST_LIBS})
 # Link required system libraries into the main executables
 target_link_libraries(Llyrdin ${LIB_DIRS})
 target_link_libraries(LlyrdinTests ${LIB_DIRS} UnitTest++)
-
-# Link the Python API for all of the modules
-#foreach( EXTENSION ${MODULE_EXTENSIONS} )
-#    target_link_libraries( ${EXTENSION} ${MODULE_LIBS} ${LIB_DIRS} ${Boost_LIBRARIES} )
-#endforeach()
 
 # Run the tests after they (successfully) build
 add_custom_target(tests ALL LlyrdinTests 

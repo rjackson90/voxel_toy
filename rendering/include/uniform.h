@@ -2,9 +2,7 @@
 #define UNIFORM_H
 
 // System headers
-#define GLM_FORCE_RADIANS
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "math_ext.h"
 
 #include <GL/glew.h>
 #include <algorithm>
@@ -53,6 +51,8 @@ namespace Rendering
      */
     struct TransformBlock : BlockDefinition
     {
+        static TransformBlock TransformFromConfig(const Core::ConfigParser &, const std::string &);
+
         virtual void getData(const SubsystemsPtr &, int key);
         virtual void updateBuffer() const;
 
@@ -66,6 +66,8 @@ namespace Rendering
      */
     struct PointLight : BlockDefinition
     {
+        static PointLight PointLightFromConfig(const Core::ConfigParser &, const std::string &);
+
         virtual void updateBuffer() const;
 
         glm::vec3 position;
@@ -77,6 +79,8 @@ namespace Rendering
      */
     struct Material : BlockDefinition
     {
+        static Material MaterialFromConfig(const Core::ConfigParser &, const std::string &);
+
         virtual void updateBuffer() const;
 
         glm::vec4 ambient;

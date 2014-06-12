@@ -17,9 +17,66 @@ const float Constants::EPSILON = 0.0001f;
 double radians(double deg){ return deg * (Constants::PI/180.0); }
 double degrees(double rad){ return rad * (180.0/Constants::PI); }
 
+/* 
+ * This function creates a GLM mat3 from serialized text data
+ */
+glm::mat3 mat3_from_string(const std::string &str)
+{
+    std::stringstream stream(str);
+    float data[9];
+
+    for(int i = 0; i < 9; i++)
+    {
+        stream >> data[i];
+    }
+
+    return glm::make_mat3(data);
+}
+
+glm::mat4 mat4_from_string(const std::string &str)
+{
+    std::stringstream stream(str);
+    float data[16];
+
+    for(int i = 0; i < 16; i++)
+    {
+        stream >> data[i];
+    }
+
+    return glm::make_mat4(data);
+}
+
+glm::vec3 vec3_from_string(const std::string &str)
+{
+    return Vector::from_string(str).toGLMVec();
+}
+
+glm::vec4 vec4_from_string(const std::string &str)
+{
+    std::stringstream stream(str);
+    float data[4];
+
+    for(int i = 0; i < 4; i++)
+    {
+        stream >> data[i];
+    }
+
+    return glm::make_vec4(data);
+}
+
 /*
  * Vector methods
  */
+
+Vector Vector::from_string(const std::string &str)
+{
+    std::stringstream stream(str);
+    Vector result;
+    
+    stream >> result.x >> result.y >> result.z;
+    return result;
+}
+
 Vector::Vector(float X, float Y, float Z)
 {
     x = X;
@@ -111,6 +168,16 @@ glm::vec3 Vector::toGLMVec() const
 /*
  * Quaternion methods
  */
+
+Quaternion Quaternion::from_string(const std::string &str)
+{
+    std::stringstream stream(str);
+    Quaternion result;
+
+    stream >> result.w >> result.x >> result.y >> result.z;
+    return result;
+}
+
 Quaternion::Quaternion(float W, const Vector &v)
 {
     w = W;

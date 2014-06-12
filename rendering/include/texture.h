@@ -6,6 +6,9 @@
 #include <iostream>
 
 #include "fileops.h"
+#include "rendering.h"
+#include "config.h"
+#include "data_paths.h"
 
 namespace Rendering
 {
@@ -14,6 +17,8 @@ namespace Rendering
         public:
         Texture(GLenum, std::string);
         ~Texture();
+
+        static TexturePtr TextureFromConfig(const Core::ConfigParser &, const std::string &);
 
         void bind() const;
 

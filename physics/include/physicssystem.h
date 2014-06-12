@@ -10,6 +10,7 @@
 #include "core.h"
 #include "math_ext.h"
 #include "system.h"
+#include "config.h"
 
 #include "physics.h"
 #include "integrator.h"
@@ -25,6 +26,7 @@ class PhysicsSystem : public System
         // Required to implement System interface
         virtual void tick(const SubsystemsPtr &, const double) override;
         void addNode(int, Physics::State&);
+        void addNodeFromConfig(const Core::ConfigParser &);
 
         // Provide a 4x4 matrix describing the precise position and 
         // orientation of each node to other subsystems

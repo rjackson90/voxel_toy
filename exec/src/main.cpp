@@ -26,8 +26,8 @@ int main()
     systems->physics = PhysicsPtr(new PhysicsSystem());
     
     // Initialize hardware-accelerated window.
-    int width = 1024;
-    int height = 768;
+    int width = 1280;
+    int height = 800;
     const std::string title = "Really Fun Game!";
     Rendering::GLWindowPtr window = make_shared<Rendering::GLWindow>();
 
@@ -52,54 +52,45 @@ int main()
     auto console = std::make_shared<Script::RemoteConsole>();
     systems->script->addScript(console);
 
-    // Generate geometry
-    auto cube = std::make_shared<Rendering::Geometry>();
-    cube->genTestCube();
-    cube->setDrawMode(GL_TRIANGLES);
+    // Create ConfigParser
+    Core::ConfigParser parser;
+    parser.parse_file(Paths::config_root+"static_stone.cfg");
 
-    auto quad = std::make_shared<Rendering::Geometry>();
-    quad->genTestQuad();
-    quad->setDrawMode(GL_TRIANGLES);
+    // Create RenderNodes
+    auto geometry = Rendering::Geometry::GeometryFromConfig(parser, "Geometry");
+    auto effect = Rendering::GenericEffect::GenericEffectFromConfig(parser, "Effect");
+    systems->render->addNode(1, geometry, {{effect}}, {});
+
+/*
+    // Generate geometry
+    Core::ConfigParser gparse;
+
+    gparse.parse_file(Paths::config_root+"quad_geom.cfg");
+    auto quad = Rendering::Geometry::GeometryFromConfig(gparse, "QuadGeometry");
 
     // Load textures
-    auto stonebrick = std::make_shared<Rendering::Texture>(
-            GL_TEXTURE_2D, Paths::rendering+"stonebrick.tga");
-    auto stonebrickn = std::make_shared<Rendering::Texture>(
-            GL_TEXTURE_2D, Paths::rendering+"stonebrickn.tga");
-    
-    auto woodplank = std::make_shared<Rendering::Texture>(
-            GL_TEXTURE_2D, Paths::rendering+"woodplank.tga");
-    auto woodplankn = std::make_shared<Rendering::Texture>(
-            GL_TEXTURE_2D, Paths::rendering+"woodplankn.tga");
-    
-    auto obsidian = std::make_shared<Rendering::Texture>(
-            GL_TEXTURE_2D, Paths::rendering+"obsidian.tga");
-    auto obsidiann = std::make_shared<Rendering::Texture>(
-            GL_TEXTURE_2D, Paths::rendering+"obsidiann.tga");
 
+    gparse.parse_file(Paths::config_root+"textures.cfg");
+    auto stonebrick = Rendering::Texture::TextureFromConfig(gparse, "StoneBrick");
+    auto stonebrickn = Rendering::Texture::TextureFromConfig(gparse, "StoneBrickNormal");
+    
+    auto woodplank = Rendering::Texture::TextureFromConfig(gparse, "WoodPlank");
+    auto woodplankn = Rendering::Texture::TextureFromConfig(gparse, "WoodPlankNormal");
+    
+    auto obsidian = Rendering::Texture::TextureFromConfig(gparse, "Obsidian");
+    auto obsidiann = Rendering::Texture::TextureFromConfig(gparse, "ObsidianNormal");
+    
     // Load program
-    auto phong_program = std::make_shared<Rendering::Program>();
-    if(!phong_program->attachShader(Paths::shaders+"phong.vs", Rendering::VertexShader)){
-        return 1;
-    }
-    if(!phong_program->attachShader(Paths::shaders+"phong.fs", Rendering::FragmentShader)){
-        return 1;
-    }
-    if(!phong_program->link()){
-        return 1;
-    }
+
+    gparse.parse_file(Paths::config_root+"phong_shading.cfg");
+    auto phong_program = Rendering::Program::ProgramFromConfig(gparse, "PhongShading");
 
     // Set texture sampling parameters
-    Rendering::SamplerParams params;
-    params.min_filter = GL_LINEAR;
+
+    gparse.parse_file(Paths::config_root+"sampler.cfg");
+    auto linear_blend = Rendering::Sampler::SamplerFromConfig(gparse, "LinearBlend");
+    auto nearest_sample = Rendering::Sampler::SamplerFromConfig(gparse, "NearestSample");
     
-    auto linear_blend = std::make_shared<Rendering::Sampler>(params);
-
-    params.min_filter = GL_NEAREST;
-    params.mag_filter = GL_NEAREST;
-
-    auto nearest_sample = std::make_shared<Rendering::Sampler>(params);
-
     // Bundle texture data into VecTexDataTuplePtr objects
     auto stone_color = std::make_shared<Rendering::TexDataTuple>(
             stonebrick, linear_blend, "texColor", -1);
@@ -120,22 +111,14 @@ int main()
     Rendering::VecTexDataTuplePtr obsidian_data{obsidian_color, obsidian_normal};
 
     // Create uniform blocks
-    Rendering::TransformBlock transform_block;
-    Rendering::PointLight point_light_block;
-    Rendering::Material material_block;
+    gparse.parse_file(Paths::config_root+"uniforms.cfg");
 
-    // Set initial values for uniforms
-    transform_block.mvp = glm::mat4(1.0f);
-    transform_block.mv = glm::mat4(1.0f);
-    transform_block.normal_matrix = glm::mat4(1.0f);
-
-    point_light_block.position = glm::vec3(0.0f, 0.0f, 0.0f);
-    point_light_block.intensity = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-
-    material_block.ambient = glm::vec4(0.02f, 0.02f, 0.02f, 1.0f);
-    material_block.diffuse = glm::vec4(0.6f, 0.65f, 0.6f, 1.0f);
-    material_block.specular = glm::vec4(0.95f, 0.9f, 0.99f, 1.0f);
-    material_block.shininess = 20.0f;
+    Rendering::TransformBlock transform_block = 
+        Rendering::TransformBlock::TransformFromConfig(gparse, "Transform");
+    Rendering::PointLight point_light_block = 
+        Rendering::PointLight::PointLightFromConfig(gparse, "PointLight");
+    Rendering::Material material_block = 
+        Rendering::Material::MaterialFromConfig(gparse, "Material");
 
     // Load the blocks into buffers, then into UniformPairPtrs
     GLuint bindpoint = 0;
@@ -166,38 +149,21 @@ int main()
     systems->render->addNode(2, quad, {{phong_stone}}, {{transform}});
     systems->render->addNode(3, quad, {{phong_wood}}, {{transform}});
     systems->render->addNode(4, quad, {{phong_obsidian}}, {{transform}});
-
+*/
     // Add rigid bodies to the physics system
     cout << "Creating rigid bodies" << endl;
+    
+    parser.parse_file(Paths::config_root+"static_stone.cfg");
+    systems->physics->addNodeFromConfig(parser);
 
-    float sixth = 1.0f/6.0f;
+    parser.parse_file(Paths::config_root+"spinny_stone.cfg");
+    systems->physics->addNodeFromConfig(parser);
 
-    Physics::State start;
-    start.orientation = Quaternion( 1.0, Constants::ORIGIN );
-    start.position = Vector(-1.25f, 1.25f, -0.0002f);
-    start.momentum = Constants::ORIGIN;
-    start.angular_momentum = Constants::ORIGIN;
-    start.mass = 1.0f;
-    start.inverse_mass = 1.0f;
-    start.inertia_tensor = glm::mat3(sixth, 0.0f, 0.0f, 0.0f, sixth, 0.0f, 0.0f, 0.0f, sixth);
-    start.inverse_inertia_tensor = glm::inverse(start.inertia_tensor);
-    systems->physics->addNode(1, start);
+    parser.parse_file(Paths::config_root+"turning_wood.cfg");
+    systems->physics->addNodeFromConfig(parser);
 
-    Physics::State cube2 = start;
-    cube2.position.x = 1.25f;
-    cube2.angular_momentum = Vector(0.0f, 0.05f, 0.0f);
-    systems->physics->addNode(2, cube2);
-
-    Physics::State cube3 = start;
-    cube3.position.x = -3.75f;
-    cube3.position.y = -1.75f;
-    cube3.angular_momentum = Vector(0.0f, 0.0f, 0.05f);
-    systems->physics->addNode(3, cube3);
-
-    Physics::State cube4 = cube2;
-    cube4.position.y = -1.25f;
-    cube4.angular_momentum = Vector(0.05f, 0.0f, 0.0f);
-    systems->physics->addNode(4, cube4);
+    parser.parse_file(Paths::config_root+"obsidian.cfg");
+    systems->physics->addNodeFromConfig(parser);
 
     /* GO */
     cout << "Starting main loop" << endl;
