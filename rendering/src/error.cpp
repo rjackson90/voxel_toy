@@ -50,7 +50,7 @@ void FormatDebugOutputARB(string& outString, GLenum source, GLenum type,
 
 void DebugCallBackARB(GLenum source, GLenum type, GLuint id, GLenum severity, 
         __attribute__((unused))GLsizei length, const GLchar *message, 
-        __attribute__((unused))GLvoid *userParam)
+        __attribute__((unused))const GLvoid *userParam)
 {
     string text;
     FormatDebugOutputARB(text, source, type, id, severity, message);

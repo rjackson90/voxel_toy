@@ -71,26 +71,30 @@ void RenderSystem::tick(const SubsystemsPtr &systems,
     glClearColor(1.0, 1.0, 1.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+    /*
     // Update uniforms which are at frame scope
     for(const auto& uniform : frame_uniforms)
     {
         // Pass invalid key to cause errors for buffers which aren't actually frame-scope
         uniform->first->updateContents(systems, -1);
     }
+    */
 
     // Iterate over the RenderNodes
     for(auto i = nodes.begin(); i != nodes.end(); ++i)
     {
+        /*
         // Update node-scope uniforms
         for(const auto& uniform : i->second->object_uniforms)
         {
             uniform->first->updateContents(systems, i->first);
         }
+        */
 
         // For every effect in the list: bind it then draw the geometry
         for(const auto &effect : i->second->effects)
         {
-            effect->bind();
+            effect->bind(systems, i->first);
             i->second->mesh->draw();
         }
     }

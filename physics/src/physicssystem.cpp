@@ -5,7 +5,7 @@ using namespace Physics;
 /* This is where the magic happens. During each subsystem tick the physics
  * simulation is advanced by dt
  */
-void PhysicsSystem::tick(__attribute__((unused)) const SubsystemsPtr &systems, const double dt)
+void PhysicsSystem::tick(const SubsystemsPtr &systems, const double dt)
 {
     // Advance the physics simulation by dt
     for(auto it = nodes.begin(); it != nodes.end(); ++it)
@@ -22,6 +22,10 @@ void PhysicsSystem::tick(__attribute__((unused)) const SubsystemsPtr &systems, c
 
         // Integrate forces
         RK4::integrate(it->second.present, it->second.forces, dt);
+
+        // Update the Transform for this object
+        systems->transform->setPosition(it->first, it->second.present.position);
+        systems->transform->setOrientation(it->first, it->second.present.orientation);
     }
 }
 
@@ -112,7 +116,9 @@ Vector PhysicsSystem::getStopDeltaV(int node)
  * The render system calls this method to obtain the position and 
  * orientation of objects in world-space.
  */
+/*
 glm::mat4 PhysicsSystem::getWorldCoords(int key)
 {
     return nodes[key].present.world_coords;
 }
+*/

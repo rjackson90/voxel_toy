@@ -25,6 +25,9 @@ typedef std::shared_ptr<InputSystem> InputPtr;
 class ScriptSystem;
 typedef std::shared_ptr<ScriptSystem> ScriptPtr;
 
+class Transform;
+typedef std::shared_ptr<Transform> TransformPtr;
+
 // Define Subsystems struct
 
 /* This struct holds unique pointers to the various subsystems. 
@@ -38,6 +41,7 @@ struct Subsystems
     InputPtr input;
     ScriptPtr script;
     DispatchPtr dispatch;
+    TransformPtr transform;
 };
 typedef std::shared_ptr<Subsystems> SubsystemsPtr;
 

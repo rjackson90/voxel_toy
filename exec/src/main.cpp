@@ -24,6 +24,7 @@ int main()
     systems->script = ScriptPtr(new ScriptSystem());
     systems->input = InputPtr(new InputSystem());
     systems->physics = PhysicsPtr(new PhysicsSystem());
+    systems->transform = TransformPtr(new Transform());
     
     // Initialize hardware-accelerated window.
     int width = 1280;
@@ -56,9 +57,13 @@ int main()
     Core::ConfigParser parser;
     parser.parse_file(Paths::config_root+"static_stone.cfg");
 
+    // Create Transform
+    systems->transform->addNode(1, Vector(), Quaternion());
+
     // Create RenderNodes
     auto geometry = Rendering::Geometry::GeometryFromConfig(parser, "Geometry");
-    auto effect = Rendering::GenericEffect::GenericEffectFromConfig(parser, "Effect");
+    auto effect = Rendering::TextureEffect::TextureEffectFromConfig(parser, "Effect");
+    //auto effect = Rendering::GenericEffect::GenericEffectFromConfig(parser, "Effect");
     systems->render->addNode(1, geometry, {{effect}}, {});
 
 /*

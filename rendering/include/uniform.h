@@ -24,7 +24,7 @@ namespace Rendering
     class UniformBuffer
     {
     public:
-        UniformBuffer(BlockDefinition&, GLuint);
+        UniformBuffer(BlockPtr, GLuint);
         ~UniformBuffer();
 
         void bind(GLuint, const GLchar*);
@@ -33,7 +33,7 @@ namespace Rendering
     private:
         GLuint buffer;
         GLuint index;
-        BlockDefinition& block;
+        BlockPtr block;
     };
 
     /* This struct describes the minimum requirements of a uniform block definition,
@@ -51,7 +51,8 @@ namespace Rendering
      */
     struct TransformBlock : BlockDefinition
     {
-        static TransformBlock TransformFromConfig(const Core::ConfigParser &, const std::string &);
+        static std::shared_ptr<TransformBlock> TransformFromConfig(
+                const Core::ConfigParser &, const std::string &);
 
         virtual void getData(const SubsystemsPtr &, int key);
         virtual void updateBuffer() const;
