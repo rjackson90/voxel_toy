@@ -26,6 +26,7 @@ void UniformBuffer::bind(GLuint program, const GLchar* text)
 void UniformBuffer::updateContents(const SubsystemsPtr &systems, int key)
 {
     glBindBuffer(GL_UNIFORM_BUFFER, buffer);
+    glBindBufferBase(GL_UNIFORM_BUFFER, index, buffer);
     block->getData(systems, key);
     block->updateBuffer();
     glBindBuffer(GL_UNIFORM_BUFFER, 0);

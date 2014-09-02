@@ -15,35 +15,20 @@ void Transform::addNode(int idx, const Vector &pos, const Quaternion &orient)
     nodes.insert({{idx, node}});
 }
 
-void Transform::addNodeFromConfig(const Core::ConfigParser &parser, const std::string &section)
+void Transform::addNodeDependency(int idx)
 {
-    Vector position;
-    Quaternion orientation;
-    int idx = -1;
-    bool status = false;
-
-    // Swallow exceptions. If something bad happens, don't add the node to the map
-    try
-    {
-        // The nodeID is in the Meta section
-        idx = stoi(parser.get("nodeID", "Meta"));
-
-        // Everything else is in the passed section name
-        position = Vector::from_string(parser.get("position", section));
-        orientation = Quaternion::from_string(parser.get("orientation", section));
-
-        // If execution gets here, everything is fine and we can add the node to the map
-        status = true;
-    }
-    catch(const std::exception &ex)
-    {
-        std::cerr << "Error while parsing config file " << ex.what()
-                  << std::endl;
+    TransformNode node;
+    node.position = Vector();
+    node.orientation = Quaternion();
+    
+    // We don't want to trample an existing transform, so search before write
+    auto has_key = nodes.find(idx);
+    if(has_key == nodes.end()) {
+        nodes[idx] = node;
     }
 
-    if(status) this->addNode(idx, position, orientation);
+    std::cout << "Added new transform node. Node count: " << nodes.size() << std::endl;
 }
-
 void Transform::recalculate(int idx)
 {
     nodes[idx].world_coordinates = nodes[idx].orientation.toMatrix(nodes[idx].position);

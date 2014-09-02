@@ -13,7 +13,7 @@ class Transform : public System
     public:
     virtual void tick(const SubsystemsPtr &, const double) override;
     void addNode(int, const Vector &, const Quaternion &);
-    void addNodeFromConfig(const Core::ConfigParser &, const std::string &);
+    void addNodeDependency(int);
 
     glm::mat4 getWorldCoords(int);
     Vector getPosition(int);

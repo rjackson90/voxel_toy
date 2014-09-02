@@ -6,6 +6,7 @@ Program::Program()
 {
     // Create program and shader objects
     program_obj = glCreateProgram();
+    std::cout << "Created new OpenGL program: " << program_obj << std::endl;
 }
 
 ProgramPtr Program::ProgramFromConfig(const Core::ConfigParser &parser, const std::string &section)

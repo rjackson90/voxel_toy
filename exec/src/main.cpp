@@ -53,122 +53,22 @@ int main()
     auto console = std::make_shared<Script::RemoteConsole>();
     systems->script->addScript(console);
 
-    // Create ConfigParser
+    // Create ConfigParser, parse nodes
     Core::ConfigParser parser;
-    parser.parse_file(Paths::config_root+"static_stone.cfg");
 
-    // Create Transform
-    systems->transform->addNode(1, Vector(), Quaternion());
+    static const string config_files[] = {
+        "static_stone.cfg",
+        "spinny_stone.cfg",
+        "turning_wood.cfg",
+        "obsidian.cfg"
+    };
 
-    // Create RenderNodes
-    auto geometry = Rendering::Geometry::GeometryFromConfig(parser, "Geometry");
-    auto effect = Rendering::TextureEffect::TextureEffectFromConfig(parser, "Effect");
-    //auto effect = Rendering::GenericEffect::GenericEffectFromConfig(parser, "Effect");
-    systems->render->addNode(1, geometry, {{effect}}, {});
-
-/*
-    // Generate geometry
-    Core::ConfigParser gparse;
-
-    gparse.parse_file(Paths::config_root+"quad_geom.cfg");
-    auto quad = Rendering::Geometry::GeometryFromConfig(gparse, "QuadGeometry");
-
-    // Load textures
-
-    gparse.parse_file(Paths::config_root+"textures.cfg");
-    auto stonebrick = Rendering::Texture::TextureFromConfig(gparse, "StoneBrick");
-    auto stonebrickn = Rendering::Texture::TextureFromConfig(gparse, "StoneBrickNormal");
-    
-    auto woodplank = Rendering::Texture::TextureFromConfig(gparse, "WoodPlank");
-    auto woodplankn = Rendering::Texture::TextureFromConfig(gparse, "WoodPlankNormal");
-    
-    auto obsidian = Rendering::Texture::TextureFromConfig(gparse, "Obsidian");
-    auto obsidiann = Rendering::Texture::TextureFromConfig(gparse, "ObsidianNormal");
-    
-    // Load program
-
-    gparse.parse_file(Paths::config_root+"phong_shading.cfg");
-    auto phong_program = Rendering::Program::ProgramFromConfig(gparse, "PhongShading");
-
-    // Set texture sampling parameters
-
-    gparse.parse_file(Paths::config_root+"sampler.cfg");
-    auto linear_blend = Rendering::Sampler::SamplerFromConfig(gparse, "LinearBlend");
-    auto nearest_sample = Rendering::Sampler::SamplerFromConfig(gparse, "NearestSample");
-    
-    // Bundle texture data into VecTexDataTuplePtr objects
-    auto stone_color = std::make_shared<Rendering::TexDataTuple>(
-            stonebrick, linear_blend, "texColor", -1);
-    auto stone_normal = std::make_shared<Rendering::TexDataTuple>(
-            stonebrickn, nearest_sample, "texNormal", -1);
-    Rendering::VecTexDataTuplePtr stone_data{stone_color, stone_normal};
-
-    auto wood_color = std::make_shared<Rendering::TexDataTuple>(
-            woodplank, linear_blend, "texColor", -1);
-    auto wood_normal = std::make_shared<Rendering::TexDataTuple>(
-            woodplankn, nearest_sample, "texNormal", -1);
-    Rendering::VecTexDataTuplePtr wood_data{wood_color, wood_normal};
-
-    auto obsidian_color = std::make_shared<Rendering::TexDataTuple>(
-            obsidian, linear_blend, "texColor", -1);
-    auto obsidian_normal = std::make_shared<Rendering::TexDataTuple>(
-            obsidiann, nearest_sample, "texNormal", -1);
-    Rendering::VecTexDataTuplePtr obsidian_data{obsidian_color, obsidian_normal};
-
-    // Create uniform blocks
-    gparse.parse_file(Paths::config_root+"uniforms.cfg");
-
-    Rendering::TransformBlock transform_block = 
-        Rendering::TransformBlock::TransformFromConfig(gparse, "Transform");
-    Rendering::PointLight point_light_block = 
-        Rendering::PointLight::PointLightFromConfig(gparse, "PointLight");
-    Rendering::Material material_block = 
-        Rendering::Material::MaterialFromConfig(gparse, "Material");
-
-    // Load the blocks into buffers, then into UniformPairPtrs
-    GLuint bindpoint = 0;
-    auto transform_buffer = make_shared<Rendering::UniformBuffer>(transform_block, bindpoint++);
-    auto point_light_buffer = make_shared<Rendering::UniformBuffer>(point_light_block, bindpoint++);
-    auto material_buffer = make_shared<Rendering::UniformBuffer>(material_block, bindpoint++);
-
-    auto transform = std::make_shared<Rendering::UniformPair>(transform_buffer, "TransformBlock");
-    auto point_light = std::make_shared<Rendering::UniformPair>(point_light_buffer, "PointLight");
-    auto material = std::make_shared<Rendering::UniformPair>(material_buffer, "Material");
-
-    Rendering::VecUniformPairPtr phong_uniforms{transform, point_light, material};
-
-    // Add buffers to Rendersystem's list of updates-per-frame
-    systems->render->addFrameUniform(point_light);
-    systems->render->addFrameUniform(material);
-
-    // Wrap it all up into Effects
-    auto phong_stone = std::make_shared<Rendering::GenericEffect>(
-            0, phong_program, stone_data, phong_uniforms);
-    auto phong_wood = std::make_shared<Rendering::GenericEffect>(
-            2, phong_program, wood_data, phong_uniforms);
-    auto phong_obsidian = std::make_shared<Rendering::GenericEffect>(
-            4, phong_program, obsidian_data, phong_uniforms);
-
-    // Create new RenderNodes
-    systems->render->addNode(1, quad, {{phong_stone}}, {{transform}});
-    systems->render->addNode(2, quad, {{phong_stone}}, {{transform}});
-    systems->render->addNode(3, quad, {{phong_wood}}, {{transform}});
-    systems->render->addNode(4, quad, {{phong_obsidian}}, {{transform}});
-*/
-    // Add rigid bodies to the physics system
-    cout << "Creating rigid bodies" << endl;
-    
-    parser.parse_file(Paths::config_root+"static_stone.cfg");
-    systems->physics->addNodeFromConfig(parser);
-
-    parser.parse_file(Paths::config_root+"spinny_stone.cfg");
-    systems->physics->addNodeFromConfig(parser);
-
-    parser.parse_file(Paths::config_root+"turning_wood.cfg");
-    systems->physics->addNodeFromConfig(parser);
-
-    parser.parse_file(Paths::config_root+"obsidian.cfg");
-    systems->physics->addNodeFromConfig(parser);
+    for(int i = 0; i < 4; i++) {
+        parser.parse_file(Paths::config_root+config_files[i]);
+        systems->transform->addNodeDependency(stoi(parser.get("nodeID", "Meta")));
+        systems->render->addNodeFromConfig(parser);
+        systems->physics->addNodeFromConfig(parser);
+    }
 
     /* GO */
     cout << "Starting main loop" << endl;
