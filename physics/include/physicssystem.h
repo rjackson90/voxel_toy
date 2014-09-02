@@ -15,6 +15,8 @@
 #include "physics.h"
 #include "integrator.h"
 
+#include "transform.h"
+
 /* Like other subsystems, the Physics subsystem is surprisingly simple.
  * Put simply, it consists of a data structure which holds RigidBodyNodes.
  * The id associated with each RigidBodyNode identifies the in-game object
@@ -30,7 +32,7 @@ class PhysicsSystem : public System
 
         // Provide a 4x4 matrix describing the precise position and 
         // orientation of each node to other subsystems
-        glm::mat4 getWorldCoords(int);
+        //glm::mat4 getWorldCoords(int);
         
         // Methods to manage forces
         void addForce(int, const Vector&);

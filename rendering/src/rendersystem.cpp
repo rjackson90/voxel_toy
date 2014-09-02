@@ -41,24 +41,26 @@ void RenderSystem::addNode(int key,
 
 /* This function creates a new Node based on information in the provided config file.
  */
-void addNodeFromConfig(const Core::ConfigParser &parser)
+void RenderSystem::addNodeFromConfig(const Core::ConfigParser &parser)
 {   
     // Swallow exceptions
     try
     {
-        // The Node's ID is in the Meta section
+        // Start off the recursive descent into config parsing
         int nodeID = stoi(parser.get("nodeID", "Meta"));
-        nodeID = nodeID + 1 - 1; // Prevent "unused variable" warning
+        auto geo = Geometry::GeometryFromConfig(parser, "Geometry");
+        auto effect = TextureEffect::TextureEffectFromConfig(parser, "Effect");
 
-        // Geometry
-        std::string geom_section = parser.get("geom_section", "RenderNode");
-        GeometryPtr geo = Geometry::GeometryFromConfig(parser, geom_section);
+        // add the node if there were no exceptions
+        addNode(nodeID, geo, {{effect}}, {});
     }
     catch(const std::exception &ex)
     {
         std::cerr << "Error parsing config file " << ex.what()
                   << std::endl;
     }
+    std::cout << "Added a new key to render system. " << nodes.size() << 
+        " nodes in the system." << std::endl;
 }
 
 /* RenderSystem's tick simply draws the whole scene, calling upon the PhysicsSystem 
@@ -71,26 +73,13 @@ void RenderSystem::tick(const SubsystemsPtr &systems,
     glClearColor(1.0, 1.0, 1.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    // Update uniforms which are at frame scope
-    for(const auto& uniform : frame_uniforms)
-    {
-        // Pass invalid key to cause errors for buffers which aren't actually frame-scope
-        uniform->first->updateContents(systems, -1);
-    }
-
     // Iterate over the RenderNodes
     for(auto i = nodes.begin(); i != nodes.end(); ++i)
     {
-        // Update node-scope uniforms
-        for(const auto& uniform : i->second->object_uniforms)
-        {
-            uniform->first->updateContents(systems, i->first);
-        }
-
         // For every effect in the list: bind it then draw the geometry
         for(const auto &effect : i->second->effects)
         {
-            effect->bind();
+            effect->bind(systems, i->first);
             i->second->mesh->draw();
         }
     }

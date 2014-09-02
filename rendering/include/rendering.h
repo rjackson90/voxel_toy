@@ -33,6 +33,7 @@ namespace Rendering
     // Uniform buffers
     class UniformBuffer;
     class BlockDefinition;
+    typedef std::shared_ptr<BlockDefinition> BlockPtr;
     typedef std::shared_ptr<UniformBuffer> UniformPtr;
     typedef std::vector<UniformPtr> VecUniformPtr;
 

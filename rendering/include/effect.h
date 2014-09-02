@@ -23,11 +23,12 @@ namespace Rendering
     {
     public:
         Effect(int);
-        virtual void bind() = 0;
+        virtual void bind(const SubsystemsPtr &, int) = 0;
 
     protected:
         int tex_unit_start;
     };
+
 
     /* This class covers the common case for an Effect 
      */
@@ -38,12 +39,31 @@ namespace Rendering
                 const Core::ConfigParser &, const std::string &);
 
         GenericEffect(int, ProgramPtr, VecTexDataTuplePtr, VecUniformPairPtr);
-        virtual void bind();
+        virtual void bind(const SubsystemsPtr &, int)   override;
 
     private:
         ProgramPtr program;
         VecTexDataTuplePtr textures;
         VecUniformPairPtr uniforms;
+    };
+
+    /* This class describes an Effect which simply textures a single piece of geometry
+     */
+    class TextureEffect : public Effect
+    {
+    public:
+        static EffectPtr TextureEffectFromConfig(
+                const Core::ConfigParser &, const std::string &);
+
+        TextureEffect(ProgramPtr, TexDataTuplePtr, UniformPtr);
+        virtual void bind(const SubsystemsPtr &, int)   override;
+
+    private:
+        ProgramPtr program;
+        TexDataTuplePtr color_tex;
+        UniformPtr transform;
+
+        GLint tex_loc;
     };
 
 }

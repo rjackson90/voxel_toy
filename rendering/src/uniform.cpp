@@ -4,11 +4,11 @@ using namespace Rendering;
 
 // Implementation of UniformBuffer
 
-UniformBuffer::UniformBuffer(BlockDefinition &blk, GLuint bind_point) : index(bind_point), block(blk)
+UniformBuffer::UniformBuffer(BlockPtr blk, GLuint bind_point) : index(bind_point), block(blk)
 {
     glGenBuffers(1, &buffer);
     glBindBuffer(GL_UNIFORM_BUFFER, buffer);
-    block.updateBuffer();
+    block->updateBuffer();
     glBindBufferBase(GL_UNIFORM_BUFFER, index, buffer);
 }
 
@@ -26,22 +26,23 @@ void UniformBuffer::bind(GLuint program, const GLchar* text)
 void UniformBuffer::updateContents(const SubsystemsPtr &systems, int key)
 {
     glBindBuffer(GL_UNIFORM_BUFFER, buffer);
-    block.getData(systems, key);
-    block.updateBuffer();
+    glBindBufferBase(GL_UNIFORM_BUFFER, index, buffer);
+    block->getData(systems, key);
+    block->updateBuffer();
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 // BlockDefinition implementations
 
-TransformBlock TransformBlock::TransformFromConfig(
+std::shared_ptr<TransformBlock> TransformBlock::TransformFromConfig(
         const Core::ConfigParser &parser, const std::string &section)
 {
-    TransformBlock tb;
+    auto tb = std::make_shared<TransformBlock>();
     try
     {
-        tb.mvp = mat4_from_string(parser.get("mvp", section));
-        tb.mv = mat4_from_string(parser.get("mv", section));
-        tb.normal_matrix = mat4_from_string(parser.get("normal_matrix", section));
+        tb->mvp = mat4_from_string(parser.get("mvp", section));
+        tb->mv = mat4_from_string(parser.get("mv", section));
+        tb->normal_matrix = mat4_from_string(parser.get("normal_matrix", section));
     }
     catch(const std::exception &ex)
     {
@@ -57,7 +58,7 @@ void TransformBlock::getData( const SubsystemsPtr &systems, int key)
     using glm::inverse;
     using glm::transpose;
 
-    mat4 m = systems->physics->getWorldCoords(key);
+    mat4 m = systems->transform->getWorldCoords(key);
     mat4 v = systems->render->getCameraMatrix();
     mat4 p = systems->render->getPerspectiveMatrix();
 

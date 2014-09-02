@@ -7,6 +7,6 @@
 #include <sstream>
 
 void FormatDebugOutputARB(std::string&, GLenum, GLenum, GLuint, GLenum, const char*);
-void DebugCallBackARB(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar*, GLvoid*);
+void DebugCallBackARB(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar*, const GLvoid*);
 
 #endif // GLERROR_H
