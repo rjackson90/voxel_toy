@@ -4,7 +4,7 @@ project(Llyrdin CXX C)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/exec/cmake_modules")
 
 # List of modules in the project
-set(MODULES core physics rendering scripting input)
+set(MODULES core physics rendering scripting input voxel)
 
 # Set appropriate flags for g++
 if(CMAKE_COMPILER_IS_GNUCXX)
